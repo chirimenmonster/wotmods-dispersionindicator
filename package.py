@@ -9,11 +9,13 @@ SCRIPT_NAME = 'mod_dispersionindicator'
 
 WOTMOD_ROOTDIR = 'res'
 SCRIPT_RELDIR = 'scripts/client/gui/mods'
+RESOURCE_RELDIR = 'mods/chirimen.dispersionindicator'
 
 BUILD_DIR = 'build'
 
 files = [
-    (SCRIPT_NAME + '.py', SCRIPT_NAME + '.pyc', SCRIPT_RELDIR),
+    ('python', SCRIPT_NAME + '.py', SCRIPT_RELDIR),
+    ('plain', 'bgimage.dds', RESOURCE_RELDIR),
 ]
 
 def compile_python(src, dst, virtualdir):
@@ -64,21 +66,32 @@ def main():
 
     paths = []
     for target in files:
-        if isinstance(target, list) or isinstance(target, tuple):
-            src, dst, reldir = target
+        if target[0] == 'python':
+            method, src, reldir = target
+            root, ext = os.path.splitext(src)
+            dst = root + '.pyc'
             apply_template(src, BUILD_DIR, parameters)
             compile_python(os.path.join(BUILD_DIR, src), os.path.join(BUILD_DIR, dst), reldir)
             paths.append((dst, os.path.join(WOTMOD_ROOTDIR, reldir, dst)))
+        elif target[0] == 'apply':
+            method, src, reldir = target
+            apply_template(src, BUILD_DIR, parameters)
+            paths.append((src, os.path.join(WOTMOD_ROOTDIR, reldir, src)))
         else:
-            apply_template(target, BUILD_DIR, parameters)      
-            paths.append((target, target))
+            method, src, reldir = target
+            shutil.copy(src, BUILD_DIR)      
+            paths.append((src, os.path.join(WOTMOD_ROOTDIR, reldir, src)))
 
     package_path = os.path.join(BUILD_DIR, parameters['package'])
+    donelist = []
     with zipfile.ZipFile(package_path, 'w', compression=zipfile.ZIP_STORED) as package_file:
         for source, target in paths:
             for dir in split(target)[0:-1]:
-                package_file.write('.', dir, zipfile.ZIP_STORED)
+                if dir not in donelist:
+                    package_file.write('.', dir, zipfile.ZIP_STORED)
+                    donelist.append(dir)
             package_file.write(os.path.join(BUILD_DIR, source), target, zipfile.ZIP_STORED)
+            donelist.append(target)
 
 if __name__ == "__main__":
     main()

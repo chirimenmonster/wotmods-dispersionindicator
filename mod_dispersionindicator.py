@@ -1,8 +1,6 @@
 import math
 import BigWorld
 import GUI
-import Keys
-import BattleReplay
 from debug_utils import LOG_CURRENT_EXCEPTION
 from gui import g_guiResetters
 from gui.Scaleform.daapi.view.battle.shared.crosshair.plugins import ShotResultIndicatorPlugin
@@ -10,11 +8,38 @@ from Avatar import PlayerAvatar
 from items.components import component_constants
 
 MOD_NAME = 'DispersionIndicator'
+LOG_FILE = 'mods/logs/chirimen.dispersionindicator/log.csv'
 
 class Settings: pass
 
 _strage = Settings()
 _strage.info = {}
+
+_strage.descr = (
+    ('currTime',            'Current Time',     '{:.2f}',   1.0, '' ),
+    ('vehicleSpeed',        'Vehicle Speed',    '{:.2f}',   1.0 / component_constants.KMH_TO_MS, 'km/s' ),
+    ('vehicleRSpeed',       'Vehicle RSpeed',   '{:.2f}',   1.0, 'rad/s' ),
+    ('turretRotationSpeed', 'Turret RSpeed',    '{:.2f}',   1.0, 'rad/s' ),
+    ('additiveFactor',      'Additive Factor',  '{:.2f}',   1.0, '' ),
+    ('dAngleAiming',        'DAngle Aiming',    '{:.2f}',   100.0, 'rad/100' ),
+    ('dAngleIdeal',         'DAngle Ideal',     '{:.2f}',   100.0, 'rad/100' ),
+    ('shotDispersionAngle', 'Shot DAngle',      '{:.2f}',   100.0, 'rad/100' ),
+)
+
+_strage.tags = [ 'currTime', '', 'turretRotationSpeed', ]
+
+def outputLog():
+    import os
+    import csv
+    
+    try:
+        os.makedirs(os.path.dirname(LOG_FILE))
+    except:
+        # LOG_CURRENT_EXCEPTION()
+        pass
+    with open(LOG_FILE, 'wb') as f:
+        writer = csv.writer(f, dialect='excel')
+        writer.writerows(_strage.data)
 
 
 def playerAvatarAddon_getOwnVehicleShotDispersionAngle(self, *args, **kwargs):
@@ -26,6 +51,7 @@ def playerAvatarAddon_getOwnVehicleShotDispersionAngle(self, *args, **kwargs):
     descr = self._PlayerAvatar__getDetailedVehicleDescriptor()
     _strage.info['additiveFactor'] = self._PlayerAvatar__getAdditiveShotDispersionFactor(descr)
     _strage.info['shotDispersionAngle'] = descr.gun.shotDispersionAngle
+    _strage.data.append([ _strage.info[tag[0]] for tag in _strage.descr ])
     return result
 
 
@@ -34,6 +60,8 @@ def shotResultIndicatorPluginAddon_start(self):
     try:
         _strage.indicator = IndicatorPanel()
         _strage.indicator.start()
+        _strage.data = []
+        _strage.data.append([ tag[0] for tag in _strage.descr ])
     except:
         LOG_CURRENT_EXCEPTION()
     return result
@@ -44,6 +72,7 @@ def shotResultIndicatorPluginAddon_stop(self):
         if _strage.indicator:
             _strage.indicator.stop()
             _strage.indicator = None
+        outputLog()
     except:
         LOG_CURRENT_EXCEPTION()
     return result
@@ -76,25 +105,16 @@ def init():
 class IndicatorPanel(object):
     offset = (-170, 100)
     __active = False
-    __tags = (
-        ('currTime',            'Current Time',     '{:.2f}',   1.0, '' ),
-        ('vehicleSpeed',        'Vehicle Speed',    '{:.2f}',   1.0 / component_constants.KMH_TO_MS, 'km/s' ),
-        ('vehicleRSpeed',       'Vehicle RSpeed',   '{:.2f}',   1.0, 'rad/s' ),
-        ('turretRotationSpeed', 'Turret RSpeed',    '{:.2f}',   1.0, 'rad/s' ),
-        ('additiveFactor',      'Additive Factor',  '{:.2f}',   1.0, '' ),
-        ('dAngleAiming',        'DAngle Aiming',    '{:.2f}',   100.0, 'rad/100' ),
-        ('dAngleIdeal',         'DAngle Ideal',     '{:.2f}',   100.0, 'rad/100' ),
-        ('shotDispersionAngle', 'Shot DAngle',      '{:.2f}',   100.0, 'rad/100' ),
-    )
+    __tags = _strage.descr
 
     def __init__(self):
-        self.window = GUI.Window('')
+        self.window = GUI.Window('mods/chirimen.dispersionindicator/bgimage.dds')
         self.window.materialFX = 'BLEND'
         self.window.horizontalPositionMode = 'PIXEL'
         self.window.verticalPositionMode = 'PIXEL'
         self.window.widthMode = 'PIXEL'
         self.window.heightMode = 'PIXEL'
-        self.window.width = 480
+        self.window.width = 320
         self.window.height = 180
         self.window.visible = False
         self.labels = {}
@@ -109,8 +129,8 @@ class IndicatorPanel(object):
             self.values[name] = self._genLabel(horizontalAnchor='RIGHT')
             self.units[name] = self._genLabel(horizontalAnchor='LEFT', text=unit)
             self.labels[name].position = (x - 128, y, 1)
-            self.values[name].position = (x - 56, y, 1)
-            self.units[name].position = (x - 48, y, 1)
+            self.values[name].position = (x - 64, y, 1)
+            self.units[name].position = (x - 56, y, 1)
             self.window.addChild(self.labels[name])
             self.window.addChild(self.values[name])
             self.window.addChild(self.units[name])
