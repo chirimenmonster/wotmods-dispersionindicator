@@ -7,14 +7,11 @@ from gui.Scaleform.daapi.view.battle.shared.crosshair.plugins import ShotResultI
 from Avatar import PlayerAvatar
 from items.components import component_constants
 
-MOD_NAME = 'DispersionIndicator'
-LOG_FILE = 'mods/logs/chirimen.dispersionindicator/log.csv'
+MOD_NAME = '${name}'
+LOG_FILE = '${logfile}'
 
-class Settings: pass
-
-_strage = Settings()
+_strage = {}
 _strage.info = {}
-
 _strage.descr = (
     ('currTime',            'Current Time',     '{:.2f}',   1.0, '' ),
     ('vehicleSpeed',        'Vehicle Speed',    '{:.2f}',   1.0 / component_constants.KMH_TO_MS, 'km/s' ),
@@ -26,7 +23,6 @@ _strage.descr = (
     ('shotDispersionAngle', 'Shot DAngle',      '{:.2f}',   100.0, 'rad/100' ),
 )
 
-_strage.tags = [ 'currTime', '', 'turretRotationSpeed', ]
 
 def outputLog():
     import os

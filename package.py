@@ -3,20 +3,31 @@ import shutil
 import py_compile
 import zipfile
 import ConfigParser
+import json
 from string import Template
 
-SCRIPT_NAME = 'mod_dispersionindicator'
-
-WOTMOD_ROOTDIR = 'res'
-SCRIPT_RELDIR = 'scripts/client/gui/mods'
-RESOURCE_RELDIR = 'mods/chirimen.dispersionindicator'
-
 BUILD_DIR = 'build'
+CONFIG = 'config.ini'
+FILELIST = 'files.json'
 
-files = [
-    ('python', SCRIPT_NAME + '.py', SCRIPT_RELDIR),
-    ('plain', 'bgimage.dds', RESOURCE_RELDIR),
-]
+def get_config():
+    inifile = ConfigParser.SafeConfigParser()
+    inifile.read(CONFIG)
+
+    parameters = dict(
+        package     = inifile.get('mod', 'package'),
+        package_id  = inifile.get('mod', 'package_id'),
+        logfile     = inifile.get('mod', 'logfile'),
+        name        = inifile.get('mod', 'name'),
+        author      = inifile.get('mod', 'author'),
+        version     = inifile.get('mod', 'version'),
+        description = inifile.get('mod', 'description'),
+        support_url = inifile.get('mod', 'support_url'),
+        github_page = inifile.get('mod', 'github_page'),
+        wot_version = inifile.get('wot', 'version')
+    )
+    return parameters
+
 
 def compile_python(src, dst, virtualdir):
     py_compile.compile(file=src, cfile=dst, dfile=os.path.join(virtualdir, src), doraise=True)
@@ -32,55 +43,38 @@ def split(path):
     result = split(head)
     result.append(path)
     return result
-    
+
+def read_filelist(parameters=None):
+    paths = []
+    with open(FILELIST, 'r') as f:
+        desc = json.load(f)
+        for target in desc:
+            if target['method'] == 'apply+python':
+                for src in target['files']:
+                    root, ext = os.path.splitext(src)
+                    dst = root + '.pyc'
+                    apply_template(src, BUILD_DIR, parameters)
+                    compile_python(os.path.join(BUILD_DIR, src), os.path.join(BUILD_DIR, dst), target['reldir'])
+                    paths.append((dst, os.path.join(target['root'], target['reldir'], dst)))
+            elif target['method'] == 'apply':
+                for src in target['files']:
+                    apply_template(src, BUILD_DIR, parameters)
+                    paths.append((src, os.path.join(target['root'], target['reldir'], src)))
+            elif target['method'] == 'plain':
+                for src in target['files']:
+                    shutil.copy(src, BUILD_DIR)      
+                    paths.append((src, os.path.join(target['root'], target['reldir'], src)))
+    return paths
+
 def main():
-    inifile = ConfigParser.SafeConfigParser()
-    inifile.read('config.ini')
-
-    class config:
-        name        = inifile.get('mod', 'name')
-        author      = inifile.get('mod', 'author')
-        version     = inifile.get('mod', 'version')
-        description = inifile.get('mod', 'description')
-        support_url = inifile.get('mod', 'support_url')
-        github_page = inifile.get('mod', 'github_page')
-        wot_version = inifile.get('wot', 'version')
-
-    parameters = dict(
-        package     = '{}.{}_{}.wotmod'.format(config.author, config.name, config.version).lower(),
-        package_id  = '{}.{}'.format(config.author, config.name).lower(),
-        name        = config.name,
-        author      = config.author,
-        version     = config.version,
-        description = config.description,
-        support_url = config.support_url,
-        github_page = config.github_page,
-        wot_version = config.wot_version
-    )
-
+    parameters = get_config()
     try:
         shutil.rmtree(BUILD_DIR)
     except:
         pass
     os.makedirs(BUILD_DIR)
 
-    paths = []
-    for target in files:
-        if target[0] == 'python':
-            method, src, reldir = target
-            root, ext = os.path.splitext(src)
-            dst = root + '.pyc'
-            apply_template(src, BUILD_DIR, parameters)
-            compile_python(os.path.join(BUILD_DIR, src), os.path.join(BUILD_DIR, dst), reldir)
-            paths.append((dst, os.path.join(WOTMOD_ROOTDIR, reldir, dst)))
-        elif target[0] == 'apply':
-            method, src, reldir = target
-            apply_template(src, BUILD_DIR, parameters)
-            paths.append((src, os.path.join(WOTMOD_ROOTDIR, reldir, src)))
-        else:
-            method, src, reldir = target
-            shutil.copy(src, BUILD_DIR)      
-            paths.append((src, os.path.join(WOTMOD_ROOTDIR, reldir, src)))
+    paths = read_filelist(parameters=parameters)
 
     package_path = os.path.join(BUILD_DIR, parameters['package'])
     donelist = []

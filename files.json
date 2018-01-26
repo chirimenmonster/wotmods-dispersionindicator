@@ -1,0 +1,14 @@
+[
+    {
+        "method":   "apply+python",
+        "root":     "res",
+        "reldir":   "scripts/client/gui/mods",
+        "files":    [ "mod_dispersionindicator.py" ]
+    },
+    {
+        "method":   "plain",
+        "root":     "res",
+        "reldir":   "mods/chirimen.dispersionindicator",
+        "files":    [ "bgimage.dds" ]
+    }
+]
