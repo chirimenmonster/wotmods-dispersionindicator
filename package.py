@@ -30,7 +30,7 @@ def get_config():
 
 
 def compile_python(src, dst, virtualdir):
-    py_compile.compile(file=src, cfile=dst, dfile=os.path.join(virtualdir, src), doraise=True)
+    py_compile.compile(file=src, cfile=dst, dfile=os.path.join(virtualdir, os.path.basename(src)), doraise=True)
 
 def apply_template(src, dstdir, parameters):
     with open(src, 'r') as in_file, open(os.path.join(dstdir, src), 'w') as out_file:
@@ -55,6 +55,13 @@ def read_filelist(parameters=None):
                     dst = root + '.pyc'
                     apply_template(src, BUILD_DIR, parameters)
                     compile_python(os.path.join(BUILD_DIR, src), os.path.join(BUILD_DIR, dst), target['reldir'])
+                    paths.append((dst, os.path.join(target['root'], target['reldir'], dst)))
+            elif target['method'] == 'python':
+                for src in target['files']:
+                    root, ext = os.path.splitext(src)
+                    dst = root + '.pyc'
+                    apply_template(src, BUILD_DIR, parameters)
+                    compile_python(src, os.path.join(BUILD_DIR, dst), target['reldir'])
                     paths.append((dst, os.path.join(target['root'], target['reldir'], dst)))
             elif target['method'] == 'apply':
                 for src in target['files']:

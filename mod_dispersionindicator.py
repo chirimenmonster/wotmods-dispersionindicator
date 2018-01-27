@@ -7,10 +7,14 @@ from gui.Scaleform.daapi.view.battle.shared.crosshair.plugins import ShotResultI
 from Avatar import PlayerAvatar
 from items.components import component_constants
 
+from dispersionindicator.events import overrideMethod
+
 MOD_NAME = '${name}'
 LOG_FILE = '${logfile}'
 
-_strage = {}
+class Strage: pass
+
+_strage = Strage()
 _strage.info = {}
 _strage.descr = (
     ('currTime',            'Current Time',     '{:.2f}',   1.0, '' ),
@@ -38,8 +42,9 @@ def outputLog():
         writer.writerows(_strage.data)
 
 
-def playerAvatarAddon_getOwnVehicleShotDispersionAngle(self, *args, **kwargs):
-    result = _strage.playerAvatar_getOwnVehicleShotDispersionAngle(self, *args, **kwargs)
+@overrideMethod(PlayerAvatar, 'getOwnVehicleShotDispersionAngle')
+def playerAvatarAddon_getOwnVehicleShotDispersionAngle(orig, self, *args, **kwargs):
+    result = orig(self, *args, **kwargs)
     _strage.info['currTime'] = BigWorld.time()
     _strage.info['turretRotationSpeed'] = args[0]
     _strage.info['vehicleSpeed'], _strage.info['vehicleRSpeed'] = self.getOwnVehicleSpeeds(True)
@@ -51,8 +56,9 @@ def playerAvatarAddon_getOwnVehicleShotDispersionAngle(self, *args, **kwargs):
     return result
 
 
-def shotResultIndicatorPluginAddon_start(self):
-    result = _strage.ShotResultIndicatorPlugin_start(self)
+@overrideMethod(ShotResultIndicatorPlugin, 'start')
+def shotResultIndicatorPluginAddon_start(orig, self, *args, **kwargs):
+    result = orig(self, *args, **kwargs)
     try:
         _strage.indicator = IndicatorPanel()
         _strage.indicator.start()
@@ -62,8 +68,9 @@ def shotResultIndicatorPluginAddon_start(self):
         LOG_CURRENT_EXCEPTION()
     return result
 
-def shotResultIndicatorPluginAddon_stop(self):
-    result = _strage.ShotResultIndicatorPlugin_stop(self)
+@overrideMethod(ShotResultIndicatorPlugin, 'stop')
+def shotResultIndicatorPluginAddon_stop(orig, self, *args, **kwargs):
+    result = orig(self, *args, **kwargs)
     try:
         if _strage.indicator:
             _strage.indicator.stop()
@@ -73,8 +80,9 @@ def shotResultIndicatorPluginAddon_stop(self):
         LOG_CURRENT_EXCEPTION()
     return result
 
-def shotResultIndicatorPluginAddon_onGunMarkerStateChanged(*args, **kwargs):
-    result = _strage.ShotResultIndicatorPlugin_onGunMarkerStateChanged(*args, **kwargs)
+@overrideMethod(ShotResultIndicatorPlugin, '_ShotResultIndicatorPlugin__onGunMarkerStateChanged')
+def shotResultIndicatorPluginAddon_onGunMarkerStateChanged(orig, self, *args, **kwargs):
+    result = orig(self, *args, **kwargs)
     try:
         _strage.indicator.setInfo(_strage.info)
         _strage.indicator.setVisible(True)
@@ -86,14 +94,6 @@ def shotResultIndicatorPluginAddon_onGunMarkerStateChanged(*args, **kwargs):
 def init():
     try:
         BigWorld.logInfo(MOD_NAME, '{} initialize'.format(MOD_NAME), None)
-        _strage.playerAvatar_getOwnVehicleShotDispersionAngle = PlayerAvatar.getOwnVehicleShotDispersionAngle
-        PlayerAvatar.getOwnVehicleShotDispersionAngle = playerAvatarAddon_getOwnVehicleShotDispersionAngle
-        _strage.ShotResultIndicatorPlugin_start = ShotResultIndicatorPlugin.start
-        ShotResultIndicatorPlugin.start = shotResultIndicatorPluginAddon_start
-        _strage.ShotResultIndicatorPlugin_stop = ShotResultIndicatorPlugin.stop
-        ShotResultIndicatorPlugin.stop = shotResultIndicatorPluginAddon_stop
-        _strage.ShotResultIndicatorPlugin_onGunMarkerStateChanged = ShotResultIndicatorPlugin._ShotResultIndicatorPlugin__onGunMarkerStateChanged
-        ShotResultIndicatorPlugin._ShotResultIndicatorPlugin__onGunMarkerStateChanged = shotResultIndicatorPluginAddon_onGunMarkerStateChanged
     except:
         LOG_CURRENT_EXCEPTION()
 
