@@ -30,9 +30,9 @@ _strage.descr = [
     ('aimingStartFactor',   'Aiming Start Factor',  '{:.2f}',   1.0, ''),
     ('aimingTime',          'Aiming Time',      '{:.2f}',   1.0, 's'),
     ('multFactor',          'Mult. Factor',     '{:.2f}',   1.0, ''),
-    ('chassisShotDispersionFactorsMovement',    'ChassisM Factor',  '{:.2f}', 1.0, ''),
-    ('chassisShotDispersionFactorsRotation',    'ChassisR Factor',  '{:.2f}', 1.0, ''),
-    ('gunShotDispersionFactorsTurretRotation',  'TurretR Factor',   '{:.2f}', 1.0, ''),
+    ('factorsMovement',     'Movement Factor',  '{:.2f}',   1.0, ''),
+    ('factorsRotation',     'Rotation Factor',  '{:.2f}',   1.0, ''),
+    ('factorsTurretRotation',   'TurretR Factor',   '{:.2f}', 1.0, ''),
     ('shotFactor',          'Shot Factor',      '{:.2f}',   1.0, ''),
 ]
 
@@ -65,9 +65,9 @@ def playerAvatarAddon_getOwnVehicleShotDispersionAngle(orig, self, turretRotatio
     _strage.info['aimingStartTime'] = aimingStartTime
     _strage.info['aimingStartFactor'] = aimingStartFactor
     _strage.info['multFactor'] = multFactor
-    _strage.info['gunShotDispersionFactorsTurretRotation'] = gunShotDispersionFactorsTurretRotation
-    _strage.info['chassisShotDispersionFactorsMovement'] = chassisShotDispersionFactorsMovement
-    _strage.info['chassisShotDispersionFactorsRotation'] = chassisShotDispersionFactorsRotation
+    _strage.info['factorsTurretRotation'] = gunShotDispersionFactorsTurretRotation
+    _strage.info['factorsMovement'] = chassisShotDispersionFactorsMovement
+    _strage.info['factorsRotation'] = chassisShotDispersionFactorsRotation
     _strage.info['aimingTime'] = aimingTime
     if withShot == 0:
         _strage.info['shotFactor'] = 0
