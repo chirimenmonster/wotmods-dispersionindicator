@@ -19,7 +19,7 @@ class Strage:
 _strage = Strage()
 _strage.descr = [
     ('currTime',            'Current Time',     '{:.2f}',   1.0, 's' ),
-    ('vehicleSpeed',        'Vehicle Speed',    '{:.2f}',   1.0 / component_constants.KMH_TO_MS, 'km/s' ),
+    ('vehicleSpeed',        'Vehicle Speed',    '{:.2f}',   1.0 / component_constants.KMH_TO_MS, 'km/h' ),
     ('vehicleRSpeed',       'Vehicle RSpeed',   '{:.2f}',   1.0, 'rad/s' ),
     ('turretRotationSpeed', 'Turret RSpeed',    '{:.2f}',   1.0, 'rad/s' ),
     ('additiveFactor',      'Additive Factor',  '{:.2f}',   1.0, '' ),
