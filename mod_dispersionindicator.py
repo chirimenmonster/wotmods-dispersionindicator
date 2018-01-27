@@ -12,20 +12,29 @@ from dispersionindicator.events import overrideMethod
 MOD_NAME = '${name}'
 LOG_FILE = '${logfile}'
 
-class Strage: pass
+class Strage:
+    info = {}
+    indicator = None
 
 _strage = Strage()
-_strage.info = {}
-_strage.descr = (
-    ('currTime',            'Current Time',     '{:.2f}',   1.0, '' ),
+_strage.descr = [
+    ('currTime',            'Current Time',     '{:.2f}',   1.0, 's' ),
     ('vehicleSpeed',        'Vehicle Speed',    '{:.2f}',   1.0 / component_constants.KMH_TO_MS, 'km/s' ),
     ('vehicleRSpeed',       'Vehicle RSpeed',   '{:.2f}',   1.0, 'rad/s' ),
     ('turretRotationSpeed', 'Turret RSpeed',    '{:.2f}',   1.0, 'rad/s' ),
     ('additiveFactor',      'Additive Factor',  '{:.2f}',   1.0, '' ),
-    ('dAngleAiming',        'DAngle Aiming',    '{:.2f}',   100.0, 'rad/100' ),
-    ('dAngleIdeal',         'DAngle Ideal',     '{:.2f}',   100.0, 'rad/100' ),
+    ('dAngleAiming',        'Aiming DAngle',    '{:.2f}',   100.0, 'rad/100' ),
+    ('dAngleIdeal',         'Ideal DAngle',     '{:.2f}',   100.0, 'rad/100' ),
     ('shotDispersionAngle', 'Shot DAngle',      '{:.2f}',   100.0, 'rad/100' ),
-)
+    ('aimingStartTime',     'Aiming Start Time',    '{:.2f}',   1.0, 's'),
+    ('aimingStartFactor',   'Aiming Start Factor',  '{:.2f}',   1.0, ''),
+    ('aimingTime',          'Aiming Time',      '{:.2f}',   1.0, 's'),
+    ('multFactor',          'Mult. Factor',     '{:.2f}',   1.0, ''),
+    ('chassisShotDispersionFactorsMovement',    'ChassisM Factor',  '{:.2f}', 1.0, ''),
+    ('chassisShotDispersionFactorsRotation',    'ChassisR Factor',  '{:.2f}', 1.0, ''),
+    ('gunShotDispersionFactorsTurretRotation',  'TurretR Factor',   '{:.2f}', 1.0, ''),
+    ('shotFactor',          'Shot Factor',      '{:.2f}',   1.0, ''),
+]
 
 
 def outputLog():
@@ -43,15 +52,29 @@ def outputLog():
 
 
 @overrideMethod(PlayerAvatar, 'getOwnVehicleShotDispersionAngle')
-def playerAvatarAddon_getOwnVehicleShotDispersionAngle(orig, self, *args, **kwargs):
-    result = orig(self, *args, **kwargs)
+def playerAvatarAddon_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpeed, withShot = 0):
+    result = orig(self, turretRotationSpeed, withShot)
     _strage.info['currTime'] = BigWorld.time()
-    _strage.info['turretRotationSpeed'] = args[0]
+    _strage.info['turretRotationSpeed'] = turretRotationSpeed
     _strage.info['vehicleSpeed'], _strage.info['vehicleRSpeed'] = self.getOwnVehicleSpeeds(True)
     _strage.info['dAngleAiming'], _strage.info['dAngleIdeal'] = result
     descr = self._PlayerAvatar__getDetailedVehicleDescriptor()
     _strage.info['additiveFactor'] = self._PlayerAvatar__getAdditiveShotDispersionFactor(descr)
     _strage.info['shotDispersionAngle'] = descr.gun.shotDispersionAngle
+    aimingStartTime, aimingStartFactor, multFactor, gunShotDispersionFactorsTurretRotation, chassisShotDispersionFactorsMovement, chassisShotDispersionFactorsRotation, aimingTime = self._PlayerAvatar__aimingInfo
+    _strage.info['aimingStartTime'] = aimingStartTime
+    _strage.info['aimingStartFactor'] = aimingStartFactor
+    _strage.info['multFactor'] = multFactor
+    _strage.info['gunShotDispersionFactorsTurretRotation'] = gunShotDispersionFactorsTurretRotation
+    _strage.info['chassisShotDispersionFactorsMovement'] = chassisShotDispersionFactorsMovement
+    _strage.info['chassisShotDispersionFactorsRotation'] = chassisShotDispersionFactorsRotation
+    _strage.info['aimingTime'] = aimingTime
+    if withShot == 0:
+        _strage.info['shotFactor'] = 0
+    elif withShot == 1:
+        _strage.info['shotFactor'] = descr.gun.shotDispersionFactors['afterShot']
+    else:
+        _strage.info['shotFactor'] = descr.gun.shotDispersionFactors['afterShotInBurst']
     _strage.data.append([ _strage.info[tag[0]] for tag in _strage.descr ])
     return result
 
@@ -99,7 +122,7 @@ def init():
 
 
 class IndicatorPanel(object):
-    offset = (-170, 100)
+    offset = (-200, 50)
     __active = False
     __tags = _strage.descr
 
@@ -110,27 +133,27 @@ class IndicatorPanel(object):
         self.window.verticalPositionMode = 'PIXEL'
         self.window.widthMode = 'PIXEL'
         self.window.heightMode = 'PIXEL'
-        self.window.width = 320
-        self.window.height = 180
+        self.window.width = 280
         self.window.visible = False
         self.labels = {}
         self.values = {}
         self.units = {}
         x = self.window.width
         y = 0
-        y = y + 16
+        y = y + 8
         for desc in self.__tags:
             name, text, form, factor, unit = desc
             self.labels[name] = self._genLabel(horizontalAnchor='RIGHT', text=text)
             self.values[name] = self._genLabel(horizontalAnchor='RIGHT')
             self.units[name] = self._genLabel(horizontalAnchor='LEFT', text=unit)
             self.labels[name].position = (x - 128, y, 1)
-            self.values[name].position = (x - 64, y, 1)
-            self.units[name].position = (x - 56, y, 1)
+            self.values[name].position = (x - 72, y, 1)
+            self.units[name].position = (x - 60, y, 1)
             self.window.addChild(self.labels[name])
             self.window.addChild(self.values[name])
             self.window.addChild(self.units[name])
             y = y + 16
+        self.window.height = y + 8
  
     def _genLabel(self, **kwargs):
         label = GUI.Text('')
