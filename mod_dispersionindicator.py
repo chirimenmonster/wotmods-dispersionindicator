@@ -22,6 +22,10 @@ _strage.descr = [
     ('vehicleSpeed',        'Vehicle Speed',    '{:.2f}',   1.0 / component_constants.KMH_TO_MS, 'km/h' ),
     ('vehicleRSpeed',       'Vehicle RSpeed',   '{:.2f}',   1.0, 'rad/s' ),
     ('turretRotationSpeed', 'Turret RSpeed',    '{:.2f}',   1.0, 'rad/s' ),
+    ('speedInfo0',          'Speed',            '{:.2f}',   1.0 / component_constants.KMH_TO_MS, 'km/h' ),
+    ('engineSpeed',         'Engine RPM',       '{:.0f}',   1.0,    'rpm'   ),
+    ('engineRPM',           'Engine RPM',       '{:.0f}',   1.0,    'rpm'   ),
+    ('engineRelativeRPM',   'Engine Relative RPM',  '{:.0f}',   1.0,    'rpm'   ),
     ('additiveFactor',      'Additive Factor',  '{:.2f}',   1.0, '' ),
     ('dAngleAiming',        'Aiming DAngle',    '{:.2f}',   100.0, 'rad/100' ),
     ('dAngleIdeal',         'Ideal DAngle',     '{:.2f}',   100.0, 'rad/100' ),
@@ -57,6 +61,10 @@ def playerAvatarAddon_getOwnVehicleShotDispersionAngle(orig, self, turretRotatio
     _strage.info['currTime'] = BigWorld.time()
     _strage.info['turretRotationSpeed'] = turretRotationSpeed
     _strage.info['vehicleSpeed'], _strage.info['vehicleRSpeed'] = self.getOwnVehicleSpeeds(True)
+    _strage.info['speedInfo0'] = self.vehicle.getSpeed()
+    _strage.info['engineSpeed'] = self.vehicle.appearance.rpm
+    _strage.info['engineRPM'] = self.vehicle.appearance._CompoundAppearance__detailedEngineState.rpm
+    _strage.info['engineRelativeRPM'] = self.vehicle.appearance._CompoundAppearance__detailedEngineState.relativeRPM
     _strage.info['dAngleAiming'], _strage.info['dAngleIdeal'] = result
     descr = self._PlayerAvatar__getDetailedVehicleDescriptor()
     _strage.info['additiveFactor'] = self._PlayerAvatar__getAdditiveShotDispersionFactor(descr)
