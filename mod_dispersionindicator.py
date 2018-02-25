@@ -21,11 +21,10 @@ _strage.descr = [
     ('currTime',            'Current Time',     '{:.2f}',   1.0, 's' ),
     ('vehicleSpeed',        'Vehicle Speed',    '{:.2f}',   1.0 / component_constants.KMH_TO_MS, 'km/h' ),
     ('vehicleRSpeed',       'Vehicle RSpeed',   '{:.2f}',   1.0, 'rad/s' ),
-    ('turretRotationSpeed', 'Turret RSpeed',    '{:.2f}',   1.0, 'rad/s' ),
-    ('speedInfo0',          'Speed',            '{:.2f}',   1.0 / component_constants.KMH_TO_MS, 'km/h' ),
-    ('engineSpeed',         'Engine RPM',       '{:.0f}',   1.0,    'rpm'   ),
+    ('speedInfo0',          'speedInfo[0]',     '{:.2f}',   1.0 / component_constants.KMH_TO_MS, 'km/h' ),
     ('engineRPM',           'Engine RPM',       '{:.0f}',   1.0,    'rpm'   ),
-    ('engineRelativeRPM',   'Engine Relative RPM',  '{:.0f}',   1.0,    'rpm'   ),
+    ('engineRelativeRPM',   'Engine Relative RPM',  '{:.2f}',   1.0,    'rpm'   ),
+    ('turretRotationSpeed', 'Turret RSpeed',    '{:.2f}',   1.0, 'rad/s' ),
     ('additiveFactor',      'Additive Factor',  '{:.2f}',   1.0, '' ),
     ('dAngleAiming',        'Aiming DAngle',    '{:.2f}',   100.0, 'rad/100' ),
     ('dAngleIdeal',         'Ideal DAngle',     '{:.2f}',   100.0, 'rad/100' ),
@@ -54,17 +53,17 @@ def outputLog():
         writer = csv.writer(f, dialect='excel')
         writer.writerows(_strage.data)
 
-
 @overrideMethod(PlayerAvatar, 'getOwnVehicleShotDispersionAngle')
 def playerAvatarAddon_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpeed, withShot = 0):
     result = orig(self, turretRotationSpeed, withShot)
     _strage.info['currTime'] = BigWorld.time()
     _strage.info['turretRotationSpeed'] = turretRotationSpeed
     _strage.info['vehicleSpeed'], _strage.info['vehicleRSpeed'] = self.getOwnVehicleSpeeds(True)
+    
     _strage.info['speedInfo0'] = self.vehicle.getSpeed()
-    _strage.info['engineSpeed'] = self.vehicle.appearance.rpm
     _strage.info['engineRPM'] = self.vehicle.appearance._CompoundAppearance__detailedEngineState.rpm
     _strage.info['engineRelativeRPM'] = self.vehicle.appearance._CompoundAppearance__detailedEngineState.relativeRPM
+
     _strage.info['dAngleAiming'], _strage.info['dAngleIdeal'] = result
     descr = self._PlayerAvatar__getDetailedVehicleDescriptor()
     _strage.info['additiveFactor'] = self._PlayerAvatar__getAdditiveShotDispersionFactor(descr)
@@ -83,7 +82,7 @@ def playerAvatarAddon_getOwnVehicleShotDispersionAngle(orig, self, turretRotatio
         _strage.info['shotFactor'] = descr.gun.shotDispersionFactors['afterShot']
     else:
         _strage.info['shotFactor'] = descr.gun.shotDispersionFactors['afterShotInBurst']
-    _strage.data.append([ _strage.info[tag[0]] for tag in _strage.descr ])
+    _strage.data.append([ _strage.info.get(tag[0], None) for tag in _strage.descr ])
     return result
 
 
@@ -170,7 +169,7 @@ class IndicatorPanel(object):
         label.verticalAnchor = 'TOP'
         label.horizontalPositionMode = 'PIXEL'
         label.verticalPositionMode = 'PIXEL'
-        label.colour = (255, 255, 0, 180)
+        label.colour = (255, 255, 0, 127)
         label.colourFormatting = True
         label.visible = True
         for key, arg in kwargs.items():
@@ -207,13 +206,9 @@ class IndicatorPanel(object):
             self.window.visible = False
 
     def setInfo(self, info):
-        if info:
-            for desc in self.__tags:
-                name, text, form, factor, unit = desc
-                self.values[name].text = form.format(info[name] * factor)
-        else:
-            for desc in self._tags:
-                name, text, form, factor, unit = desc
-                self.values[name].text = ''
+        for desc in self.__tags:
+            name, text, form, factor, unit = desc
+            value = info.get(name, None) if info is not None else None
+            self.values[name].text = form.format(info[name] * factor) if value is not None else ''
 
 
