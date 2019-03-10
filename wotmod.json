@@ -5,19 +5,19 @@
             "method":   "apply+python",
             "root":     "res",
             "reldir":   "scripts/client/gui/mods",
-            "files":    [ "mod_dispersionindicator.py" ]
+            "files":    [ "src/mod_dispersionindicator.py" ]
         },
         {
             "method":   "python",
             "root":     "res",
             "reldir":   "scripts/client/gui/mods/dispersionindicator",
-            "files":    [ "__init__.py", "events.py" ]
+            "files":    [ "src/__init__.py", "src/events.py" ]
         },
         {
             "method":   "plain",
             "root":     "res",
             "reldir":   "mods/chirimen.dispersionindicator",
-            "files":    [ "bgimage.dds" ]
+            "files":    [ "src/bgimage.dds" ]
         }
     ]
 }
