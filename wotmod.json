@@ -16,8 +16,8 @@
         {
             "method":   "plain",
             "root":     "res",
-            "reldir":   "mods/chirimen.dispersionindicator",
-            "files":    [ "src/bgimage.dds" ]
+            "reldir":   "${resource_dir}",
+            "files":    [ "src/bgimage.dds", "src/config.json" ]
         }
     ]
 }

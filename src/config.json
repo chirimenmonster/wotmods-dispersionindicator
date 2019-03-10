@@ -1,0 +1,137 @@
+{
+    "panelItems":   [
+        {
+            "status":   "currTime",
+            "title":     "Current Time",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "s"
+        },
+        {
+            "status":   "vehicleSpeed",
+            "title":     "Vehicle Speed",
+            "format":   "{:.2f}",
+            "factor":   "MS_TO_KMH",
+            "unit":     "km/h"
+        },
+        {
+            "status":   "vehicleRSpeed",
+            "title":     "Vehicle RSpeed",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "rad/s"
+        },
+        {
+            "status":   "speedInfo0",
+            "title":     "speedInfo[0]",
+            "format":   "{:.2f}",
+            "factor":   "MS_TO_KMH",
+            "unit":     "km/h"
+        },
+        {
+            "status":   "engineRPM",
+            "title":     "Engine RPM",
+            "format":   "{:.0f}",
+            "factor":   1.0,
+            "unit":     "rpm"
+        },
+        {
+            "status":   "engineRelativeRPM",
+            "title":    "Engine Relative RPM",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "rpm"
+        },
+        {
+            "status":   "turretRotationSpeed",
+            "title":    "Turret RSpeed",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "rad/s"
+         },
+        {
+            "status":   "additiveFactor",
+            "title":    "Additive Factor",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        {
+            "status":   "dAngleAiming",
+            "title":    "Aiming DAngle",
+            "format":   "{:.2f}",
+            "factor":   100.0,
+            "unit":     "rad/100"
+        },
+        {
+            "status":   "dAngleIdeal",
+            "title":    "Ideal DAngle",
+            "format":   "{:.2f}",
+            "factor":   100.0,
+            "unit":     "rad/100"
+        },
+        {
+            "status":   "shotDispersionAngle",
+            "title":    "Shot DAngle",
+            "format":   "{:.2f}",
+            "factor":   100.0,
+            "unit":     "rad/100"
+        },
+        {
+            "status":   "aimingStartTime",
+            "title":    "Aiming Start Time",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "s"
+        },
+        {
+            "status":   "aimingStartFactor",
+            "title":    "Aiming Start Factor",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        {
+            "status":   "aimingTime",
+            "title":    "Aiming Time",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "s"
+        },
+        {
+            "status":   "multFactor",
+            "title":    "Mult. Factor",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        {
+            "status":   "factorsMovement",
+            "title":    "Movement Factor",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        {
+            "status":   "factorsRotation",
+            "title":    "Rotation Factor",
+            "format":   "{:.2f}",
+            "factror":  1.0,
+            "unit":     ""
+        },
+        {
+            "status":   "factorsTurretRotation",
+            "title":    "TurretR Factor",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        {
+            "status":   "shotFactor",
+            "title":    "Shot Factor",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        }
+    ]
+}
