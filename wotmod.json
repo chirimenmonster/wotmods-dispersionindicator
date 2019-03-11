@@ -5,13 +5,8 @@
             "method":   "apply+python",
             "root":     "res",
             "reldir":   "scripts/client/gui/mods",
-            "files":    [ "src/mod_dispersionindicator.py" ]
-        },
-        {
-            "method":   "python",
-            "root":     "res",
-            "reldir":   "scripts/client/gui/mods/dispersionindicator",
-            "files":    [ "src/__init__.py", "src/events.py" ]
+            "include":  "\\.py$$",
+            "dirs":     [ "src" ]
         },
         {
             "method":   "plain",

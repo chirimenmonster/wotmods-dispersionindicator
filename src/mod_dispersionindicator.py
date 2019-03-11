@@ -1,3 +1,4 @@
+
 import math
 import json
 import BigWorld
@@ -10,6 +11,8 @@ from Avatar import PlayerAvatar
 from items.components import component_constants
 
 from dispersionindicator.events import overrideMethod
+from dispersionindicator import panel
+from dispersionindicator import status
 
 MOD_NAME = '${name}'
 LOG_FILE = '${logfile}'
@@ -60,8 +63,11 @@ def outputLog():
         writer = csv.writer(f, dialect='excel')
         writer.writerows(_strage.data)
 
+
 @overrideMethod(PlayerAvatar, 'getOwnVehicleShotDispersionAngle')
 def playerAvatarAddon_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpeed, withShot = 0):
+    return status.playerAvatar_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpeed, withShot = 0)
+
     result = orig(self, turretRotationSpeed, withShot)
     _strage.info['currTime'] = BigWorld.time()
     _strage.info['turretRotationSpeed'] = turretRotationSpeed
@@ -95,6 +101,7 @@ def playerAvatarAddon_getOwnVehicleShotDispersionAngle(orig, self, turretRotatio
 
 @overrideMethod(ShotResultIndicatorPlugin, 'start')
 def shotResultIndicatorPluginAddon_start(orig, self, *args, **kwargs):
+    return status.shotResultIndicatorPlugin_start(orig, self, *args, **kwargs)
     result = orig(self, *args, **kwargs)
     try:
         _strage.indicator = IndicatorPanel()
@@ -107,6 +114,7 @@ def shotResultIndicatorPluginAddon_start(orig, self, *args, **kwargs):
 
 @overrideMethod(ShotResultIndicatorPlugin, 'stop')
 def shotResultIndicatorPluginAddon_stop(orig, self, *args, **kwargs):
+    return status.shotResultIndicatorPlugin_stop(orig, self, *args, **kwargs)
     result = orig(self, *args, **kwargs)
     try:
         if _strage.indicator:
@@ -119,6 +127,7 @@ def shotResultIndicatorPluginAddon_stop(orig, self, *args, **kwargs):
 
 @overrideMethod(ShotResultIndicatorPlugin, '_ShotResultIndicatorPlugin__onGunMarkerStateChanged')
 def shotResultIndicatorPluginAddon_onGunMarkerStateChanged(orig, self, *args, **kwargs):
+    return status.shotResultIndicatorPlugin_onGunMarkerStateChanged(orig, self, *args, **kwargs)
     result = orig(self, *args, **kwargs)
     try:
         _strage.indicator.setInfo(_strage.info)
@@ -132,6 +141,9 @@ def init():
     global g_config
     try:
         BigWorld.logInfo(MOD_NAME, '{} initialize'.format(MOD_NAME), None)
+        if not ResMgr.isFile(DEFAULT_CONFIG_FILE):
+            BigWorld.logInfo(MOD_NAME, 'file is not found: {}'.format(DEFAULT_CONFIG_FILE), None)
+            raise
         file = ResMgr.openSection(DEFAULT_CONFIG_FILE)
         g_config = json.loads(file.asString)
         print json.dumps(g_config, indent=2)
@@ -141,6 +153,8 @@ def init():
             g_config = json.loads(file.asString)
             print json.dumps(g_config, indent=2)
             BigWorld.logInfo(MOD_NAME, 'load config: {}'.format(CONFIG_FILE), None)
+        status.g_config = g_config
+        status.init()
     except:
         LOG_CURRENT_EXCEPTION()
 

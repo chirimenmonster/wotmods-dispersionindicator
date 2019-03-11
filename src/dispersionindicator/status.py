@@ -1,4 +1,7 @@
 
+import math
+import BigWorld
+from panel import Panel
 
 
 CONSTANT = {
@@ -30,24 +33,27 @@ def shotResultIndicatorPlugin_onGunMarkerStateChanged(orig, self, *args, **kwarg
 
 class IndicatorPanel(Panel):
     def __init__(self):
-        configlist = self.__genSettings()
-        super(IndicatorPanel, self).__init__(configlist)
+        configList = self.__genSettings()
+        print configList
+        super(IndicatorPanel, self).__init__(configList)
 
     def __genSettings(self):
         class Config: pass
         configList = []
+        print g_config
         for setting in g_config['panelItems']:
-            name = settings['status']
-            factor = settings['factor']
-            template = settings['format']
+            name = setting['status']
+            factor = setting['factor']
+            template = setting['format']
             if isinstance(factor, str):
                 factor = CONSTANT.get(factor, 1.0)
             config = Config()
-            config.title = settings['title']
+            config.title = setting['title']
             config.func = lambda: template.format(getattr(g_status, name) * factor)
-            config.unit = settings['unit']
+            config.unit = setting['unit']
             configList.append(config)
-
+            print name
+        return configList
 
 def playerAvatar_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpeed, withShot = 0):
     result = orig(self, turretRotationSpeed, withShot)
@@ -64,7 +70,7 @@ class Status(object):
     def _getOwnVehicleShotDispersionAngle(self, avatar):
         self.currTime = BigWorld.time()
         vDescr = avatar._PlayerAvatar__getDetailedVehicleDescriptor()
-        self.additiveFactor = self._PlayerAvatar__getAdditiveShotDispersionFactor(vDescr)
+        self.additiveFactor = avatar._PlayerAvatar__getAdditiveShotDispersionFactor(vDescr)
         self.shotDispersionAngle = vDescr.gun.shotDispersionAngle
         if self.withShot == 0:
             self.shotFactor = 0.0
@@ -80,14 +86,14 @@ class Status(object):
         aimingInfo = avatar._PlayerAvatar__aimingInfo
         self.aimingStartTime = aimingInfo[0]
         self.aimingStartFactor = aimingInfo[1]
-        self.multFactor = aiminginfo[2]
+        self.multFactor = aimingInfo[2]
         self.factorsTurretRotation = aimingInfo[3]
-        self.factorsMovement = aiminginfo[4]
-        self.factorsRotation = aiminginfo[5]
+        self.factorsMovement = aimingInfo[4]
+        self.factorsRotation = aimingInfo[5]
         self.aimingTime = aimingInfo[6]
 
     def _update_vehicleSpeeds(self, avatar):
-        vehicleSpeed, vehicleRspeed = avatar.getOwnVehicleSpeeds(True)
+        vehicleSpeed, vehicleRSpeed = avatar.getOwnVehicleSpeeds(True)
         self.vehicleSpeed = vehicleSpeed
         self.vehicleRSpeed = vehicleRSpeed
 
@@ -106,4 +112,4 @@ class Status(object):
 
     @property
     def scoreDispersion(self):
-        return (mah.log(self.aimingFactor) / math.log(4.0)) ** 2 * 100.0
+        return (math.log(self.aimingFactor) / math.log(4.0)) ** 2 * 100.0
