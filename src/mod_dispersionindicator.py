@@ -20,7 +20,6 @@ BGIMAGE_FILE = '${resource_dir}/bgimage.dds'
 DEFAULT_CONFIG_FILE = '${resource_dir}/config.json'
 CONFIG_FILE = '${config_file}'
 
-g_config = None
 
 class Strage:
     info = {}
@@ -138,22 +137,21 @@ def shotResultIndicatorPluginAddon_onGunMarkerStateChanged(orig, self, *args, **
 
 
 def init():
-    global g_config
     try:
         BigWorld.logInfo(MOD_NAME, '{} initialize'.format(MOD_NAME), None)
         if not ResMgr.isFile(DEFAULT_CONFIG_FILE):
             BigWorld.logInfo(MOD_NAME, 'file is not found: {}'.format(DEFAULT_CONFIG_FILE), None)
             raise
         file = ResMgr.openSection(DEFAULT_CONFIG_FILE)
-        g_config = json.loads(file.asString)
-        print json.dumps(g_config, indent=2)
+        config = json.loads(file.asString)
+        print json.dumps(config, indent=2)
         if ResMgr.isFile(CONFIG_FILE):
             BigWorld.logInfo(MOD_NAME, 'found config: {}'.format(CONFIG_FILE), None)
             file = ResMgr.openSection(CONFIG_FILE)
-            g_config = json.loads(file.asString)
-            print json.dumps(g_config, indent=2)
+            config = json.loads(file.asString)
+            print json.dumps(config, indent=2)
             BigWorld.logInfo(MOD_NAME, 'load config: {}'.format(CONFIG_FILE), None)
-        status.g_config = g_config
+        status.g_config.config = config
         status.init()
     except:
         LOG_CURRENT_EXCEPTION()

@@ -1,9 +1,10 @@
 
 import math
 import BigWorld
+import GUI
 from gui import g_guiResetters
 
-from panel import Panel
+from panel import PanelWidget, LabelWidget
 
 
 BGIMAGE_FILE = '${resource_dir}/bgimage.dds'
@@ -18,12 +19,15 @@ class Config:
     colour = (255, 255, 0)
     alpha = 127
     font = 'default_small.font'
+    #font = 'system_medium.font'
+    #font = 'Tahoma'
     padding_top = 4
     padding_bottom = 4
     panel_width = 280
     panel_offset = (-200, 50)
     line_height = 16
     bgimage = BGIMAGE_FILE
+    config = None
 
 g_config = Config()
 
@@ -46,7 +50,7 @@ def shotResultIndicatorPlugin_stop(orig, self, *args, **kwargs):
 
 def shotResultIndicatorPlugin_onGunMarkerStateChanged(orig, self, *args, **kwargs):
     result = orig(self, *args, **kwargs)
-    g_panel.update()
+    g_panel.onGunMarkerStateChanged()
     return result
 
 def playerAvatar_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpeed, withShot = 0):
@@ -70,7 +74,7 @@ class IndicatorPanel(object):
         self.panel_offset = g_config.panel_offset
         self.panel_width = g_config.panel_width
         self.bgimage = g_config.bgimage
-        self.panel = createWidgetTree()
+        self.panel = self.createWidgetTree()
 
     def start(self):
         print 'panel.start'
@@ -105,7 +109,7 @@ class IndicatorPanel(object):
     def createWidgetTree(self):
         panel = PanelWidget(self.bgimage)
         y = self.padding_top
-        for setting in g_config['panelItems']:
+        for setting in g_config.config['panelItems']:
             child = self.createPanelLine(setting)
             panel.addChild(child)
             child.position = (0, y, 1)
@@ -120,27 +124,28 @@ class IndicatorPanel(object):
         name = setting['status']
         factor = setting['factor']
         template = setting['format']
-        if isinstance(factor, str):
+        print type(factor)
+        if isinstance(factor, str) or isinstance(factor, unicode):
             factor = CONSTANT.get(factor, 1.0)
         argList = [
             {
                 'text':     setting['title'],
                 'align':    'RIGHT',
-                'x':        width - 128
+                'x':        self.panel_width - 128
             },
             {
-                'func':     lambda n=name, f=factor, t=template: t.format(getattr(g_status, n) * f),
+                'func':     lambda n=name, f=factor, t=template: t.format(getattr(g_status, n, 0.0) * f),
                 'align':    'RIGHT',
-                'x':        width - 72    
+                'x':        self.panel_width - 72
             },
             {
                 'text':     setting['unit'],
-                'x':        width - 60
+                'x':        self.panel_width - 60
             }
         ]
         panel = PanelWidget(self.bgimage)
         for kwarg in argList:
-            label = LabelWidget(**kwarg)
+            label = self.createLabel(**kwarg)
             panel.addChild(label)
         panel.width = self.panel_width
         panel.height = self.line_height

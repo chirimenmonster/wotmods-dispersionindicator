@@ -21,7 +21,7 @@ class Widget(object):
 
     @property
     def height(self):
-        return self.widget.width
+        return self.widget.height
 
     @height.setter
     def height(self, height):
@@ -32,7 +32,7 @@ class Widget(object):
         return self.widget.horizontalAnchor
 
     @horizontalAnchor.setter
-    def horizontalAnchor(self, horizontanAnchor):
+    def horizontalAnchor(self, horizontalAnchor):
         self.widget.horizontalAnchor = horizontalAnchor
 
     @property
@@ -60,6 +60,7 @@ class LabelWidget(Widget):
         self.widget.colourFormatting = True
         self.horizontalAnchor = 'LEFT'
         self.verticalAnchor = 'TOP'
+        self.__func = None
 
     def update(self):
         if callable(self.__func):
@@ -91,6 +92,14 @@ class LabelWidget(Widget):
     @colour.setter
     def colour(self, colour):
         self.widget.colour = colour
+
+    @property
+    def explicitSize(self):
+        return self.widget.explicitSize
+
+    @explicitSize.setter
+    def explicitSize(self, explicitSize):
+        self.widget.explicitSize = explicitSize
 
 
 class PanelWidget(Widget):
