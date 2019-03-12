@@ -129,7 +129,7 @@ class IndicatorPanel(object):
                 'x':        width - 128
             },
             {
-                'func':     lambda: template.format(getattr(g_status, name) * factor),
+                'func':     lambda n=name, f=factor, t=template: t.format(getattr(g_status, n) * f),
                 'align':    'RIGHT',
                 'x':        width - 72    
             },
