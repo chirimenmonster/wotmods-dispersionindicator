@@ -49,7 +49,7 @@ def shotResultIndicatorPlugin_start(orig, self, *args, **kwargs):
 
 @overrideMethod(ShotResultIndicatorPlugin, 'stop')
 def shotResultIndicatorPlugin_stop(orig, self, *args, **kwargs):
-    sttaus.g_panel.stop()
+    status.g_panel.stop()
     result = orig(self, *args, **kwargs)
     return result
 
