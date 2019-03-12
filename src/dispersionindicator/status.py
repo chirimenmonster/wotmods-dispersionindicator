@@ -38,20 +38,6 @@ def init():
     g_status = Status()
     g_panel = IndicatorPanel()
 
-def shotResultIndicatorPlugin_start(orig, self, *args, **kwargs):
-    result = orig(self, *args, **kwargs)
-    g_panel.start()
-    return result
-
-def shotResultIndicatorPlugin_stop(orig, self, *args, **kwargs):
-    g_panel.stop()
-    result = orig(self, *args, **kwargs)
-    return result
-
-def shotResultIndicatorPlugin_onGunMarkerStateChanged(orig, self, *args, **kwargs):
-    result = orig(self, *args, **kwargs)
-    g_panel.onGunMarkerStateChanged()
-    return result
 
 def playerAvatar_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpeed, withShot = 0):
     result = orig(self, turretRotationSpeed, withShot)
