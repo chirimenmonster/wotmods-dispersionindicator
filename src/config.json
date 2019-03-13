@@ -1,5 +1,14 @@
 {
-    "panelItems":   [
+	"colour":			[ 255, 255, 0 ],
+	"alpha":			127,
+	"font":				"default_small.font",
+	"padding_top":		4,
+	"padding_bottom":	4,
+	"panel_width":		280,
+	"panel_offset":		[ -160, 50 ],
+	"line_height":		16,
+	"bgimage":			"${resource_dir}/bgimage.dds",
+    "panel_items":   [
         {
             "status":   "currTime",
             "title":     "Current Time",

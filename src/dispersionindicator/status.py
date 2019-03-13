@@ -1,172 +1,41 @@
 
 import math
 import BigWorld
-import GUI
-from gui import g_guiResetters
 
-from panel import PanelWidget, LabelWidget
+from events import overrideMethod
 
-
-BGIMAGE_FILE = '${resource_dir}/bgimage.dds'
-DEFAULT_WIDTH = 280
-DEFAULT_HEIGHT = 16
-
-CONSTANT = {
-    'MS_TO_KMH':    3600.0 / 1000.0
-}
-
-class Config:
-    colour = (255, 255, 0)
-    alpha = 127
-    font = 'default_small.font'
-    #font = 'system_medium.font'
-    #font = 'Tahoma'
-    padding_top = 4
-    padding_bottom = 4
-    panel_width = 280
-    panel_offset = (-200, 50)
-    line_height = 16
-    bgimage = BGIMAGE_FILE
-    config = None
-
-g_config = Config()
-
+g_status = None
 
 def init():
-    global g_status
-    global g_panel
-    g_status = Status()
-    g_panel = IndicatorPanel()
+    global g_status = DispersionStats()
 
-
+@overrideMethod(PlayerAvatar, 'getOwnVehicleShotDispersionAngle')
 def playerAvatar_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpeed, withShot = 0):
-    result = orig(self, turretRotationSpeed, withShot)
-    avatar = self
-    g_status.dAngleAiming = result[0]
-    g_status.dAngleIdeal = result[1]
-    g_status.turretRotationSpeed = turretRotationSpeed
-    g_status.withShot = withShot
-    g_status._getOwnVehicleShotDispersionAngle(avatar)
+    dispersionAngle = result = orig(self, turretRotationSpeed, withShot)
+    if g_status:
+        avatar = self
+        g_status.currTime = BigWorld.time()
+        g_status._updateDispersionAngle(avatar, dispersionAngle, turretRotationSpeed, withShot)
+        g_status._update_aimingInfo(avatar)
+        g_status._update_vehicleSpeeds(avatar)
+        g_status._update_vehicleEngineState(avatar)
     return result
 
 
-class IndicatorPanel(object):
-    def __init__(self):
-        self.label_font = g_config.font
-        self.label_colour = g_config.colour + (g_config.alpha, )
-        self.line_height = g_config.line_height
-        self.padding_top = g_config.padding_top
-        self.padding_bottom = g_config.padding_bottom
-        self.panel_offset = g_config.panel_offset
-        self.panel_width = g_config.panel_width
-        self.bgimage = g_config.bgimage
-        self.panel = self.createWidgetTree()
-
-    def start(self):
-        print 'panel.start'
-        self.panel.addRoot()
-        g_guiResetters.add(self.onScreenResolutionChanged)
-        self.updatePosition()
-        self.panel.visible = True
-        
-    def stop(self):
-        print 'panel.stop'
-        g_guiResetters.discard(self.onScreenResolutionChanged)
-        self.panel.visible = False
-        self.panel.delRoot()
-
-    def toggleVisible(self):
-        self.panel.visible = not self.panel.visible
-
-    def onGunMarkerStateChanged(self):
-        self.panel.update()
-
-    def onScreenResolutionChanged(self):
-        self.updatePosition()
-
-    def updatePosition(self):
-        screen = GUI.screenResolution()
-        center = ( screen[0] / 2, screen[1] / 2)
-        x = center[0] + self.panel_offset[0]
-        y = center[1] + self.panel_offset[1]
-        self.panel.position = (x, y, 1)
-        print self.panel.position, self.panel.width, self.panel.height
-
-    def createWidgetTree(self):
-        panel = PanelWidget(self.bgimage)
-        y = self.padding_top
-        for setting in g_config.config['panelItems']:
-            child = self.createPanelLine(setting)
-            panel.addChild(child)
-            child.position = (0, y, 1)
-            y = y + child.height
-        panel.width = self.panel_width
-        panel.height = y + self.padding_bottom
-        panel.horizontalAnchor = 'RIGHT'
-        panel.verticalAnchor = 'CENTER'
-        return panel
-
-    def createPanelLine(self, setting):
-        name = setting['status']
-        factor = setting['factor']
-        template = setting['format']
-        print type(factor)
-        if isinstance(factor, str) or isinstance(factor, unicode):
-            factor = CONSTANT.get(factor, 1.0)
-        argList = [
-            {
-                'text':     setting['title'],
-                'align':    'RIGHT',
-                'x':        self.panel_width - 128
-            },
-            {
-                'func':     lambda n=name, f=factor, t=template: t.format(getattr(g_status, n, 0.0) * f),
-                'align':    'RIGHT',
-                'x':        self.panel_width - 72
-            },
-            {
-                'text':     setting['unit'],
-                'x':        self.panel_width - 60
-            }
-        ]
-        panel = PanelWidget(self.bgimage)
-        for kwarg in argList:
-            label = self.createLabel(**kwarg)
-            panel.addChild(label)
-        panel.width = self.panel_width
-        panel.height = self.line_height
-        panel.visible = True
-        return panel
-
-    def createLabel(self, text=None, func=None, align='LEFT', x=0):
-        label = LabelWidget()
-        if text is not None:
-            label.text = text
-        if func is not None:
-            label.setCallback(func)
-        label.font = self.label_font
-        label.colour = self.label_colour
-        label.horizontalAnchor = align
-        label.position = (x, 0, 1)
-        label.visible = True
-        return label
-
-
-class Status(object):
-    def _getOwnVehicleShotDispersionAngle(self, avatar):
-        self.currTime = BigWorld.time()
+class DispersionStats(object):
+    def _update_dispersionAngle(self, avatar, dispersionAngle, turretRotationSpeed, withShot):
+        self.dAngleAiming = dispersionAngle[0]
+        self.dAngleIdeal = dispersionAngle[1]
+        self.turretRotationSpeed = turretRotationSpeed
         vDescr = avatar._PlayerAvatar__getDetailedVehicleDescriptor()
         self.additiveFactor = avatar._PlayerAvatar__getAdditiveShotDispersionFactor(vDescr)
         self.shotDispersionAngle = vDescr.gun.shotDispersionAngle
-        if self.withShot == 0:
+        if withShot == 0:
             self.shotFactor = 0.0
-        elif self.withShot == 1:
+        elif withShot == 1:
             self.shotFactor = vDescr.gun.shotDispersionFactors['afterShot']
         else:
             self.shotFactor = vDescr.gun.shotDispersionFactors['afterShotInBurst']
-        self._update_aimingInfo(avatar)
-        self._update_vehicleSpeeds(avatar)
-        self._update_vehicleEngineState(avatar)
 
     def _update_aimingInfo(self, avatar):
         aimingInfo = avatar._PlayerAvatar__aimingInfo
@@ -194,8 +63,12 @@ class Status(object):
 
     @property
     def aimingTimeConverging(self):
-        return self.aimingStartTime + self.aimingTime * math.log(self.aimingStartFactor) - self.currTime
+        factor = self.aimingStartFactor / self.multFactor
+        return self.aimingStartTime - self.currTime + self.aimingTime * math.log(factor)
 
     @property
     def scoreDispersion(self):
-        return (math.log(self.aimingFactor) / math.log(4.0)) ** 2 * 100.0
+        k = 1.0
+        fm = 16.0
+        fc = self.aimingFactor / self.multFactor
+        return (fc ** k - 1.0) / (fm ** k - 1.0) * 100.0

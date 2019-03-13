@@ -12,8 +12,13 @@
             "method":   "plain",
             "root":     "res",
             "reldir":   "${resource_dir}",
-            "files":    [ "src/bgimage.dds", "src/config.json" ]
+            "files":    [ "src/bgimage.dds" ]
+        },
+        {
+            "method":   "apply",
+            "root":     "res",
+            "reldir":   "${resource_dir}",
+            "files":    [ "src/config.json" ]
         }
     ]
 }
-
