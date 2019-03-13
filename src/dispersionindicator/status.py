@@ -15,7 +15,6 @@ def getDispersionStatsPool():
 @overrideMethod(PlayerAvatar, 'getOwnVehicleShotDispersionAngle')
 def playerAvatar_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpeed, withShot = 0):
     dispersionAngle = result = orig(self, turretRotationSpeed, withShot)
-    print 'g_status = ', g_status
     if g_status:
         avatar = self
         g_status.currTime = BigWorld.time()

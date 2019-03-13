@@ -8,6 +8,8 @@ from debug_utils import LOG_CURRENT_EXCEPTION
 from gui import g_guiResetters
 from gui.Scaleform.daapi.view.battle.shared.crosshair.plugins import ShotResultIndicatorPlugin
 
+from PlayerEvents import g_playerEvents
+
 from dispersionindicator.status import getDispersionStatsPool
 from dispersionindicator.events import overrideMethod
 from dispersionindicator.panel import PanelWidget, LabelWidget
@@ -23,16 +25,19 @@ CONSTANT = {
 }
 
 g_config = {
-    'colour':           [ 255, 255, 0 ],
-    'alpha':            127,
-    'font':             'default_small.font',
-    'padding_top':      4,
-    'padding_bottom':   4,
-    'panel_width':      280,
-    'panel_offset':     [ -200, 50 ],
-    'line_height':      16,
-    'bgimage':          'BGIMAGE_FILE',
-    'panel_items':       None
+    'default': {
+        'colour':           [ 255, 255, 0 ],
+        'alpha':            127,
+        'font':             'default_small.font',
+        'padding_top':      4,
+        'padding_bottom':   4,
+        'panel_width':      280,
+        'panel_offset':     [ -200, 50 ],
+        'line_height':      16,
+        'bgimage':          'BGIMAGE_FILE'
+    },
+    'stats_defs':       {},
+    'panels':           {}
 }
 
 g_panel = None
@@ -61,18 +66,26 @@ def init():
         else:
             file = ResMgr.openSection(DEFAULT_CONFIG_FILE)
             data = json.loads(file.asString)
-            g_config.update(data)
+            g_config['default'].update(data['default'])
+            g_config['stats_defs'].update(data['stats_defs'])
+            g_config['panels'].update(data['panels'])
         if ResMgr.isFile(CONFIG_FILE):
             BigWorld.logInfo(MOD_NAME, 'load config file: {}'.format(CONFIG_FILE), None)
             file = ResMgr.openSection(CONFIG_FILE)
             data = json.loads(file.asString)
-            g_config.update(data)
+            g_config['default'].update(data.get('default', {}))
+            g_config['stats_defs'].update(data.get('stats_defs', {}))
+            g_config['panels'].update(data.get('panels', {}))
             print json.dumps(g_config, indent=2)
         stats = getDispersionStatsPool()
         g_panel = IndicatorPanel(g_config, stats)
     except:
         LOG_CURRENT_EXCEPTION()
+    g_playerEvents.onAvatarBecomePlayer += onAvatarBecomePlayer
 
+
+def onAvatarBecomePlayer():
+    print 'onAvatarBecomePlayer'
 
 @overrideMethod(ShotResultIndicatorPlugin, 'start')
 def shotResultIndicatorPlugin_start(orig, self, *args, **kwargs):
@@ -99,15 +112,17 @@ def shotResultIndicatorPlugin_onGunMarkerStateChanged(orig, self, *args, **kwarg
 class IndicatorPanel(object):
     def __init__(self, config, stats):
         self.stats = stats
-        self.label_font = config['font']
-        self.label_colour = tuple(config['colour'] + [ config['alpha'] ])
-        self.line_height = config['line_height']
-        self.padding_top = config['padding_top']
-        self.padding_bottom = config['padding_bottom']
-        self.panel_offset = config['panel_offset']
-        self.panel_width = config['panel_width']
-        self.bgimage = config['bgimage']
-        self.panel = self.createWidgetTree(config['panel_items'])
+        default = config['default']
+        self.label_font = default['font']
+        self.label_colour = tuple(default['colour'] + [ default['alpha'] ])
+        self.line_height = default['line_height']
+        self.padding_top = default['padding_top']
+        self.padding_bottom = default['padding_bottom']
+        self.panel_offset = default['panel_offset']
+        self.panel_width = default['panel_width']
+        self.bgimage = default['bgimage']
+        self.statsdefs = config['stats_defs']
+        self.panel = self.createWidgetTree(config['panels']['panel0']['items'])
 
     def start(self):
         BigWorld.logInfo(MOD_NAME, 'panel.start', None)
@@ -141,7 +156,8 @@ class IndicatorPanel(object):
     def createWidgetTree(self, items):
         panel = PanelWidget(self.bgimage)
         y = self.padding_top
-        for setting in items:
+        for name in items:
+            setting = self.statsdefs[name]
             child = self.createPanelLine(setting)
             panel.addChild(child)
             child.position = (0, y, 1)
