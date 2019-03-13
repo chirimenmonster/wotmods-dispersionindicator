@@ -7,11 +7,8 @@ import GUI
 from debug_utils import LOG_CURRENT_EXCEPTION
 from gui import g_guiResetters
 from gui.Scaleform.daapi.view.battle.shared.crosshair.plugins import ShotResultIndicatorPlugin
-from Avatar import PlayerAvatar
-from items.components import component_constants
 
-from dispersionindicator import status
-from dispersionindicator.status import g_status
+from dispersionindicator.status import getDispersionStatsPool
 from dispersionindicator.events import overrideMethod
 from dispersionindicator.panel import PanelWidget, LabelWidget
 
@@ -26,16 +23,16 @@ CONSTANT = {
 }
 
 g_config = {
-    'colour':           (255, 255, 0),
+    'colour':           [ 255, 255, 0 ],
     'alpha':            127,
     'font':             'default_small.font',
     'padding_top':      4,
     'padding_bottom':   4,
     'panel_width':      280,
-    'panel_offset':     (-200, 50),
+    'panel_offset':     [ -200, 50 ],
     'line_height':      16,
     'bgimage':          'BGIMAGE_FILE',
-    'panelItems':       None
+    'panel_items':       None
 }
 
 g_panel = None
@@ -57,7 +54,6 @@ def outputLog():
 def init():
     global g_panel
     try:
-        config = Config()
         BigWorld.logInfo(MOD_NAME, '{} initialize'.format(MOD_NAME), None)
         if not ResMgr.isFile(DEFAULT_CONFIG_FILE):
             BigWorld.logError(MOD_NAME, 'default config is not found: {}'.format(DEFAULT_CONFIG_FILE), None)
@@ -65,15 +61,15 @@ def init():
         else:
             file = ResMgr.openSection(DEFAULT_CONFIG_FILE)
             data = json.loads(file.asString)
-            config.update(data)
+            g_config.update(data)
         if ResMgr.isFile(CONFIG_FILE):
             BigWorld.logInfo(MOD_NAME, 'load config file: {}'.format(CONFIG_FILE), None)
             file = ResMgr.openSection(CONFIG_FILE)
             data = json.loads(file.asString)
-            config.update(data)
-            print json.dumps(config, indent=2)
-        g_panel = IndicatorPanel(config)
-        status.init()
+            g_config.update(data)
+            print json.dumps(g_config, indent=2)
+        stats = getDispersionStatsPool()
+        g_panel = IndicatorPanel(g_config, stats)
     except:
         LOG_CURRENT_EXCEPTION()
 
@@ -101,16 +97,17 @@ def shotResultIndicatorPlugin_onGunMarkerStateChanged(orig, self, *args, **kwarg
 
 
 class IndicatorPanel(object):
-    def __init__(self, config):
+    def __init__(self, config, stats):
+        self.stats = stats
         self.label_font = config['font']
-        self.label_colour = config['colour'] + (config['alpha'], )
+        self.label_colour = tuple(config['colour'] + [ config['alpha'] ])
         self.line_height = config['line_height']
         self.padding_top = config['padding_top']
         self.padding_bottom = config['padding_bottom']
         self.panel_offset = config['panel_offset']
         self.panel_width = config['panel_width']
         self.bgimage = config['bgimage']
-        self.panel = self.createWidgetTree(confg['panel_items'])
+        self.panel = self.createWidgetTree(config['panel_items'])
 
     def start(self):
         BigWorld.logInfo(MOD_NAME, 'panel.start', None)
@@ -168,7 +165,7 @@ class IndicatorPanel(object):
                 'x':        self.panel_width - 128
             },
             {
-                'func':     lambda n=name, f=factor, t=template: t.format(getattr(g_status, n, 0.0) * f),
+                'func':     lambda n=name, f=factor, t=template, s=self.stats: t.format(getattr(s, n, 0.0) * f),
                 'align':    'RIGHT',
                 'x':        self.panel_width - 72
             },
@@ -177,7 +174,7 @@ class IndicatorPanel(object):
                 'x':        self.panel_width - 60
             }
         ]
-        panel = PanelWidget(self.bgimage)
+        panel = PanelWidget()
         for kwarg in argList:
             label = self.createLabel(**kwarg)
             panel.addChild(label)

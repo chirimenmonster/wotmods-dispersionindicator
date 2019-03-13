@@ -1,29 +1,33 @@
 
 import math
 import BigWorld
+from Avatar import PlayerAvatar
 
 from events import overrideMethod
 
 g_status = None
 
-def init():
-    global g_status = DispersionStats()
+def getDispersionStatsPool():
+    global g_status
+    g_status = DispersionStats()
+    return g_status
 
 @overrideMethod(PlayerAvatar, 'getOwnVehicleShotDispersionAngle')
 def playerAvatar_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpeed, withShot = 0):
     dispersionAngle = result = orig(self, turretRotationSpeed, withShot)
+    print 'g_status = ', g_status
     if g_status:
         avatar = self
         g_status.currTime = BigWorld.time()
         g_status._updateDispersionAngle(avatar, dispersionAngle, turretRotationSpeed, withShot)
-        g_status._update_aimingInfo(avatar)
-        g_status._update_vehicleSpeeds(avatar)
-        g_status._update_vehicleEngineState(avatar)
+        g_status._updateAimingInfo(avatar)
+        g_status._updateVehicleSpeeds(avatar)
+        g_status._updateVehicleEngineState(avatar)
     return result
 
 
 class DispersionStats(object):
-    def _update_dispersionAngle(self, avatar, dispersionAngle, turretRotationSpeed, withShot):
+    def _updateDispersionAngle(self, avatar, dispersionAngle, turretRotationSpeed, withShot):
         self.dAngleAiming = dispersionAngle[0]
         self.dAngleIdeal = dispersionAngle[1]
         self.turretRotationSpeed = turretRotationSpeed
@@ -37,7 +41,7 @@ class DispersionStats(object):
         else:
             self.shotFactor = vDescr.gun.shotDispersionFactors['afterShotInBurst']
 
-    def _update_aimingInfo(self, avatar):
+    def _updateAimingInfo(self, avatar):
         aimingInfo = avatar._PlayerAvatar__aimingInfo
         self.aimingStartTime = aimingInfo[0]
         self.aimingStartFactor = aimingInfo[1]
@@ -47,12 +51,12 @@ class DispersionStats(object):
         self.factorsRotation = aimingInfo[5]
         self.aimingTime = aimingInfo[6]
 
-    def _update_vehicleSpeeds(self, avatar):
+    def _updateVehicleSpeeds(self, avatar):
         vehicleSpeed, vehicleRSpeed = avatar.getOwnVehicleSpeeds(True)
         self.vehicleSpeed = vehicleSpeed
         self.vehicleRSpeed = vehicleRSpeed
 
-    def _update_vehicleEngineState(self, avatar):
+    def _updateVehicleEngineState(self, avatar):
         detailedEngineState = avatar.vehicle.appearance._CompoundAppearance__detailedEngineState
         self.engineRPM = detailedEngineState.rpm
         self.engineRelativeRPM = detailedEngineState.relativeRPM

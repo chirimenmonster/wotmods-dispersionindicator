@@ -103,7 +103,7 @@ class LabelWidget(Widget):
 
 
 class PanelWidget(Widget):
-    def __init__(self, bgimage=None):
+    def __init__(self, bgimage=''):
         self.children = []
         self.widget = GUI.Window(bgimage)
         self.widget.materialFX = 'BLEND'
