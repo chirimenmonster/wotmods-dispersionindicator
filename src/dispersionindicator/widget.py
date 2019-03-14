@@ -69,6 +69,9 @@ class LabelWidget(Widget):
     def setCallback(self, callback):
         self.__func = callback
 
+    def getStringWidth(self):
+        return self.widget.stringWidth(self.text)
+    
     @property
     def text(self):
         return self.widget.text
@@ -105,6 +108,7 @@ class LabelWidget(Widget):
 class PanelWidget(Widget):
     def __init__(self, bgimage=''):
         self.children = []
+        self.__children = {}
         self.widget = GUI.Window(bgimage)
         self.widget.materialFX = 'BLEND'
         self.widget.horizontalPositionMode = 'PIXEL'
@@ -114,9 +118,14 @@ class PanelWidget(Widget):
         self.horizontalAnchor = 'LEFT'
         self.verticalAnchor = 'TOP'
 
-    def addChild(self, child):
+    def addChild(self, child, name=None):
         self.children.append(child)
+        if name is not None:
+            self.__children[name] = child
         self.widget.addChild(child.widget)
+
+    def getChild(self, name):
+        return self.__children.get(name, None)
 
     def update(self):
         for child in self.children:
