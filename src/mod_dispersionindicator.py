@@ -4,7 +4,7 @@ import json
 import BigWorld
 import ResMgr
 from debug_utils import LOG_CURRENT_EXCEPTION
-
+from gui.Scaleform.daapi.view.battle.shared.crosshair.plugins import ShotResultIndicatorPlugin
 from PlayerEvents import g_playerEvents
 
 from dispersionindicator.status import getDispersionStatsPool
@@ -76,8 +76,8 @@ def init():
         stats = getDispersionStatsPool()
         for name, paneldef in g_config['panels'].items():
             config = { 'style': {} }
-            config['style'].udate(g_config['default'])
-            config['style'].udate(paneldef['style'])
+            config['style'].update(g_config['default'])
+            config['style'].update(paneldef.get('style', {}))
             config['stats_defs'] = g_config['stats_defs']
             config['items'] = paneldef['items']
             panel = IndicatorPanel(config, stats)

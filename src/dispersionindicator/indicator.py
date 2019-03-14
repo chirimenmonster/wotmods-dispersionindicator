@@ -1,14 +1,16 @@
 
 import BigWorld
+import GUI
 from gui import g_guiResetters
 
 from widget import PanelWidget, LabelWidget
 
+MOD_NAME = '${name}'
 
 class IndicatorPanel(object):
     def __init__(self, config, stats):
         self.stats = stats
-        style = config['styles']
+        style = config['style']
         self.label_font = style['font']
         self.label_colour = tuple(style['colour'] + [ style['alpha'] ])
         self.line_height = style['line_height']
@@ -50,7 +52,7 @@ class IndicatorPanel(object):
         self.panel.position = (x, y, 1)
 
     def createWidgetTree(self, items):
-        panelPanelWidget(self.bgimage)
+        panel = PanelWidget(self.bgimage)
         y = self.padding_top
         envx = [0, 0]
         for name in items:
@@ -83,7 +85,7 @@ class IndicatorPanel(object):
                 'func':     lambda n=name, f=factor, t=template, s=self.stats: t.format(getattr(s, n, 0.0) * f),
                 'align':    'RIGHT',
                 'x':        self.panel_width - 72,
-                'width':    56  # 128 - 72,
+                'width':    56,
                 'relx':     0
             },
             'unit': {
@@ -94,8 +96,8 @@ class IndicatorPanel(object):
         }
         panel = PanelWidget()
         envx = [0, 0]
-        for name, kwarg in argList.items():
-            label = self.createLabel(**kwarg)
+        for name, kwargs in argList.items():
+            label = self.createLabel(**kwargs)
             panel.addChild(label, name)
             w = max(label.getStringWidth(), kwargs.get('width', 0))
             if kwargs.get('align', None) == 'RIGHT':
@@ -109,7 +111,7 @@ class IndicatorPanel(object):
         panel.visible = True
         return panel, envx
 
-    def createLabel(self, text=None, func=None, align='LEFT', x=0):
+    def createLabel(self, text=None, func=None, align='LEFT', x=0, width=None, relx=0):
         label = LabelWidget()
         if text is not None:
             label.text = text
