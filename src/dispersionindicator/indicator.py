@@ -47,7 +47,7 @@ class IndicatorPanel(object):
     def updatePosition(self):
         screen = GUI.screenResolution()
         center = ( screen[0] / 2, screen[1] / 2)
-        x = center[0] + self.panel_offset[0] - self.panel_envx[1]
+        x = center[0] + self.panel_offset[0] - self.panel_envx[0]
         y = center[1] + self.panel_offset[1]
         self.panel.position = (x, y, 1)
 
@@ -60,8 +60,14 @@ class IndicatorPanel(object):
             child, posx = self.createPanelLine(setting)
             panel.addChild(child)
             child.position = (0, y, 1)
-            y = y + child.height
             envx = [min(envx[0] , posx[0]), max(envx[1] , posx[1])]
+            print name, envx
+            y = y + child.height
+        for child in panel.children:
+            pos = list(child.position)
+            newpos = (pos[0] - child.offset[0] - envx[0], pos[1], pos[2])
+            child.position = newpos
+            print pos, newpos
         panel.width = envx[1] - envx[0]
         panel.height = y + self.padding_bottom
         panel.horizontalAnchor = 'RIGHT'
@@ -94,7 +100,7 @@ class IndicatorPanel(object):
                 'relx':     0
             }
         }
-        panel = PanelWidget()
+        panel = PanelWidget(self.bgimage)
         envx = [0, 0]
         for name, kwargs in argList.items():
             label = self.createLabel(**kwargs)
@@ -106,6 +112,11 @@ class IndicatorPanel(object):
                 posx = [0, w]                
             posx = [ x + kwargs['relx'] for x in posx ]
             envx = [min(envx[0] , posx[0]), max(envx[1] , posx[1])]
+        panel.offset = [ - envx[0], 0 ]
+        for child in panel.children:
+            pos = list(child.position)
+            newpos = (pos[0] + panel.offset[0], pos[1], pos[2])
+            child.position = newpos
         panel.width = envx[1] - envx[0]
         panel.height = self.line_height
         panel.visible = True
@@ -120,6 +131,6 @@ class IndicatorPanel(object):
         label.font = self.label_font
         label.colour = self.label_colour
         label.horizontalAnchor = align
-        label.position = (x, 0, 1)
+        label.position = (relx, 0, 1)
         label.visible = True
         return label
