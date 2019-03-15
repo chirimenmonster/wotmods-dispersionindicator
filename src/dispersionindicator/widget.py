@@ -110,7 +110,7 @@ class LabelWidget(Widget):
             return self.__explicitWidth
         return self.getStringWidth()
 
-    @width.setter:
+    @width.setter
     def width(self, width):
         self.__explicitWidth = width
 

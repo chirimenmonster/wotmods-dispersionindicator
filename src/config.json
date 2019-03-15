@@ -5,9 +5,11 @@
         "font":             "default_small.font",
         "padding_top":      4,
         "padding_bottom":   4,
-        "panel_width":      280,
+        "padding_left":     4,
+        "padding_right":    4,
         "panel_offset":     [ -160, 50 ],
         "line_height":      16,
+        "stats_width":      56,
         "bgimage":          "${resource_dir}/bgimage.dds"
     },
     "stats_defs": {
@@ -160,15 +162,13 @@
         }
     },
     "panels": {
-        "panel0": {
+        "panel_0": {
+            "style": {
+                "horizontalAnchor": "RIGHT",
+                "verticalAnchor":   "TOP",
+                "panel_offset":     [ -150, -120 ]
+            },
             "items":   [
-                "currTime",
-                "vehicleSpeed",
-                "vehicleRSpeed",
-                "speedInfo0",
-                "engineRPM",
-                "engineRelativeRPM",
-                "turretRotationSpeed",
                 "additiveFactor",
                 "dAngleAiming",
                 "dAngleIdeal",
@@ -180,7 +180,24 @@
                 "factorsMovement",
                 "factorsRotation",
                 "factorsTurretRotation",
-                "shotFactor"
+                "shotFactor",
+                "aimingTimeConverging",
+                "scoreDispersion"
+            ]
+        },
+        "panel_1": {
+            "style": {
+                "horizontalAnchor": "LEFT",
+                "verticalAnchor":   "TOP",
+                "panel_offset":     [ 150, -120 ]
+            },
+            "items":   [
+                "currTime",
+                "vehicleSpeed",
+                "vehicleRSpeed",
+                "engineRPM",
+                "engineRelativeRPM",
+                "turretRotationSpeed"
             ]
         }
     }

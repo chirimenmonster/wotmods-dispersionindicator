@@ -17,10 +17,6 @@ BGIMAGE_FILE = '${resource_dir}/bgimage.dds'
 DEFAULT_CONFIG_FILE = '${resource_dir}/config.json'
 CONFIG_FILE = '${config_file}'
 
-CONSTANT = {
-    'MS_TO_KMH':    3600.0 / 1000.0
-}
-
 g_config = {
     'default': {
         'colour':           [ 255, 255, 0 ],
@@ -28,10 +24,15 @@ g_config = {
         'font':             'default_small.font',
         'padding_top':      4,
         'padding_bottom':   4,
+        'padding_left':     4,
+        'padding_right':    4,
         'panel_width':      280,
         'panel_offset':     [ -200, 50 ],
         'line_height':      16,
-        'bgimage':          BGIMAGE_FILE
+        'stats_width':      56,
+        'bgimage':          BGIMAGE_FILE,
+        'horizontalAnchor': 'LEFT',
+        'verticalAnchor':   'TOP'
     },
     'stats_defs':       {},
     'panels':           {}
@@ -64,14 +65,14 @@ def init():
             data = json.loads(file.asString)
             g_config['default'].update(data['default'])
             g_config['stats_defs'].update(data['stats_defs'])
-            g_config['panels'].update(data['panels'])
+            g_config['panels'] = data['panels']
         if ResMgr.isFile(CONFIG_FILE):
             BigWorld.logInfo(MOD_NAME, 'load config file: {}'.format(CONFIG_FILE), None)
             file = ResMgr.openSection(CONFIG_FILE)
             data = json.loads(file.asString)
             g_config['default'].update(data.get('default', {}))
             g_config['stats_defs'].update(data.get('stats_defs', {}))
-            g_config['panels'].update(data.get('panels', {}))
+            g_config['panels'] = data.get('panels', {})
             print json.dumps(g_config, indent=2)
         stats = getDispersionStatsPool()
         for name, paneldef in g_config['panels'].items():
@@ -85,11 +86,7 @@ def init():
                 g_panel[name] = panel
     except:
         LOG_CURRENT_EXCEPTION()
-    g_playerEvents.onAvatarBecomePlayer += onAvatarBecomePlayer
 
-
-def onAvatarBecomePlayer():
-    print 'onAvatarBecomePlayer'
 
 @overrideMethod(ShotResultIndicatorPlugin, 'start')
 def shotResultIndicatorPlugin_start(orig, self, *args, **kwargs):
@@ -109,6 +106,7 @@ def shotResultIndicatorPlugin_stop(orig, self, *args, **kwargs):
 def shotResultIndicatorPlugin_onGunMarkerStateChanged(orig, self, *args, **kwargs):
     result = orig(self, *args, **kwargs)
     for panel in g_panel.values():
+        #panel.enable()
         panel.onGunMarkerStateChanged()
     return result
 
