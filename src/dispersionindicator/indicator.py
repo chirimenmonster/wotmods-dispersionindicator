@@ -54,7 +54,6 @@ class IndicatorPanel(object):
     def createWidgetTree(self, items):
         panel = PanelWidget(self.bgimage)
         y = self.padding_top
-        envx = [0, 0]
         for name in items:
             setting = self.statsdefs[name]
             child = self.createPanelLine(setting)
@@ -65,17 +64,12 @@ class IndicatorPanel(object):
             pos = list(child.position)
             offsetx = anchorx - child.anchor[0]
             newpos = (pos[0] + offsetx, pos[1], pos[2])
-            child.bx[0] = child.bx[0] + offsetx
-            child.bx[1] = child.bx[1] + offsetx
             child.position = newpos
             print pos, newpos
-        bx = [
-            min([ c.bx[0] for c in panel.children]),
-            max([ c.bx[1] for c in panel.children])
-        ]
-        panel.width = bx[1] - bx[0]
+        bx0 = min([ c.boundingBox[0] for c in panel.children])
+        bx1 = max([ c.boundingBox[2] for c in panel.children])
+        panel.width = bx1 - bx0
         panel.height = y + self.padding_bottom
-        panel.bx = bx
         panel.horizontalAnchor = 'RIGHT'
         panel.verticalAnchor = 'CENTER'
         return panel
@@ -90,42 +84,36 @@ class IndicatorPanel(object):
             'title': {
                 'text':     setting['title'],
                 'align':    'RIGHT',
-                'x':        self.panel_width - 128,
-                'relx':     -56
+                'x':        -56
             },
             'stat': {
                 'func':     lambda n=name, f=factor, t=template, s=self.stats: t.format(getattr(s, n, 0.0) * f),
                 'align':    'RIGHT',
-                'x':        self.panel_width - 72,
                 'width':    56,
-                'relx':     0
+                'x':        0
             },
             'unit': {
                 'text':     setting['unit'],
-                'x':        self.panel_width - 60,
-                'relx':     0
+                'x':        0
             }
         }
         panel = PanelWidget(self.bgimage)
         for name, kwargs in argList.items():
             label = self.createLabel(**kwargs)
             panel.addChild(label, name)
-        bx = [
-            min([ c.bx[0] for c in panel.children]),
-            max([ c.bx[1] for c in panel.children])
-        ]
+        bx0 = min([ c.boundingBox[0] for c in panel.children])
+        bx1 = max([ c.boundingBox[1] for c in panel.children])
         for child in panel.children:
             pos = list(child.position)
-            newpos = (pos[0] - bx[0], pos[1] - bx[0], pos[2])
+            newpos = (pos[0] - bx0, pos[1], pos[2])
             child.position = newpos
-        panel.anchor = [ -bx[0], 0 ]
-        panel.width = bx[1] - bx[0]
+        panel.anchor = [ - bx0, 0 ]
+        panel.width = bx1 - bx0
         panel.height = self.line_height
-        panel.bx = [ 0, panel.width ]
         panel.visible = True
         return panel
 
-    def createLabel(self, text='', func=None, align='LEFT', x=0, width=None, relx=0):
+    def createLabel(self, text='', func=None, align='LEFT', width=None, x=0):
         label = LabelWidget()
         label.text = text
         if func is not None:
@@ -133,11 +121,7 @@ class IndicatorPanel(object):
         label.font = self.label_font
         label.colour = self.label_colour
         label.horizontalAnchor = align
-        label.position = (relx, 0, 1)
+        label.position = (x, 0, 1)
         label.visible = True
-        width = max(label.getStringWidth(), kwargs.get('width', 0))
-        if align == 'RIGHT':
-            label.bx = [ relx - width, relx ]
-        else:
-            label.bx = [ relx, relx + width ]
+        label.width = width
         return label

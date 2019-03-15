@@ -51,6 +51,29 @@ class Widget(object):
     def position(self, position):
         self.widget.position = position
 
+    @property
+    def boundingBox(self):
+        pos = self.position
+        width = self.width
+        height = self.height
+        if self.horizontalAnchor == 'LEFT':
+            bx = [ pos[0], pos[0] + width ]
+        elif self.horizontalAnchor == 'RIGHT':
+            bx = [ pos[0] - width, pos[0] ]
+        elif self.horizontalAnchor == 'CENTER':
+            bx = [ pos[0] - width / 2, pos[0] + width / 2 ]
+        else:
+            raise Exception('implement error')
+        if self.verticalAnchor == 'TOP':
+            by = [ pos[1], pos[1] + height ]
+        elif self.verticalAnchor == 'BOTTOM':
+            by = [ pos[1] - height, pos[1] ]
+        elif self.verticalAnchor == 'CENTER':
+            by = [ pos[1] - height / 2, pos[1] + height / 2 ]
+        else:
+            raise Exception('implement error')
+        return ( bx[0], by[0], bx[1], by[1] )
+
 
 class LabelWidget(Widget):
     def __init__(self, text=''):
@@ -61,6 +84,7 @@ class LabelWidget(Widget):
         self.horizontalAnchor = 'LEFT'
         self.verticalAnchor = 'TOP'
         self.__func = None
+        self.__explicitWidth = None
 
     def update(self):
         if callable(self.__func):
@@ -79,6 +103,16 @@ class LabelWidget(Widget):
     @text.setter
     def text(self, text):
         self.widget.text = text
+
+    @property
+    def width(self):
+        if self.__explicitWidth is not None:
+            return self.__explicitWidth
+        return self.getStringWidth()
+
+    @width.setter:
+    def width(self, width):
+        self.__explicitWidth = width
 
     @property
     def font(self):
