@@ -20,7 +20,7 @@ class IndicatorPanel(object):
         self.panel_width = style['panel_width']
         self.bgimage = style['bgimage']
         self.statsdefs = config['stats_defs']
-        self.panel, self.panel_envx = self.createWidgetTree(config['items'])
+        self.panel = self.createWidgetTree(config['items'])
 
     def start(self):
         BigWorld.logInfo(MOD_NAME, 'panel.start', None)
@@ -57,22 +57,28 @@ class IndicatorPanel(object):
         envx = [0, 0]
         for name in items:
             setting = self.statsdefs[name]
-            child, posx = self.createPanelLine(setting)
+            child = self.createPanelLine(setting)
             panel.addChild(child)
-            child.position = (0, y, 1)
-            envx = [min(envx[0] , posx[0]), max(envx[1] , posx[1])]
-            print name, envx
             y = y + child.height
+        anchorx = max([ c.anchor for c in panel.chidren ])
         for child in panel.children:
             pos = list(child.position)
-            newpos = (pos[0] - child.offset[0] - envx[0], pos[1], pos[2])
+            offsetx = anchorx - child.anchor[0]
+            newpos = (pos[0] + offsetx, pos[1], pos[2])
+            child.bx[0] = child.bx[0] + offsetx
+            child.bx[1] = child.bx[1] + offsetx
             child.position = newpos
             print pos, newpos
-        panel.width = envx[1] - envx[0]
+        bx = [
+            min([ c.bx[0] for c in panel.children]),
+            max([ c.bx[1] for c in panel.children])
+        ]
+        panel.width = bx[1] - bx[0]
         panel.height = y + self.padding_bottom
+        panel.bx = bx
         panel.horizontalAnchor = 'RIGHT'
         panel.verticalAnchor = 'CENTER'
-        return panel, envx
+        return panel
 
     def createPanelLine(self, setting):
         name = setting['status']
@@ -101,31 +107,27 @@ class IndicatorPanel(object):
             }
         }
         panel = PanelWidget(self.bgimage)
-        envx = [0, 0]
         for name, kwargs in argList.items():
             label = self.createLabel(**kwargs)
             panel.addChild(label, name)
-            w = max(label.getStringWidth(), kwargs.get('width', 0))
-            if kwargs.get('align', None) == 'RIGHT':
-                posx = [-w, 0]
-            else:
-                posx = [0, w]                
-            posx = [ x + kwargs['relx'] for x in posx ]
-            envx = [min(envx[0] , posx[0]), max(envx[1] , posx[1])]
-        panel.offset = [ - envx[0], 0 ]
+        bx = [
+            min([ c.bx[0] for c in panel.children]),
+            max([ c.bx[1] for c in panel.children])
+        ]
         for child in panel.children:
             pos = list(child.position)
-            newpos = (pos[0] + panel.offset[0], pos[1], pos[2])
+            newpos = (pos[0] - bx[0], pos[1] - bx[0], pos[2])
             child.position = newpos
-        panel.width = envx[1] - envx[0]
+        panel.anchor = [ -bx[0], 0 ]
+        panel.width = bx[1] - bx[0]
         panel.height = self.line_height
+        panel.bx = [ 0, panel.width ]
         panel.visible = True
-        return panel, envx
+        return panel
 
-    def createLabel(self, text=None, func=None, align='LEFT', x=0, width=None, relx=0):
+    def createLabel(self, text='', func=None, align='LEFT', x=0, width=None, relx=0):
         label = LabelWidget()
-        if text is not None:
-            label.text = text
+        label.text = text
         if func is not None:
             label.setCallback(func)
         label.font = self.label_font
@@ -133,4 +135,9 @@ class IndicatorPanel(object):
         label.horizontalAnchor = align
         label.position = (relx, 0, 1)
         label.visible = True
+        width = max(label.getStringWidth(), kwargs.get('width', 0))
+        if align == 'RIGHT':
+            label.bx = [ relx - width, relx ]
+        else:
+            label.bx = [ relx, relx + width ]
         return label
