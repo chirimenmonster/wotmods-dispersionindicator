@@ -78,7 +78,9 @@ def shotResultIndicatorPlugin_stop(orig, self, *args, **kwargs):
 def shotResultIndicatorPlugin_onGunMarkerStateChanged(orig, self, *args, **kwargs):
     result = orig(self, *args, **kwargs)
     for panel in g_panel.values():
-        #panel.enable()
-        panel.onGunMarkerStateChanged()
+        try:
+            panel.onGunMarkerStateChanged()
+        except:
+            BigWorld.logError(MOD_NAME, 'fail to update panel state', None)
     return result
 

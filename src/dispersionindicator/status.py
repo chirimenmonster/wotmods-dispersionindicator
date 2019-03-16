@@ -5,6 +5,8 @@ from Avatar import PlayerAvatar
 
 from events import overrideMethod
 
+MOD_NAME = '${name}'
+
 g_status = None
 
 def getDispersionStatsPool():
@@ -18,10 +20,22 @@ def playerAvatar_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpee
     if g_status:
         avatar = self
         g_status.currTime = BigWorld.time()
-        g_status._updateDispersionAngle(avatar, dispersionAngle, turretRotationSpeed, withShot)
-        g_status._updateAimingInfo(avatar)
-        g_status._updateVehicleSpeeds(avatar)
-        g_status._updateVehicleEngineState(avatar)
+        try:
+            g_status._updateDispersionAngle(avatar, dispersionAngle, turretRotationSpeed, withShot)
+        except:
+            BigWorld.logWarning(MOD_NAME, 'fail to _updateDispersionAngle', None)
+        try:
+            g_status._updateAimingInfo(avatar)
+        except:
+            BigWorld.logWarning(MOD_NAME, 'fail to _updateAimingInfo', None)
+        try:
+            g_status._updateVehicleSpeeds(avatar)
+        except:
+            BigWorld.logWarning(MOD_NAME, 'fail to _updateVehicleSpeeds', None)
+        try:
+            g_status._updateVehicleEngineState(avatar)
+        except:
+            BigWorld.logWarning(MOD_NAME, 'fail to _updateVehicleEngineState', None)
     return result
 
 
