@@ -168,20 +168,21 @@
                 "panel_offset":     [ -150, -120 ]
             },
             "items":   [
-                "additiveFactor",
+                "scoreDispersion",
+                "aimingTimeConverging",
                 "dAngleAiming",
                 "dAngleIdeal",
                 "shotDispersionAngle",
+                "currTime",
                 "aimingStartTime",
                 "aimingStartFactor",
                 "aimingTime",
+                "additiveFactor",
                 "multFactor",
                 "factorsMovement",
                 "factorsRotation",
                 "factorsTurretRotation",
-                "shotFactor",
-                "aimingTimeConverging",
-                "scoreDispersion"
+                "shotFactor"
             ]
         },
         "panel_1": {
@@ -191,7 +192,6 @@
                 "panel_offset":     [ 150, -120 ]
             },
             "items":   [
-                "currTime",
                 "vehicleSpeed",
                 "vehicleRSpeed",
                 "engineRPM",
