@@ -2,6 +2,8 @@
 import BigWorld
 import GUI
 from gui import g_guiResetters
+from helpers import dependency
+from skeletons.gui.battle_session import IBattleSessionProvider
 
 from widget import PanelWidget, LabelWidget
 
@@ -37,12 +39,24 @@ class IndicatorPanel(object):
         g_guiResetters.add(self.onScreenResolutionChanged)
         self.updatePosition()
         self.panel.visible = True
+        self.session = dependency.instance(IBattleSessionProvider)
+        ctl = self.session.shared.crosshair
+        ctl.onGunMarkerStateChanged += self.onGunMarkerStateChanged
         
     def stop(self):
         BigWorld.logInfo(MOD_NAME, 'panel.stop', None)
         g_guiResetters.discard(self.onScreenResolutionChanged)
         self.panel.visible = False
         self.panel.delRoot()
+        ctl = self.session.shared.crosshair
+        if ctl:
+            ctl.onGunMarkerStateChanged -= self.onGunMarkerStateChanged
+
+    def onGunMarkerStateChanged(self, markerType, position, direction, collision):
+        self.updatePanel()
+
+    def onScreenResolutionChanged(self):
+        self.updatePosition()
 
     def enable(self):
         self.panel.visible = True
@@ -50,11 +64,11 @@ class IndicatorPanel(object):
     def toggleVisible(self):
         self.panel.visible = not self.panel.visible
 
-    def onGunMarkerStateChanged(self):
-        self.panel.update()
-
-    def onScreenResolutionChanged(self):
-        self.updatePosition()
+    def updatePanel(self, *args):
+        try:
+            self.panel.update()
+        except:
+            BigWorld.logError(MOD_NAME, 'fail to update panel state', None)
 
     def updatePosition(self):
         screen = GUI.screenResolution()
