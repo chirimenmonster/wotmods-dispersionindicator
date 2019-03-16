@@ -20,5 +20,16 @@
                 "aimingTimeConverging"
             ]
         }
+    },
+    "logs": {
+        "output_0": {
+            "items": [
+                "currTime",
+                "aimingTimeConverging",
+                "modifiedAimingFactor",
+                "aimingFactor",
+                "dAngleAiming"
+            ]
+        }
     }
 }

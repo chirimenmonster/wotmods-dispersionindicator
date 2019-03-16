@@ -10,9 +10,10 @@ from PlayerEvents import g_playerEvents
 from dispersionindicator.status import getDispersionStatsPool
 from dispersionindicator.events import overrideMethod
 from dispersionindicator.indicator import IndicatorPanel
+from dispersionindicator.output import OutputFile
+
 
 MOD_NAME = '${name}'
-LOG_FILE = '${logfile}'
 
 CONFIG_FILES = [
     '${resource_dir}/default.json',
@@ -22,19 +23,6 @@ CONFIG_FILES = [
 
 g_config = { 'default': {}, 'stats_defs': {}, 'panels': {} }
 g_panel = {}
-
-def outputLog():
-    import os
-    import csv
-    
-    try:
-        os.makedirs(os.path.dirname(LOG_FILE))
-    except:
-        # LOG_CURRENT_EXCEPTION()
-        pass
-    with open(LOG_FILE, 'wb') as f:
-        writer = csv.writer(f, dialect='excel')
-        writer.writerows(_strage.data)
 
 
 def init():
@@ -49,17 +37,25 @@ def init():
             g_config['default'].update(data.get('default', {}))
             g_config['stats_defs'].update(data.get('stats_defs', {}))
             g_config['panels'] = data.get('panels', {})
+            g_config['logs'] = data.get('logs', {})
         print json.dumps(g_config, indent=2)
         stats = getDispersionStatsPool()
         for name, paneldef in g_config['panels'].items():
             config = { 'style': {} }
             config['style'].update(g_config['default'])
             config['style'].update(paneldef.get('style', {}))
-            config['stats_defs'] = g_config['stats_defs']
+            config['stats_defs'] = {}
+            config['stats_defs'].update(g_config['stats_defs'])
+            config['stats_defs'].update(paneldef.get('stats_defs', {}))
             config['items'] = paneldef['items']
             panel = IndicatorPanel(config, stats)
             if panel:
                 g_panel[name] = panel
+        if len(g_config.get('logs', {})):
+            config = {}
+            config['items'] = g_config['logs'].values()[0]['items']
+            config['stats_defs'] = g_config['stats_defs']
+            g_panel['__log__'] = OutputFile(config, stats)
     except:
         LOG_CURRENT_EXCEPTION()
 

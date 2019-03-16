@@ -92,6 +92,7 @@ class IndicatorPanel(object):
         template = setting['format']
         if isinstance(factor, str) or isinstance(factor, unicode):
             factor = CONSTANT.get(factor, 1.0)
+        print 'name=', name, 'title=', setting['title']
         argList = {
             'title': {
                 'text':     setting['title'],

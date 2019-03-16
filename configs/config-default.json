@@ -31,7 +31,7 @@
         },
         "vehicleRSpeed": {
             "status":   "vehicleRSpeed",
-            "title":     "Vehicle RSpeed",
+            "title":     "Vehicle Rot. Speed",
             "format":   "{:.2f}",
             "factor":   1.0,
             "unit":     "rad/s"
@@ -52,14 +52,14 @@
         },
         "engineRelativeRPM": {
             "status":   "engineRelativeRPM",
-            "title":    "Engine Relative RPM",
+            "title":    "Engine Rel. RPM",
             "format":   "{:.2f}",
             "factor":   1.0,
             "unit":     "rpm"
         },
         "turretRotationSpeed": {
             "status":   "turretRotationSpeed",
-            "title":    "Turret RSpeed",
+            "title":    "Turret Rot. Speed",
             "format":   "{:.2f}",
             "factor":   1.0,
             "unit":     "rad/s"
@@ -73,21 +73,21 @@
         },
         "dAngleAiming": {
             "status":   "dAngleAiming",
-            "title":    "Aiming DAngle",
+            "title":    "Aiming D. Angle",
             "format":   "{:.2f}",
             "factor":   100.0,
             "unit":     "rad/100"
         },
         "dAngleIdeal": {
             "status":   "dAngleIdeal",
-            "title":    "Ideal DAngle",
+            "title":    "Ideal D. Angle",
             "format":   "{:.2f}",
             "factor":   100.0,
             "unit":     "rad/100"
         },
         "shotDispersionAngle": {
             "status":   "shotDispersionAngle",
-            "title":    "Shot DAngle",
+            "title":    "Shot D. Angle",
             "format":   "{:.2f}",
             "factor":   100.0,
             "unit":     "rad/100"
@@ -136,7 +136,7 @@
         },
         "factorsTurretRotation": {
             "status":   "factorsTurretRotation",
-            "title":    "TurretR Factor",
+            "title":    "Turret Rot. Factor",
             "format":   "{:.2f}",
             "factor":   1.0,
             "unit":     ""
@@ -144,6 +144,20 @@
         "shotFactor": {
             "status":   "shotFactor",
             "title":    "Shot Factor",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        "aimingFactor": {
+            "status":   "aimingFactor",
+            "title":    "Aiming Factor",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        "modifiedAimingFactor": {
+            "status":   "modifiedAimingFactor",
+            "title":    "M. Aiming Factor",
             "format":   "{:.2f}",
             "factor":   1.0,
             "unit":     ""

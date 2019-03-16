@@ -70,8 +70,12 @@ class DispersionStats(object):
         return self.aimingStartTime - self.currTime + self.aimingTime * math.log(factor)
 
     @property
+    def modifiedAimingFactor(self):
+        return self.aimingFactor / self.multFactor
+
+    @property
     def scoreDispersion(self):
         k = 1.0
         fm = 16.0
-        fc = self.aimingFactor / self.multFactor
+        fc = self.modifiedAimingFactor
         return (fc ** k - 1.0) / (fm ** k - 1.0) * 100.0

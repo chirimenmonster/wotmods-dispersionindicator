@@ -3,8 +3,8 @@
     "sources":  [
         {
             "method":   "apply",
-            "root":     "res",
-            "reldir":   "${resource_dir}",
+            "root":     "",
+            "reldir":   "",
             "files":    [ "src/meta.xml" ]
         },
         {
@@ -21,10 +21,11 @@
             "files":    [ "src/bgimage.dds" ]
         },
         {
-            "method":   "apply",
+            "method":   "apply+copy",
             "root":     "res",
             "reldir":   "${resource_dir}",
-            "files":    [ "src/default.json" ]
+            "replace":  [ "config-default", "default" ],
+            "files":    [ "configs/config-default.json" ]
         },
         {
             "method":   "copy",
