@@ -13,31 +13,14 @@ from dispersionindicator.indicator import IndicatorPanel
 
 MOD_NAME = '${name}'
 LOG_FILE = '${logfile}'
-BGIMAGE_FILE = '${resource_dir}/bgimage.dds'
-DEFAULT_CONFIG_FILE = '${resource_dir}/config.json'
-CONFIG_FILE = '${config_file}'
 
-g_config = {
-    'default': {
-        'colour':           [ 255, 255, 0 ],
-        'alpha':            127,
-        'font':             'default_small.font',
-        'padding_top':      4,
-        'padding_bottom':   4,
-        'padding_left':     4,
-        'padding_right':    4,
-        'panel_width':      280,
-        'panel_offset':     [ -200, 50 ],
-        'line_height':      16,
-        'stats_width':      56,
-        'bgimage':          BGIMAGE_FILE,
-        'horizontalAnchor': 'LEFT',
-        'verticalAnchor':   'TOP'
-    },
-    'stats_defs':       {},
-    'panels':           {}
-}
+CONFIG_FILES = [
+    '${resource_dir}/default.json',
+    '${resource_dir}/config.json',
+    '${config_file}'
+]
 
+g_config = { 'default': {}, 'stats_defs': {}, 'panels': {} }
 g_panel = {}
 
 def outputLog():
@@ -57,23 +40,16 @@ def outputLog():
 def init():
     try:
         BigWorld.logInfo(MOD_NAME, '{} initialize'.format(MOD_NAME), None)
-        if not ResMgr.isFile(DEFAULT_CONFIG_FILE):
-            BigWorld.logError(MOD_NAME, 'default config is not found: {}'.format(DEFAULT_CONFIG_FILE), None)
-            raise Exception
-        else:
-            file = ResMgr.openSection(DEFAULT_CONFIG_FILE)
-            data = json.loads(file.asString)
-            g_config['default'].update(data['default'])
-            g_config['stats_defs'].update(data['stats_defs'])
-            g_config['panels'] = data['panels']
-        if ResMgr.isFile(CONFIG_FILE):
-            BigWorld.logInfo(MOD_NAME, 'load config file: {}'.format(CONFIG_FILE), None)
-            file = ResMgr.openSection(CONFIG_FILE)
-            data = json.loads(file.asString)
+        for file in CONFIG_FILES:
+            if not ResMgr.isFile(file):
+                continue
+            BigWorld.logInfo(MOD_NAME, 'load config file: {}'.format(file), None)
+            section = ResMgr.openSection(file)
+            data = json.loads(section.asString)
             g_config['default'].update(data.get('default', {}))
             g_config['stats_defs'].update(data.get('stats_defs', {}))
             g_config['panels'] = data.get('panels', {})
-            print json.dumps(g_config, indent=2)
+        print json.dumps(g_config, indent=2)
         stats = getDispersionStatsPool()
         for name, paneldef in g_config['panels'].items():
             config = { 'style': {} }

@@ -1,0 +1,15 @@
+{
+    "package":  "${release_package}",
+    "sources":  [
+        {
+            "method":   "plain",
+            "root":     "",
+            "files":    [ "${build_dir}/${package}" ]
+        },
+        {
+            "method":   "plain",
+            "root":     "mods/${config_dir}",
+            "dirs":     [ "configs" ]
+        }
+    ]
+}

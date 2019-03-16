@@ -1,0 +1,6 @@
+<root>
+   <id>${package_id}</id>
+   <version>${version}</version>
+   <name>${name}</name>
+   <description>${description}</description>
+</root>

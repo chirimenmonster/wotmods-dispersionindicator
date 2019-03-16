@@ -1,0 +1,166 @@
+{
+    "default": {
+        "colour":           [ 255, 255, 0 ],
+        "alpha":            127,
+        "font":             "default_small.font",
+        "padding_top":      4,
+        "padding_bottom":   4,
+        "padding_left":     4,
+        "padding_right":    4,
+        "line_height":      16,
+        "stats_width":      56,
+        "bgimage":          "${resource_dir}/bgimage.dds",
+        "horizontalAnchor": "RIGHT",
+        "verticalAnchor":   "TOP",
+        "panel_offset":     [ -160, 50 ]
+    },
+    "stats_defs": {
+        "currTime": {
+            "status":   "currTime",
+            "title":     "Current Time",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "s"
+        },
+        "vehicleSpeed": {
+            "status":   "vehicleSpeed",
+            "title":     "Vehicle Speed",
+            "format":   "{:.2f}",
+            "factor":   "MS_TO_KMH",
+            "unit":     "km/h"
+        },
+        "vehicleRSpeed": {
+            "status":   "vehicleRSpeed",
+            "title":     "Vehicle RSpeed",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "rad/s"
+        },
+        "speedInfo0": {
+            "status":   "speedInfo0",
+            "title":     "speedInfo[0]",
+            "format":   "{:.2f}",
+            "factor":   "MS_TO_KMH",
+            "unit":     "km/h"
+        },
+        "engineRPM": {
+            "status":   "engineRPM",
+            "title":     "Engine RPM",
+            "format":   "{:.0f}",
+            "factor":   1.0,
+            "unit":     "rpm"
+        },
+        "engineRelativeRPM": {
+            "status":   "engineRelativeRPM",
+            "title":    "Engine Relative RPM",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "rpm"
+        },
+        "turretRotationSpeed": {
+            "status":   "turretRotationSpeed",
+            "title":    "Turret RSpeed",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "rad/s"
+         },
+        "additiveFactor": {
+            "status":   "additiveFactor",
+            "title":    "Additive Factor",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        "dAngleAiming": {
+            "status":   "dAngleAiming",
+            "title":    "Aiming DAngle",
+            "format":   "{:.2f}",
+            "factor":   100.0,
+            "unit":     "rad/100"
+        },
+        "dAngleIdeal": {
+            "status":   "dAngleIdeal",
+            "title":    "Ideal DAngle",
+            "format":   "{:.2f}",
+            "factor":   100.0,
+            "unit":     "rad/100"
+        },
+        "shotDispersionAngle": {
+            "status":   "shotDispersionAngle",
+            "title":    "Shot DAngle",
+            "format":   "{:.2f}",
+            "factor":   100.0,
+            "unit":     "rad/100"
+        },
+        "aimingStartTime": {
+            "status":   "aimingStartTime",
+            "title":    "Aiming Start Time",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "s"
+        },
+        "aimingStartFactor": {
+            "status":   "aimingStartFactor",
+            "title":    "Aiming Start Factor",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        "aimingTime": {
+            "status":   "aimingTime",
+            "title":    "Aiming Time",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "s"
+        },
+        "multFactor": {
+            "status":   "multFactor",
+            "title":    "Mult. Factor",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        "factorsMovement": {
+            "status":   "factorsMovement",
+            "title":    "Movement Factor",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        "factorsRotation": {
+            "status":   "factorsRotation",
+            "title":    "Rotation Factor",
+            "format":   "{:.2f}",
+            "factor":  1.0,
+            "unit":     ""
+        },
+        "factorsTurretRotation": {
+            "status":   "factorsTurretRotation",
+            "title":    "TurretR Factor",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        "shotFactor": {
+            "status":   "shotFactor",
+            "title":    "Shot Factor",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        "aimingTimeConverging": {
+            "status":   "aimingTimeConverging",
+            "title":    "Time Converging",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "s"
+        },
+        "scoreDispersion": {
+            "status":   "scoreDispersion",
+            "title":    "Score Dispersion",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        }
+    }
+}

@@ -23,7 +23,6 @@ class IndicatorPanel(object):
         self.padding_left = style['padding_left']
         self.padding_right = style['padding_right']
         self.panel_offset = style['panel_offset']
-        self.panel_width = style['panel_width']
         self.panel_horizontalAnchor = str(style['horizontalAnchor'])
         self.panel_verticalAnchor = str(style['verticalAnchor'])
         self.stats_width = style['stats_width']

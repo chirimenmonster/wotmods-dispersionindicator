@@ -2,6 +2,12 @@
     "package":  "${package}",
     "sources":  [
         {
+            "method":   "apply",
+            "root":     "res",
+            "reldir":   "${resource_dir}",
+            "files":    [ "src/meta.xml" ]
+        },
+        {
             "method":   "apply+python",
             "root":     "res",
             "reldir":   "scripts/client/gui/mods",
@@ -18,7 +24,14 @@
             "method":   "apply",
             "root":     "res",
             "reldir":   "${resource_dir}",
-            "files":    [ "src/config.json" ]
+            "files":    [ "src/default.json" ]
+        },
+        {
+            "method":   "copy",
+            "root":     "res",
+            "reldir":   "${resource_dir}",
+            "replace":  [ "config-simple", "config" ],
+            "files":    [ "configs/config-simple.json" ]
         }
     ]
 }

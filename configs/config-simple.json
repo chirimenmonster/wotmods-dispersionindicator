@@ -1,0 +1,24 @@
+{
+    "stats_defs": {
+        "aimingTimeConverging": {
+            "status":   "aimingTimeConverging",
+            "title":    "",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "s"
+        }
+    },
+    "panels": {
+        "panel_0": {
+            "style": {
+                "horizontalAnchor": "LEFT",
+                "verticalAnchor":   "BOTTOM",
+                "panel_offset":     [ 100, -160 ],
+                "stats_width":      40
+            },
+            "items": [
+                "aimingTimeConverging"
+            ]
+        }
+    }
+}
