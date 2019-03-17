@@ -4,11 +4,14 @@ import GUI
 from gui import g_guiResetters
 from helpers import dependency
 from skeletons.gui.battle_session import IBattleSessionProvider
+from gui.shared.utils.TimeInterval import TimeInterval
+from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
 
 from widget import PanelWidget, LabelWidget
 
 MOD_NAME = '${name}'
 
+_UPDATE_INTERVAL = 0.1
 CONSTANT = {
     'MS_TO_KMH':    3600.0 / 1000.0
 }
@@ -40,11 +43,15 @@ class IndicatorPanel(object):
         self.updatePosition()
         self.panel.visible = True
         self.session = dependency.instance(IBattleSessionProvider)
-        ctl = self.session.shared.crosshair
-        ctl.onGunMarkerStateChanged += self.onGunMarkerStateChanged
+        # gui.battle_control.controllers.vehicle_state_ctrl VehicleStateController
+        ctl = self.session.shared.vehicleState
+        ctl.onVehicleStateUpdated += self.onVehicleStateUpdated
+        ctl.onVehicleControlling += self.onVehicleControlling
+        self._timeInterval = TimeInterval(_UPDATE_INTERVAL, self, '_update')
         
     def stop(self):
         BigWorld.logInfo(MOD_NAME, 'panel.stop', None)
+        self._timeInterval.stop()
         g_guiResetters.discard(self.onScreenResolutionChanged)
         self.panel.visible = False
         self.panel.delRoot()
@@ -52,12 +59,26 @@ class IndicatorPanel(object):
         if ctl:
             ctl.onGunMarkerStateChanged -= self.onGunMarkerStateChanged
 
-    def onGunMarkerStateChanged(self, markerType, position, direction, collision):
-        self.updatePanel()
+    def onVehicleStateUpdated(self, stateID, stateValue):
+        BigWorld.logInfo(MOD_NAME, 'onVehicleStateUpdated: {}, {}'.format(stateID, stateValue), None)
+        if stateID == VEHICLE_VIEW_STATE.CRUISE_MODE:
+            if not self._timeInterval.isStarted():
+                BigWorld.logInfo(MOD_NAME, 'TimeInterval: start', None)
+                self._timeInterval.start()
+
+    def onVehicleControlling(self, vehicle):
+        BigWorld.logInfo(MOD_NAME, 'onVehicleControlling: {}'.format(vehicle), None)
+        if not self._timeInterval.isStarted():
+            BigWorld.logInfo(MOD_NAME, 'TimeInterval: start', None)
+            self._timeInterval.start()
 
     def onScreenResolutionChanged(self):
         self.updatePosition()
 
+    def _update(self):
+        #BigWorld.logInfo(MOD_NAME, '_update', None)
+        self.updatePanel()
+    
     def enable(self):
         self.panel.visible = True
     

@@ -6,6 +6,7 @@ import ResMgr
 from debug_utils import LOG_CURRENT_EXCEPTION
 from gui.Scaleform.daapi.view.battle.shared.crosshair.plugins import ShotResultIndicatorPlugin
 from PlayerEvents import g_playerEvents
+from Avatar import PlayerAvatar
 
 from dispersionindicator.status import getDispersionStatsPool
 from dispersionindicator.events import overrideMethod
@@ -56,20 +57,32 @@ def init():
             config['items'] = g_config['logs'].values()[0]['items']
             config['stats_defs'] = g_config['stats_defs']
             g_panel['__log__'] = OutputFile(config, stats)
+        g_playerEvents.onAvatarBecomePlayer += panel_start
+        g_playerEvents.onAvatarBecomeNonPlayer += panel_stop
     except:
         LOG_CURRENT_EXCEPTION()
 
 
-@overrideMethod(ShotResultIndicatorPlugin, 'start')
-def shotResultIndicatorPlugin_start(orig, self, *args, **kwargs):
-    result = orig(self, *args, **kwargs)
+def panel_start():
+    BigWorld.logInfo(MOD_NAME, 'onAvatarBecomePlayer', None)
     for panel in g_panel.values():
         panel.start()
-    return result
 
-@overrideMethod(ShotResultIndicatorPlugin, 'stop')
-def shotResultIndicatorPlugin_stop(orig, self, *args, **kwargs):
+def panel_stop():
+    BigWorld.logInfo(MOD_NAME, 'onAvatarBecomeNonPlayer', None)
     for panel in g_panel.values():
         panel.stop()
-    result = orig(self, *args, **kwargs)
-    return result
+
+#@overrideMethod(ShotResultIndicatorPlugin, 'start')
+#def shotResultIndicatorPlugin_start(orig, self, *args, **kwargs):
+#    result = orig(self, *args, **kwargs)
+#    for panel in g_panel.values():
+#        panel.start()
+#    return result
+
+#@overrideMethod(ShotResultIndicatorPlugin, 'stop')
+#def shotResultIndicatorPlugin_stop(orig, self, *args, **kwargs):
+#    for panel in g_panel.values():
+#        panel.stop()
+#    result = orig(self, *args, **kwargs)
+#    return result
