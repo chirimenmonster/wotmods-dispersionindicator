@@ -24,7 +24,7 @@ class OutputFile(object):
         BigWorld.logInfo(MOD_NAME, 'output.stop', None)
         self.outputLog()
    
-    def onGunMarkerStateChanged(self):
+    def update(self):
         data = [ getattr(self.stats, key, '') for key in self.names ]
         BigWorld.logInfo(MOD_NAME, 'stock data: {}'.format(data), None)
         self.__strage.append(data)

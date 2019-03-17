@@ -22,13 +22,10 @@ CONFIG_FILES = [
     '${config_file}'
 ]
 
-g_config = { 'default': {}, 'stats_defs': {}, 'panels': {} }
-g_panel = {}
-
-
 def init():
     try:
         BigWorld.logInfo(MOD_NAME, '{} initialize'.format(MOD_NAME), None)
+        g_config = { 'default': {}, 'stats_defs': {}, 'panels': {} }
         for file in CONFIG_FILES:
             if not ResMgr.isFile(file):
                 continue
@@ -41,6 +38,7 @@ def init():
             g_config['logs'] = data.get('logs', {})
         print json.dumps(g_config, indent=2)
         stats = getDispersionStatsPool()
+        indicator = IndicatorPanel()
         for name, paneldef in g_config['panels'].items():
             config = { 'style': {} }
             config['style'].update(g_config['default'])
@@ -49,40 +47,14 @@ def init():
             config['stats_defs'].update(g_config['stats_defs'])
             config['stats_defs'].update(paneldef.get('stats_defs', {}))
             config['items'] = paneldef['items']
-            panel = IndicatorPanel(config, stats)
-            if panel:
-                g_panel[name] = panel
+            indicator.addPanel(name, config, stats)
         if len(g_config.get('logs', {})):
             config = {}
             config['items'] = g_config['logs'].values()[0]['items']
             config['stats_defs'] = g_config['stats_defs']
-            g_panel['__log__'] = OutputFile(config, stats)
-        g_playerEvents.onAvatarBecomePlayer += panel_start
-        g_playerEvents.onAvatarBecomeNonPlayer += panel_stop
+            indicator.addLogger(config, stats)
+        g_playerEvents.onAvatarBecomePlayer += indicator.start
+        g_playerEvents.onAvatarBecomeNonPlayer += indicator.stop
     except:
         LOG_CURRENT_EXCEPTION()
 
-
-def panel_start():
-    BigWorld.logInfo(MOD_NAME, 'onAvatarBecomePlayer', None)
-    for panel in g_panel.values():
-        panel.start()
-
-def panel_stop():
-    BigWorld.logInfo(MOD_NAME, 'onAvatarBecomeNonPlayer', None)
-    for panel in g_panel.values():
-        panel.stop()
-
-#@overrideMethod(ShotResultIndicatorPlugin, 'start')
-#def shotResultIndicatorPlugin_start(orig, self, *args, **kwargs):
-#    result = orig(self, *args, **kwargs)
-#    for panel in g_panel.values():
-#        panel.start()
-#    return result
-
-#@overrideMethod(ShotResultIndicatorPlugin, 'stop')
-#def shotResultIndicatorPlugin_stop(orig, self, *args, **kwargs):
-#    for panel in g_panel.values():
-#        panel.stop()
-#    result = orig(self, *args, **kwargs)
-#    return result
