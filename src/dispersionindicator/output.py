@@ -1,16 +1,15 @@
 
+import os
+import csv
+
 import BigWorld
 import GUI
 from gui import g_guiResetters
 
-import os
-import csv
-
-MOD_NAME = '${name}'
-LOG_FILE = '${log_file}'
+from constants import MOD_NAME, LOG_FILE
 
 
-class OutputFile(object):
+class IndicatorLogger(object):
     def __init__(self, config, stats):
         self.stats = stats
         self.statsdefs = config['stats_defs']

@@ -4,55 +4,43 @@ import json
 import BigWorld
 import ResMgr
 from debug_utils import LOG_CURRENT_EXCEPTION
-from gui.Scaleform.daapi.view.battle.shared.crosshair.plugins import ShotResultIndicatorPlugin
 from PlayerEvents import g_playerEvents
 from Avatar import PlayerAvatar
 
-from dispersionindicator.status import getDispersionStatsPool
-from dispersionindicator.events import overrideMethod
-from dispersionindicator.indicator import IndicatorPanel
-from dispersionindicator.output import OutputFile
+from dispersionindicator.constants import MOD_NAME, CONFIG_FILES
+from dispersionindicator.indicator import Indicator
 
-
-MOD_NAME = '${name}'
-
-CONFIG_FILES = [
-    '${resource_dir}/default.json',
-    '${resource_dir}/config.json',
-    '${config_file}'
-]
 
 def init():
     try:
         BigWorld.logInfo(MOD_NAME, '{} initialize'.format(MOD_NAME), None)
-        g_config = { 'default': {}, 'stats_defs': {}, 'panels': {} }
+        config = { 'default': {}, 'stats_defs': {}, 'panels': {} }
         for file in CONFIG_FILES:
             if not ResMgr.isFile(file):
                 continue
             BigWorld.logInfo(MOD_NAME, 'load config file: {}'.format(file), None)
             section = ResMgr.openSection(file)
             data = json.loads(section.asString)
-            g_config['default'].update(data.get('default', {}))
-            g_config['stats_defs'].update(data.get('stats_defs', {}))
-            g_config['panels'] = data.get('panels', {})
-            g_config['logs'] = data.get('logs', {})
-        print json.dumps(g_config, indent=2)
-        stats = getDispersionStatsPool()
-        indicator = IndicatorPanel()
-        for name, paneldef in g_config['panels'].items():
-            config = { 'style': {} }
-            config['style'].update(g_config['default'])
-            config['style'].update(paneldef.get('style', {}))
-            config['stats_defs'] = {}
-            config['stats_defs'].update(g_config['stats_defs'])
-            config['stats_defs'].update(paneldef.get('stats_defs', {}))
-            config['items'] = paneldef['items']
-            indicator.addPanel(name, config, stats)
-        if len(g_config.get('logs', {})):
-            config = {}
-            config['items'] = g_config['logs'].values()[0]['items']
-            config['stats_defs'] = g_config['stats_defs']
-            indicator.addLogger(config, stats)
+            config['default'].update(data.get('default', {}))
+            config['stats_defs'].update(data.get('stats_defs', {}))
+            config['panels'] = data.get('panels', {})
+            config['logs'] = data.get('logs', {})
+        print json.dumps(config, indent=2)
+        indicator = Indicator(config)
+        for name, paneldef in config['panels'].items():
+            localConfig = { 'style': {} }
+            localConfig['style'].update(config['default'])
+            localConfig['style'].update(paneldef.get('style', {}))
+            localConfig['stats_defs'] = {}
+            localConfig['stats_defs'].update(config['stats_defs'])
+            localConfig['stats_defs'].update(paneldef.get('stats_defs', {}))
+            localConfig['items'] = paneldef['items']
+            indicator.addPanel(name, localConfig)
+        if len(config.get('logs', {})):
+            localConfig = {}
+            localConfig['items'] = config['logs'].values()[0]['items']
+            localConfig['stats_defs'] = config['stats_defs']
+            indicator.addLogger(localConfig)
         g_playerEvents.onAvatarBecomePlayer += indicator.start
         g_playerEvents.onAvatarBecomeNonPlayer += indicator.stop
     except:

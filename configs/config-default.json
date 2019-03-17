@@ -1,5 +1,6 @@
 {
     "default": {
+        "update_interval":  0.1,
         "colour":           [ 255, 255, 0 ],
         "alpha":            127,
         "font":             "default_small.font",

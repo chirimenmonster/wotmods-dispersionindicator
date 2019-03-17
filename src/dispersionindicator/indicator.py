@@ -7,28 +7,25 @@ from skeletons.gui.battle_session import IBattleSessionProvider
 from gui.shared.utils.TimeInterval import TimeInterval
 from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
 
+from constants import MOD_NAME, CONSTANT
+from status import g_dispersionStats
+from output import IndicatorLogger
 from widget import PanelWidget, LabelWidget
-from output import OutputFile
-
-MOD_NAME = '${name}'
-
-_UPDATE_INTERVAL = 0.1
-CONSTANT = {
-    'MS_TO_KMH':    3600.0 / 1000.0
-}
 
 
-class IndicatorPanel(object):
-    def __init__(self):
+class Indicator(object):
+    def __init__(self, config):
         self.__panels = {}
-        self._timeInterval = TimeInterval(_UPDATE_INTERVAL, self, '_update')
+        self.__stats = g_dispersionStats
+        updateInterval = config['default']['update_interval']
+        self._timeInterval = TimeInterval(updateInterval, self, 'update')
 
-    def addPanel(self, name, config, stats):
-        panel = _IndicatorSubPanel(config, stats)
+    def addPanel(self, name, config):
+        panel = IndicatorPanel(config, self.__stats)
         self.__panels[name] = panel
 
-    def addLogger(self, config, stats):
-        logger = OutputFile(config, stats)
+    def addLogger(self, config):
+        logger = IndicatorLogger(config, self.__stats)
         self.__panels['__logger__'] = logger
 
     def start(self):
@@ -39,7 +36,6 @@ class IndicatorPanel(object):
         self.session = dependency.instance(IBattleSessionProvider)
         # VehicleStateController in gui.battle_control.controllers.vehicle_state_ctrl
         ctl = self.session.shared.vehicleState
-        ctl.onVehicleStateUpdated += self.onVehicleStateUpdated
         ctl.onVehicleControlling += self.onVehicleControlling
 
     def stop(self):
@@ -53,17 +49,9 @@ class IndicatorPanel(object):
         for panel in self.__panels.values():
             panel.stop()
 
-    def _update(self):
-        #BigWorld.logInfo(MOD_NAME, '_update', None)
+    def update(self):
         for panel in self.__panels.values():
             panel.update()
-
-    def onVehicleStateUpdated(self, stateID, stateValue):
-        BigWorld.logInfo(MOD_NAME, 'onVehicleStateUpdated: {}, {}'.format(stateID, stateValue), None)
-        if stateID == VEHICLE_VIEW_STATE.CRUISE_MODE:
-            if not self._timeInterval.isStarted():
-                BigWorld.logInfo(MOD_NAME, 'TimeInterval: start', None)
-                self._timeInterval.start()
 
     def onVehicleControlling(self, vehicle):
         BigWorld.logInfo(MOD_NAME, 'onVehicleControlling: {}'.format(vehicle), None)
@@ -77,7 +65,7 @@ class IndicatorPanel(object):
                 panel.updatePosition()
 
 
-class _IndicatorSubPanel(object):
+class IndicatorPanel(object):
     def __init__(self, config, stats):
         self.stats = stats
         style = config['style']

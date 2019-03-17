@@ -3,37 +3,31 @@ import math
 import BigWorld
 from Avatar import PlayerAvatar
 
+from constants import MOD_NAME
 from events import overrideMethod
 
-MOD_NAME = '${name}'
-
-g_status = None
-
-def getDispersionStatsPool():
-    global g_status
-    g_status = DispersionStats()
-    return g_status
+g_dispersionStats = None
 
 @overrideMethod(PlayerAvatar, 'getOwnVehicleShotDispersionAngle')
 def playerAvatar_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpeed, withShot = 0):
     dispersionAngle = result = orig(self, turretRotationSpeed, withShot)
-    if g_status:
+    if g_dispersionStats:
         avatar = self
-        g_status.currTime = BigWorld.time()
+        g_dispersionStats.currTime = BigWorld.time()
         try:
-            g_status._updateDispersionAngle(avatar, dispersionAngle, turretRotationSpeed, withShot)
+            g_dispersionStats._updateDispersionAngle(avatar, dispersionAngle, turretRotationSpeed, withShot)
         except:
             BigWorld.logWarning(MOD_NAME, 'fail to _updateDispersionAngle', None)
         try:
-            g_status._updateAimingInfo(avatar)
+            g_dispersionStats._updateAimingInfo(avatar)
         except:
             BigWorld.logWarning(MOD_NAME, 'fail to _updateAimingInfo', None)
         try:
-            g_status._updateVehicleSpeeds(avatar)
+            g_dispersionStats._updateVehicleSpeeds(avatar)
         except:
             BigWorld.logWarning(MOD_NAME, 'fail to _updateVehicleSpeeds', None)
         try:
-            g_status._updateVehicleEngineState(avatar)
+            g_dispersionStats._updateVehicleEngineState(avatar)
         except:
             BigWorld.logWarning(MOD_NAME, 'fail to _updateVehicleEngineState', None)
     return result
@@ -93,3 +87,5 @@ class DispersionStats(object):
         fm = 16.0
         fc = self.modifiedAimingFactor
         return (fc ** k - 1.0) / (fm ** k - 1.0) * 100.0
+
+g_dispersionStats = DispersionStats()
