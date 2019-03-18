@@ -41,6 +41,7 @@ def init():
             localConfig['items'] = config['logs'].values()[0]['items']
             localConfig['stats_defs'] = config['stats_defs']
             indicator.addLogger(localConfig)
+        indicator.addFlash(localConfig)
         g_playerEvents.onAvatarBecomePlayer += indicator.start
         g_playerEvents.onAvatarBecomeNonPlayer += indicator.stop
     except:

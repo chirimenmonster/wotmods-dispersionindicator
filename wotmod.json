@@ -33,6 +33,12 @@
             "reldir":   "${resource_dir}",
             "replace":  [ "config-simple", "config" ],
             "files":    [ "configs/config-simple.json" ]
+        },
+        {
+            "method":   "plain",
+            "root":     "res",
+            "reldir":   "gui/scaleform",
+            "files":    [ "flash/TestProject/bin/TestProject.swf" ]
         }
     ]
 }

@@ -10,7 +10,10 @@ from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
 from constants import MOD_NAME, CONSTANT
 from status import g_dispersionStats
 from output import IndicatorLogger
+from test import IndicatorFlashText
 from widget import PanelWidget, LabelWidget
+
+import test
 
 
 class Indicator(object):
@@ -21,12 +24,17 @@ class Indicator(object):
         self._timeInterval = TimeInterval(updateInterval, self, 'update')
 
     def addPanel(self, name, config):
+        return
         panel = IndicatorPanel(config, self.__stats)
         self.__panels[name] = panel
 
     def addLogger(self, config):
         logger = IndicatorLogger(config, self.__stats)
         self.__panels['__logger__'] = logger
+
+    def addFlash(self, config):
+        flash = IndicatorFlashText(config, self.__stats)
+        self.__panels['__flash__'] = flash
 
     def start(self):
         BigWorld.logInfo(MOD_NAME, 'panel.start', None)
@@ -37,7 +45,13 @@ class Indicator(object):
         # VehicleStateController in gui.battle_control.controllers.vehicle_state_ctrl
         ctl = self.session.shared.vehicleState
         ctl.onVehicleControlling += self.onVehicleControlling
+        #
+        ctl = self.session.shared.crosshair
+        ctl.onCrosshairPositionChanged += self.onCrosshairPositionChanged
+        ctl.onCrosshairSizeChanged += lambda width, height: BigWorld.logInfo(MOD_NAME, 'crosshairSizeChanged: {}, {}'.format(width, height), None)
+        ctl.onCrosshairViewChanged += lambda viewID: BigWorld.logInfo(MOD_NAME, 'crosshairViewChanged: {}'.format(viewID), None)
 
+        
     def stop(self):
         BigWorld.logInfo(MOD_NAME, 'panel.stop', None)
         self._timeInterval.stop()
@@ -63,6 +77,11 @@ class Indicator(object):
         for panel in self.__panels.values():
             if getattr(panel, 'updatePosition', None) and callable(panel.updatePosition):
                 panel.updatePosition()
+
+    def onCrosshairPositionChanged(self, x, y):
+        for panel in self.__panels.values():
+            if getattr(panel, 'updateCrosshairPosition', None) and callable(panel.updateCrosshairPosition):
+                panel.updateCrosshairPosition(x, y)
 
 
 class IndicatorPanel(object):
