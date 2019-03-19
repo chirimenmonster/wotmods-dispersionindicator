@@ -42,8 +42,8 @@ def init():
             localConfig['stats_defs'] = config['stats_defs']
             indicator.addLogger(localConfig)
         indicator.addFlash(localConfig)
-        g_playerEvents.onAvatarBecomePlayer += indicator.start
-        g_playerEvents.onAvatarBecomeNonPlayer += indicator.stop
+        g_playerEvents.onAvatarBecomePlayer += indicator.onAvatarBecomePlayer
+        g_playerEvents.onAvatarBecomeNonPlayer += indicator.onAvatarBecomeNonPlayer
     except:
         LOG_CURRENT_EXCEPTION()
 

@@ -22,9 +22,12 @@ class IndicatorFlashText(object):
         flash.component.moveFocus = False
         self.flash = flash
 
+    def init(self):
+        BigWorld.logInfo(MOD_NAME, 'flashText.init', None)
+        self.updatePosition()
+
     def start(self):
         BigWorld.logInfo(MOD_NAME, 'flashText.start', None)
-        self.updatePosition()
         self.flash.active(True)
 
     def stop(self):
