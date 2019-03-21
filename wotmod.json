@@ -15,13 +15,7 @@
             "dirs":     [ "src" ]
         },
         {
-            "method":   "plain",
-            "root":     "res",
-            "reldir":   "${resource_dir}",
-            "files":    [ "src/bgimage.dds" ]
-        },
-        {
-            "method":   "apply+copy",
+            "method":   "copy",
             "root":     "res",
             "reldir":   "${resource_dir}",
             "replace":  [ "config-default", "default" ],
@@ -33,6 +27,12 @@
             "reldir":   "${resource_dir}",
             "replace":  [ "config-simple", "config" ],
             "files":    [ "configs/config-simple.json" ]
+        },
+        {
+            "method":   "plain",
+            "root":     "res",
+            "reldir":   "${flash_dir}",
+            "files":    [ "flash/IndicatorPanelProject/bin/IndicatorPanel.swf" ]
         }
     ]
 }

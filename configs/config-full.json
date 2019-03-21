@@ -1,10 +1,10 @@
 {
     "default": {
         "colour":           [ 255, 255, 0 ],
-        "alpha":            127,
-        "font":             "default_small.font",
-        "padding_top":      4,
-        "padding_bottom":   4,
+        "alpha":            0.8,
+        "font":             "$FieldFont",
+        "padding_top":      2,
+        "padding_bottom":   2,
         "padding_left":     4,
         "padding_right":    4,
         "panel_offset":     [ -160, 50 ],
@@ -14,9 +14,36 @@
     "panels": {
         "panel_0": {
             "style": {
-                "horizontalAnchor": "RIGHT",
-                "verticalAnchor":   "TOP",
-                "panel_offset":     [ -150, -120 ]
+                "horizontalAnchor": "LEFT",
+                "verticalAnchor":   "CENTER",
+                "referencePoint":   "CROSSHAIR",
+                "panel_offset":     [ 120, 1 ],
+                "statsWidth":       40,
+                "textColor":        [ 255, 255, 0 ],
+                "filter":           "DROPSHADOW",
+                "alpha":            0.8,
+                "fontsize":         16
+            },
+            "stats_defs": {
+                "aimingTimeConverging": {
+                    "status":   "aimingTimeConverging",
+                    "title":    "",
+                    "format":   "{:.2f}",
+                    "factor":   1.0,
+                    "unit":     ""
+                }
+            },
+            "items": [
+                "aimingTimeConverging"
+            ]
+        },
+        "panel_1": {
+            "style": {
+                "horizontalAnchor": "LEFT",
+                "verticalAnchor":   "BOTTOM",
+                "referencePoint":   "SCREEN_LEFT_BOTTOM",
+                "panel_offset":     [ 320, -100 ],
+                "backgroundColor":  [ 0, 0, 0, 0.4 ]
             },
             "items":   [
                 "scoreDispersion",
@@ -38,11 +65,13 @@
                 "shotFactor"
             ]
         },
-        "panel_1": {
+        "panel_2": {
             "style": {
-                "horizontalAnchor": "LEFT",
-                "verticalAnchor":   "TOP",
-                "panel_offset":     [ 150, -120 ]
+                "horizontalAnchor": "RIGHT",
+                "verticalAnchor":   "BOTTOM",
+                "referencePoint":   "SCREEN_RIGHT_BOTTOM",
+                "panel_offset":     [ -320, -100 ],
+                "backgroundColor":  [ 0, 0, 0, 0.4 ]
             },
             "items":   [
                 "vehicleSpeed",
