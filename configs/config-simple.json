@@ -24,28 +24,6 @@
             "items": [
                 "aimingTimeConverging"
             ]
-        },
-        "panel_1": {
-            "style": {
-                "horizontalAnchor": "RIGHT",
-                "verticalAnchor":   "TOP",
-                "referencePoint":   "SCREEN_CENTER",
-                "panel_offset":     [ -200, -20 ],
-                "statsWidth":       40,
-                "backgroundColor":  [ 0, 0, 0, 0.4 ],
-                "textColor":        [ 255, 255, 0 ],
-                "alpha":            0.8,
-                "fontsize":         14,
-                "lineHeight":       18
-            },
-            "items": [
-                "currTime",
-                "vehicleSpeed",
-                "vehicleRSpeed",
-                "engineRPM",
-                "engineRelativeRPM",
-                "turretRotationSpeed"
-            ]
         }
     }
 }
