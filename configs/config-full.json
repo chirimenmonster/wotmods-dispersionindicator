@@ -2,14 +2,8 @@
     "default": {
         "colour":           [ 255, 255, 0 ],
         "alpha":            0.8,
-        "font":             "$FieldFont",
-        "padding_top":      2,
-        "padding_bottom":   2,
-        "padding_left":     4,
-        "padding_right":    4,
-        "panel_offset":     [ -160, 50 ],
-        "line_height":      16,
-        "stats_width":      56
+        "lineHeight":      16,
+        "statsWidth":      56
     },
     "panels": {
         "panel_0": {
