@@ -3,9 +3,14 @@
         "panel_0": {
             "style": {
                 "horizontalAnchor": "LEFT",
-                "verticalAnchor":   "BOTTOM",
-                "panel_offset":     [ 100, -160 ],
-                "stats_width":      40
+                "verticalAnchor":   "CENTER",
+                "referencePoint":   "CROSSHAIR",
+                "panel_offset":     [ 120, 1 ],
+                "statsWidth":       40,
+                "textColor":        [ 255, 255, 0 ],
+                "filter":           "DROPSHADOW",
+                "alpha":            0.8,
+                "fontsize":         16
             },
             "stats_defs": {
                 "aimingTimeConverging": {
@@ -13,11 +18,33 @@
                     "title":    "",
                     "format":   "{:.2f}",
                     "factor":   1.0,
-                    "unit":     "s"
+                    "unit":     ""
                 }
             },
             "items": [
                 "aimingTimeConverging"
+            ]
+        },
+        "panel_1": {
+            "style": {
+                "horizontalAnchor": "RIGHT",
+                "verticalAnchor":   "TOP",
+                "referencePoint":   "SCREEN_CENTER",
+                "panel_offset":     [ -200, -20 ],
+                "statsWidth":       40,
+                "backgroundColor":  [ 0, 0, 0, 0.4 ],
+                "textColor":        [ 255, 255, 0 ],
+                "alpha":            0.8,
+                "fontsize":         14,
+                "lineHeight":       18
+            },
+            "items": [
+                "currTime",
+                "vehicleSpeed",
+                "vehicleRSpeed",
+                "engineRPM",
+                "engineRelativeRPM",
+                "turretRotationSpeed"
             ]
         }
     }

@@ -19,7 +19,9 @@ package
 	 */
 	public class Main extends Sprite 
 	{
-		private var text1:TextField = new TextField();
+		public var fieldWidth:int = 0;
+		public var fieldHeight:int = 0;
+		
 		private var panel:PanelContainer;
 		
 		public function Main() 
@@ -35,32 +37,18 @@ package
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align = StageAlign.TOP_LEFT;
 			
-			text1.autoSize = TextFieldAutoSize.LEFT;
-			text1.defaultTextFormat = new TextFormat("$FieldFont", 16, 0xffff00);
-			text1.alpha = 0.8
-			
-			var dropShadow:DropShadowFilter = new DropShadowFilter(0, 45, 0, 0.8, 8, 8, 3);
-			text1.filters = [ dropShadow ];
-			text1.x = 100;
-			text1.y = 100;
-			text1.text = "TEST";
-			
-			stage.addChild(text1);
+			//test();
 		}
 				
-		public function as_createPanel(config:Array):void
+		public function as_createPanel(config:Array, style:Object):void
 		{
-			var dropShadow:DropShadowFilter = new DropShadowFilter(0, 45, 0, 0.8, 8, 8, 3);
-			var filters:Array = [ dropShadow ];
-			panel = new PanelContainer(config, filters);
+			panel = new PanelContainer(config, style);
 			stage.addChild(panel);
+			fieldWidth = panel.fieldWidth;
+			fieldHeight = panel.fieldHeight;
+			panel.alpha = style.alpha;
 		}
 		
-		public function as_setText(text:String = null):void
-		{
-			text1.htmlText = text;
-		}
-
 		public function as_setValue(name:String = null, text:String = null):void
 		{
 			var child:LabelContainer = panel.getChildByName(name) as LabelContainer;
@@ -71,6 +59,40 @@ package
 		{
 			panel.x = x;
 			panel.y = y;
+		}
+		
+		public function test():void
+		{
+			var config:Array = [
+				{
+					"name":         "test",
+					"label":        "Test",
+					'unit':         "(suffix)"
+				},
+				{
+					"name":         "test",
+					"label":        "Test",
+					'unit':         "(suffix)"
+				}
+			];
+			var style:Object = {
+				"font": 			"default_small.font",
+				"fontsize":			14,
+				"statsWidth": 		150,
+				"alpha": 			0.8,
+				"panel_offset": 	[ -200, -20],
+				"horizontalAnchor":	"RIGHT",
+				"verticalAnchor": 	"TOP",
+				"colour": 			[255, 255, 0],
+				"backgroundColor": 	[0, 0, 0, 0.4],
+				"paddingTop": 		4,
+				"paddingBottom": 	4,
+				"paddingLeft": 		4,
+				"paddingRight": 	4,
+				"lineHeight": 		18,
+				"textColor": 		[255, 255, 0]				
+			};
+			as_createPanel(config, style)
 		}
 		
 	}

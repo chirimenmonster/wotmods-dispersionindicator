@@ -13,9 +13,9 @@ package
 	 */
 	public class LabelContainer extends Sprite
 	{
-		private var labelField:TextField;
+		public var labelField:TextField;
 		public var valueField:TextField;
-		private var unitField:TextField;
+		public var unitField:TextField;
 		
 		public var anchorX:int = 0;
 		public var anchorY:int = 0;
@@ -26,48 +26,73 @@ package
 		{
 			var format:TextFormat;
 			
-			labelField = createTextField();
-			labelField.autoSize = TextFieldAutoSize.LEFT;
+			labelField = new TextField();
 			
-			valueField = createTextField();
+			valueField = new TextField();
 			valueField.autoSize = TextFieldAutoSize.NONE;
 			
-			unitField = createTextField();
-			format = unitField.getTextFormat();
-			format.align = TextFormatAlign.LEFT;
-			unitField.defaultTextFormat = format;
+			unitField = new TextField();
 
 			addChild(labelField);
 			addChild(valueField);
 			addChild(unitField);
 		}
 		
-		private function createTextField():TextField
+		private function getTextFormat(style:Object):TextFormat
 		{
-			var textField:TextField = new TextField();
-			var format:TextFormat = new TextFormat("$FieldFont", 16, 0xffff00);
+			var format:TextFormat = new TextFormat();
+			format.font = style.font;
+			format.size = style.fontsize;
 			format.align = TextFormatAlign.RIGHT;
-			textField.defaultTextFormat = format;
-			return textField;
+			if (style.hasOwnProperty("textColor"))
+				format.color = style.textColor[0] << 16 + style.textColor[1] << 8 + style.textColor[2];
+			format.color = 0xffff00;
+			return format;
 		}
 
-		public function init(label:String, unit:String, valueWidth:int):void
+		private function assignLabelField(textField:TextField, style:Object):void
 		{
-			labelField.x = 0;
-			labelField.htmlText = label;
-			
-			var valueHeight:int;
-			valueField.autoSize = TextFieldAutoSize.LEFT;
-			valueField.text = "0";
-			valueHeight = valueField.height;
-			valueField.autoSize = TextFieldAutoSize.NONE;
-			valueField.x = labelField.x + labelField.width;
-			valueField.width = valueWidth;
-			valueField.height = valueHeight;
-			valueField.htmlText = "";
+			var format:TextFormat = getTextFormat(style);
+			format.align = TextFormatAlign.RIGHT;
+			textField.defaultTextFormat = format;
+			textField.autoSize = TextFieldAutoSize.LEFT;
+		}
 
+		private function assignValueField(textField:TextField, style:Object):void
+		{
+			var format:TextFormat = getTextFormat(style);
+			format.align = TextFormatAlign.RIGHT;
+			textField.defaultTextFormat = format;
+			var height:int;
+			textField.autoSize = TextFieldAutoSize.LEFT;
+			textField.text = "0";
+			height = textField.height;
+			textField.text = "";
+			textField.autoSize = TextFieldAutoSize.NONE;
+			textField.width = style.statsWidth;
+			textField.height = height;
+		}
+		
+		private function assignUnitField(textField:TextField, style:Object):void
+		{
+			var format:TextFormat = getTextFormat(style);
+			format.align = TextFormatAlign.LEFT;
+			textField.defaultTextFormat = format;
+			textField.autoSize = TextFieldAutoSize.LEFT;
+		}
+		
+		public function init(label:String, unit:String, valueWidth:int, style:Object):void
+		{
+			assignLabelField(labelField, style);
+			labelField.htmlText = label;
+			labelField.x = 0;
+			
+			assignValueField(valueField, style);
+			valueField.x = labelField.x + labelField.width;
+
+			assignUnitField(unitField, style);
+			
 			unitField.x = valueField.x + valueField.width;
-			unitField.autoSize = TextFieldAutoSize.LEFT;
 			unitField.htmlText = unit;
 
 			anchorX = unitField.x

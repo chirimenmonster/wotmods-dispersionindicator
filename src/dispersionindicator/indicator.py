@@ -33,9 +33,9 @@ class Indicator(object):
         logger = IndicatorLogger(config, self.__stats)
         self.__panels['__logger__'] = logger
 
-    def addFlash(self, config):
+    def addFlashPanel(self, name, config):
         flash = IndicatorFlashText(config, self.__stats)
-        self.__panels['__flash__'] = flash
+        self.__panels[name] = flash
 
     def onAvatarBecomePlayer(self):
         BigWorld.logInfo(MOD_NAME, 'onAvatarBecomePlayer', None)
