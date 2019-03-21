@@ -5,6 +5,8 @@ from gui.Scaleform.Flash import Flash
 
 from constants import MOD_NAME, CONSTANT
 
+SWF_FILE = 'IndicatorPanel.swf'
+SWF_PATH = '${flash_dir}'
 
 class IndicatorFlashText(object):
     def __init__(self, config, stats):
@@ -15,7 +17,7 @@ class IndicatorFlashText(object):
         self.verticalAnchor = style['verticalAnchor']
         self.panel_offset = style['panel_offset']
         self.statsdefs = config['stats_defs']
-        flash = Flash('TestProject.swf', path='gui/scaleform')
+        flash = Flash(SWF_FILE, path=SWF_PATH)
         flash.movie.backgroundAlpha = 0.0
         flash.movie.scaleMode = 'NoScale'
         flash.component.heightMode = 'PIXEL'
@@ -43,7 +45,7 @@ class IndicatorFlashText(object):
 
     def init(self):
         BigWorld.logInfo(MOD_NAME, 'flashText.init', None)
-        self.updatePosition()
+        self.updateScreenPosition()
 
     def start(self):
         BigWorld.logInfo(MOD_NAME, 'flashText.start', None)
@@ -62,9 +64,12 @@ class IndicatorFlashText(object):
             self.flash.movie.root.as_setValue(name, text)
         #self.flash.movie.root.as_setValue('aimingTimeConverging', '{:.2f}'.format(data))
 
-    def updatePosition(self):
-        if self.referencePoint != 'SCREEN_CENTER':
+    def updateScreenPosition(self):
+        refPoint = self.referencePoint.split('_')
+        if refPoint[0] != 'SCREEN':
             return
+        if len(refPoint) == 2 and refPoint[1] == 'CENTER':
+            refPoint.append('CENTER')
         offsetX = offsetY = 0
         width = self.flash.movie.root.fieldWidth
         height = self.flash.movie.root.fieldHeight
@@ -78,8 +83,19 @@ class IndicatorFlashText(object):
             offsetY = - height / 2
         screen = GUI.screenResolution()
         center = ( screen[0] / 2, screen[1] / 2)
-        x = center[0] + self.panel_offset[0] + offsetX
-        y = center[1] + self.panel_offset[1] + offsetY
+        x = y = 0
+        if refPoint[1] == 'CENTER':
+            x = center[0] + self.panel_offset[0] + offsetX
+        elif refPoint[1] == 'LEFT':
+            x = self.panel_offset[0] + offsetX
+        elif refPoint[1] == 'RIGHT':
+            x = screen[0] + self.panel_offset[0] + offsetX
+        if refPoint[2] == 'CENTER':
+            y = center[1] + self.panel_offset[1] + offsetY
+        elif refPoint[2] == 'TOP':
+            y = self.panel_offset[1] + offsetY
+        elif refPoint[2] == 'BOTTOM':
+            y = screen[1] + self.panel_offset[1] + offsetY
         BigWorld.logInfo(MOD_NAME, 'frashText.updatePosition ({}, {})'.format(x, y), None)
         self.flash.movie.root.as_setPosition(int(x), int(y))
 

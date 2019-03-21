@@ -11,7 +11,7 @@ package
 	 * ...
 	 * @author Chirimen
 	 */
-	public class LabelContainer extends Sprite
+	public class LineContainer extends Sprite
 	{
 		public var labelField:TextField;
 		public var valueField:TextField;
@@ -22,7 +22,7 @@ package
 		public var fieldWidth:int = 0;
 		public var fieldHeight:int = 0;
 
-		public function LabelContainer()
+		public function LineContainer()
 		{
 			var format:TextFormat;
 			

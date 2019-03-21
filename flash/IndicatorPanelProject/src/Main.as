@@ -1,16 +1,10 @@
 package
 {
-	import flash.display.FrameLabel;
 	import flash.display.Sprite;
 	import flash.display.StageScaleMode;
 	import flash.display.StageAlign;
 	import flash.events.Event;
-	import flash.text.TextField;
-	import flash.text.TextFieldAutoSize;
-	import flash.text.TextFormat;
-	import flash.text.TextFormatAlign;
-	import flash.filters.DropShadowFilter;
-	import LabelContainer;
+	import LineContainer;
 	import PanelContainer;
 	
 	/**
@@ -51,7 +45,7 @@ package
 		
 		public function as_setValue(name:String = null, text:String = null):void
 		{
-			var child:LabelContainer = panel.getChildByName(name) as LabelContainer;
+			var child:LineContainer = panel.getChildByName(name) as LineContainer;
 			child.valueField.text = text;
 		}
 

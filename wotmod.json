@@ -15,13 +15,7 @@
             "dirs":     [ "src" ]
         },
         {
-            "method":   "plain",
-            "root":     "res",
-            "reldir":   "${resource_dir}",
-            "files":    [ "src/bgimage.dds" ]
-        },
-        {
-            "method":   "apply+copy",
+            "method":   "copy",
             "root":     "res",
             "reldir":   "${resource_dir}",
             "replace":  [ "config-default", "default" ],
@@ -37,8 +31,8 @@
         {
             "method":   "plain",
             "root":     "res",
-            "reldir":   "gui/scaleform",
-            "files":    [ "flash/TestProject/bin/TestProject.swf" ]
+            "reldir":   "${flash_dir}",
+            "files":    [ "flash/IndicatorPanelProject/bin/IndicatorPanel.swf" ]
         }
     ]
 }

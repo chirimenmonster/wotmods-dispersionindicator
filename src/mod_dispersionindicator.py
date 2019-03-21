@@ -40,14 +40,12 @@ def init():
             localConfig['stats_defs'].update(config['stats_defs'])
             localConfig['stats_defs'].update(paneldef.get('stats_defs', {}))
             localConfig['items'] = paneldef['items']
-            #indicator.addPanel(name, localConfig)
             indicator.addFlashPanel(name, localConfig)
         if len(config.get('logs', {})):
             localConfig = {}
             localConfig['items'] = config['logs'].values()[0]['items']
             localConfig['stats_defs'] = config['stats_defs']
             indicator.addLogger(localConfig)
-        #indicator.addFlash(localConfig)
         g_playerEvents.onAvatarBecomePlayer += indicator.onAvatarBecomePlayer
         g_playerEvents.onAvatarBecomeNonPlayer += indicator.onAvatarBecomeNonPlayer
     except:

@@ -3,9 +3,14 @@
         "panel_0": {
             "style": {
                 "horizontalAnchor": "LEFT",
-                "verticalAnchor":   "BOTTOM",
-                "panel_offset":     [ 100, -160 ],
-                "stats_width":      40
+                "verticalAnchor":   "CENTER",
+                "referencePoint":   "CROSSHAIR",
+                "panel_offset":     [ 120, 1 ],
+                "statsWidth":       40,
+                "textColor":        [ 255, 255, 0 ],
+                "filter":           "DROPSHADOW",
+                "alpha":            0.8,
+                "fontsize":         16
             },
             "stats_defs": {
                 "aimingTimeConverging": {
@@ -13,7 +18,7 @@
                     "title":    "",
                     "format":   "{:.2f}",
                     "factor":   1.0,
-                    "unit":     "s"
+                    "unit":     ""
                 }
             },
             "items": [

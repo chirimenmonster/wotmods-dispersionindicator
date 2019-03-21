@@ -4,7 +4,7 @@ package
 	import flash.display.Sprite;
 	import flash.filters.DropShadowFilter;
 
-	import LabelContainer;
+	import LineContainer;
 	
 	/**
 	 * ...
@@ -22,11 +22,11 @@ package
 			var i:int;
 			var y:int = 0;
 			var anchorX:int = 0;
-			var line:LabelContainer;
+			var line:LineContainer;
 			
 			y = style.paddingTop;
 			for each (var c:Object in config) {
-				line = new LabelContainer();
+				line = new LineContainer();
 				addChild(line);
 				line.init(c.label, c.unit, c.valueWidth, style);
 				line.name = c.name;
@@ -40,7 +40,7 @@ package
 			}
 			fieldHeight += style.paddingBottom;
 			for (i = 0; i < numChildren; i++) {
-				line = getChildAt(i) as LabelContainer;
+				line = getChildAt(i) as LineContainer;
 				line.x = anchorX - line.anchorX + style.paddingLeft;
 				fieldWidth = Math.max(fieldWidth, line.x + line.width + style.paddingRight);
 			}
@@ -65,7 +65,7 @@ package
 					var dropShadow:DropShadowFilter = new DropShadowFilter(0, 45, 0, 0.8, 8, 8, 3);
 					var filters:Array = [ dropShadow ];
 					for (var i:int = 0; i < numChildren; i++) {
-						var line:LabelContainer = getChildAt(i) as LabelContainer;
+						var line:LineContainer = getChildAt(i) as LineContainer;
 						line.setFilters(filters);
 					}
 				}
