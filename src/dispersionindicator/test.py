@@ -20,7 +20,13 @@ class IndicatorFlashText(object):
         flash.component.wg_inputKeyMode = 2
         flash.component.focus = False
         flash.component.moveFocus = False
+        flash.movie.root.as_createPanel([
+            { "label": "time", "unit": "s" },
+            { "label": "angle", "unit": "rad/100" },
+            { "label": "velocity", "unit": "km/h" }
+        ])
         self.flash = flash
+ 
 
     def start(self):
         BigWorld.logInfo(MOD_NAME, 'flashText.start', None)
