@@ -37,8 +37,9 @@ class Indicator(object):
         flash = IndicatorFlashText(config, self.__stats)
         self.__panels['__flash__'] = flash
 
-    def start(self):
-        avatar = BigWorld.player()
+    def onAvatarBecomePlayer(self):
+        BigWorld.logInfo(MOD_NAME, 'onAvatarBecomePlayer', None)
+        #avatar = BigWorld.player()
         #avatar.onVehicleEnterWorld += lambda _: self.populate()
         self.session = dependency.instance(IBattleSessionProvider)
         # VehicleStateController in gui.battle_control.controllers.vehicle_state_ctrl
@@ -50,36 +51,21 @@ class Indicator(object):
         ctl.onCrosshairSizeChanged += lambda width, height: BigWorld.logInfo(MOD_NAME, 'crosshairSizeChanged: {}, {}'.format(width, height), None)
         ctl.onCrosshairViewChanged += lambda viewID: BigWorld.logInfo(MOD_NAME, 'crosshairViewChanged: {}'.format(viewID), None)
         g_guiResetters.add(self.onScreenResolutionChanged)
-
-    def populate(self):
-        if self.__populated:
-            return
-        self.__populated = True
-        BigWorld.logInfo(MOD_NAME, 'panel.start', None)
         for panel in self.__panels.values():
-            panel.start()
+            panel.init()
 
-    def stop(self):
-        BigWorld.logInfo(MOD_NAME, 'panel.stop', None)
-        self._timeInterval.stop()
+    def onAvatarBecomeNonPlayer(self):
+        BigWorld.logInfo(MOD_NAME, 'onAvatarBecomeNonPlayer', None)
+        self.stop()
         g_guiResetters.discard(self.onScreenResolutionChanged)
         ctl = self.session.shared.crosshair
         if ctl:
             ctl.onVehicleStateUpdated -= self.onVehicleStateUpdated
             ctl.onVehicleControlling -= self.onVehicleControlling
-        for panel in self.__panels.values():
-            panel.stop()
-
-    def update(self):
-        for panel in self.__panels.values():
-            panel.update()
 
     def onVehicleControlling(self, vehicle):
         BigWorld.logInfo(MOD_NAME, 'onVehicleControlling: {}'.format(vehicle), None)
-        self.populate()
-        if not self._timeInterval.isStarted():
-            BigWorld.logInfo(MOD_NAME, 'TimeInterval: start', None)
-            self._timeInterval.start()
+        self.start()
 
     def onScreenResolutionChanged(self):
         for panel in self.__panels.values():
@@ -90,6 +76,32 @@ class Indicator(object):
         for panel in self.__panels.values():
             if getattr(panel, 'updateCrosshairPosition', None) and callable(panel.updateCrosshairPosition):
                 panel.updateCrosshairPosition(x, y)
+
+    def start(self):
+        if self.__populated:
+            return
+        self.__populated = True
+        BigWorld.logInfo(MOD_NAME, 'panel.start', None)
+        for panel in self.__panels.values():
+            panel.start()
+        if not self._timeInterval.isStarted():
+            BigWorld.logInfo(MOD_NAME, 'TimeInterval: start', None)
+            self._timeInterval.start()
+
+    def stop(self):
+        if not self.__populated:
+            return
+        self.__populated = False
+        BigWorld.logInfo(MOD_NAME, 'panel.stop', None)
+        if self._timeInterval.isStarted():
+            BigWorld.logInfo(MOD_NAME, 'TimeInterval: stop', None)
+            self._timeInterval.stop()
+        for panel in self.__panels.values():
+            panel.stop()
+
+    def update(self):
+        for panel in self.__panels.values():
+            panel.update()
 
 
 class IndicatorPanel(object):
@@ -112,9 +124,11 @@ class IndicatorPanel(object):
         self.panel = self.createWidgetTree(config['items'])
         self.panel.visible = False
 
-    def start(self):
+    def init(self):
         self.panel.addRoot()
         self.updatePosition()
+
+    def start(self):
         self.panel.visible = True
         
     def stop(self):

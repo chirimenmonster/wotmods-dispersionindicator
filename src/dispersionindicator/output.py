@@ -15,6 +15,9 @@ class IndicatorLogger(object):
         self.statsdefs = config['stats_defs']
         self.names = [ self.statsdefs[key]['status'] for key in config['items'] ]
 
+    def init(self):
+        pass
+
     def start(self):
         BigWorld.logInfo(MOD_NAME, 'output.start', None)
         self.__strage = []
