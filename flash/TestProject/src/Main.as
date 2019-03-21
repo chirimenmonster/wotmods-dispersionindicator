@@ -20,7 +20,6 @@ package
 	public class Main extends Sprite 
 	{
 		private var text1:TextField = new TextField();
-		//private var container:LabelContainer = new LabelContainer();
 		private var panel:PanelContainer;
 		
 		public function Main() 
@@ -40,33 +39,20 @@ package
 			text1.defaultTextFormat = new TextFormat("$FieldFont", 16, 0xffff00);
 			text1.alpha = 0.8
 			
-			var dropShadow:DropShadowFilter = new DropShadowFilter(0, 45, 0, 0.8, 8, 8, 3); 
-			
+			var dropShadow:DropShadowFilter = new DropShadowFilter(0, 45, 0, 0.8, 8, 8, 3);
 			text1.filters = [ dropShadow ];
-			
-			var config:Array = [
-				{ "label": "time", "unit": "s" },
-				{ "label": "angle", "unit": "rad/100" },
-				{ "label": "velocity", "unit": "km/h" }
-			];
+			text1.x = 100;
+			text1.y = 100;
+			text1.text = "TEST";
 			
 			stage.addChild(text1);
-			
-			resizeHandler();
 		}
-		
-		private function resizeHandler(e:Event = null):void
-		{
-			x = stage.stageWidth / 2;
-			y = stage.stageHeight / 2;
-			text1.htmlText = "Stage: (" + stage.stageWidth + ", " + stage.stageHeight + ")";
-			text1.x = x - text1.width / 2;
-			text1.y = y + 40;
-		}
-		
+				
 		public function as_createPanel(config:Array):void
 		{
-			panel = new PanelContainer(config);
+			var dropShadow:DropShadowFilter = new DropShadowFilter(0, 45, 0, 0.8, 8, 8, 3);
+			var filters:Array = [ dropShadow ];
+			panel = new PanelContainer(config, filters);
 			stage.addChild(panel);
 		}
 		
@@ -75,11 +61,18 @@ package
 			text1.htmlText = text;
 		}
 
+		public function as_setValue(name:String = null, text:String = null):void
+		{
+			var child:LabelContainer = panel.getChildByName(name) as LabelContainer;
+			child.valueField.text = text;
+		}
+
 		public function as_setPosition(x:int = 0, y:int = 0):void
 		{
-			text1.x = x;
-			text1.y = y;
+			panel.x = x;
+			panel.y = y;
 		}
+		
 	}
 	
 }

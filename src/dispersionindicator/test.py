@@ -21,9 +21,7 @@ class IndicatorFlashText(object):
         flash.component.focus = False
         flash.component.moveFocus = False
         flash.movie.root.as_createPanel([
-            { "label": "time", "unit": "s" },
-            { "label": "angle", "unit": "rad/100" },
-            { "label": "velocity", "unit": "km/h" }
+            { 'name': 'aimingTimeConverging', 'label': '', 'unit': '', 'valueWidth': 40 }
         ])
         self.flash = flash
  
@@ -43,7 +41,7 @@ class IndicatorFlashText(object):
     def update(self):
         data = getattr(self.stats, 'aimingTimeConverging', 0.0)
         #BigWorld.logInfo(MOD_NAME, 'frashText.update', None)
-        self.flash.movie.root.as_setText('{:.2f}'.format(data))
+        self.flash.movie.root.as_setValue('aimingTimeConverging', '{:.2f}'.format(data))
 
     def updatePosition(self):
         screen = GUI.screenResolution()

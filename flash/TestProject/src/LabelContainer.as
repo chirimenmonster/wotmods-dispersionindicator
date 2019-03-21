@@ -14,7 +14,7 @@ package
 	public class LabelContainer extends Sprite
 	{
 		private var labelField:TextField;
-		private var valueField:TextField;
+		public var valueField:TextField;
 		private var unitField:TextField;
 		
 		public var anchorX:int = 0;
@@ -51,7 +51,7 @@ package
 			return textField;
 		}
 
-		public function init(label:String, unit:String):void
+		public function init(label:String, unit:String, valueWidth:int):void
 		{
 			labelField.x = 0;
 			labelField.htmlText = label;
@@ -62,7 +62,7 @@ package
 			valueHeight = valueField.height;
 			valueField.autoSize = TextFieldAutoSize.NONE;
 			valueField.x = labelField.x + labelField.width;
-			valueField.width = 180;
+			valueField.width = valueWidth;
 			valueField.height = valueHeight;
 			valueField.htmlText = "";
 
@@ -73,6 +73,13 @@ package
 			anchorX = unitField.x
 			anchorY = unitField.y
 			valueField.htmlText = '(' + width + ',' + height + ')' + '(' + labelField.height + ',' + valueField.height + ',' + unitField.height + ')';
+		}
+		
+		public function setFilters(filters:Array):void
+		{
+			labelField.filters = filters;
+			valueField.filters = filters;
+			unitField.filters = filters;
 		}
 		
 		public function setValueText(text:String):void
