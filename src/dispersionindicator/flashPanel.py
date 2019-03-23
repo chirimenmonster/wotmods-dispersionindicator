@@ -3,7 +3,7 @@ import BigWorld
 import GUI
 from gui.Scaleform.Flash import Flash
 
-from constants import MOD_NAME, CONSTANT
+from constants import MOD_NAME, CONSTANT, CROSSHAIR_VIEW_SYMBOL
 
 SWF_FILE = 'IndicatorPanel.swf'
 SWF_PATH = '${flash_dir}'
@@ -15,7 +15,9 @@ class IndicatorFlashText(object):
         self.referencePoint = style['referencePoint']
         self.horizontalAnchor = style['horizontalAnchor']
         self.verticalAnchor = style['verticalAnchor']
-        self.panel_offset = style['panel_offset']
+        self.screenOffset = style['screenOffset']
+        self.crosshairOffset = { id:style.get('crosshairOffset_' + symbol, style['crosshairOffset']) for id, symbol in CROSSHAIR_VIEW_SYMBOL.items() }
+        print self.crosshairOffset
         self.statsdefs = config['stats_defs']
         flash = Flash(SWF_FILE, path=SWF_PATH)
         flash.movie.backgroundAlpha = 0.0
@@ -42,6 +44,7 @@ class IndicatorFlashText(object):
         print style
         flash.movie.root.as_createPanel(self.__config, style)
         self.flash = flash 
+        self.__viewID = 0
 
     def init(self):
         BigWorld.logInfo(MOD_NAME, 'flashText.init', None)
@@ -52,7 +55,7 @@ class IndicatorFlashText(object):
         self.flash.active(True)
 
     def stop(self):
-        BigWorld.logInfo(MOD_NAME, 'frashText.stop', None)
+        BigWorld.logInfo(MOD_NAME, 'flashText.stop', None)
         self.flash.active(False)
    
     def update(self):
@@ -83,23 +86,24 @@ class IndicatorFlashText(object):
         center = ( screen[0] / 2, screen[1] / 2)
         x = y = 0
         if refPoint[1] == 'CENTER':
-            x = center[0] + self.panel_offset[0] + offsetX
+            x = center[0] + self.screenOffset[0] + offsetX
         elif refPoint[1] == 'LEFT':
-            x = self.panel_offset[0] + offsetX
+            x = self.screenOffset[0][0] + offsetX
         elif refPoint[1] == 'RIGHT':
-            x = screen[0] + self.panel_offset[0] + offsetX
+            x = screen[0] + self.screenOffset[0] + offsetX
         if refPoint[2] == 'CENTER':
-            y = center[1] + self.panel_offset[1] + offsetY
+            y = center[1] + self.screenOffset[1] + offsetY
         elif refPoint[2] == 'TOP':
-            y = self.panel_offset[1] + offsetY
+            y = self.screenOffset[1] + offsetY
         elif refPoint[2] == 'BOTTOM':
-            y = screen[1] + self.panel_offset[1] + offsetY
-        #BigWorld.logInfo(MOD_NAME, 'frashText.updatePosition ({}, {})'.format(x, y), None)
+            y = screen[1] + self.screenOffset[1] + offsetY
+        #BigWorld.logInfo(MOD_NAME, 'flashText.updatePosition ({}, {})'.format(x, y), None)
         self.flash.movie.root.as_setPosition(int(x), int(y))
 
     def updateCrosshairPosition(self, x, y):
         if self.referencePoint != 'CROSSHAIR':
             return
+        BigWorld.logInfo(MOD_NAME, 'flashText.updateCrosshairPosition ({}, {})'.format(x, y), None)
         offsetX = offsetY = 0
         width = self.flash.movie.root.fieldWidth
         height = self.flash.movie.root.fieldHeight
@@ -111,7 +115,12 @@ class IndicatorFlashText(object):
             offsetY = - height
         elif self.verticalAnchor == 'CENTER':
             offsetY = - height / 2
-        x = x + self.panel_offset[0] + offsetX
-        y = y + self.panel_offset[1] + offsetY
-        #BigWorld.logInfo(MOD_NAME, 'frashText.updateCrosshairPosition ({}, {})'.format(x, y), None)
+        x = x + self.crosshairOffset[self.__viewID][0] + offsetX
+        y = y + self.crosshairOffset[self.__viewID][1] + offsetY
+        #BigWorld.logInfo(MOD_NAME, 'flashText.updateCrosshairPosition ({}, {})'.format(x, y), None)
         self.flash.movie.root.as_setPosition(int(x), int(y))
+
+    def changeView(self, viewID):
+        self.__viewID = viewID
+        print viewID
+        return

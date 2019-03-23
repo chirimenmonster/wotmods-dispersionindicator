@@ -5,9 +5,9 @@ from gui import g_guiResetters
 from helpers import dependency
 from skeletons.gui.battle_session import IBattleSessionProvider
 from gui.shared.utils.TimeInterval import TimeInterval
-from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
+from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE, CROSSHAIR_VIEW_ID
 
-from constants import MOD_NAME, CONSTANT
+from constants import MOD_NAME, CONSTANT, CROSSHAIR_VIEW_SYMBOL
 from status import g_dispersionStats
 from output import IndicatorLogger
 from flashPanel import IndicatorFlashText
@@ -29,7 +29,6 @@ class Indicator(object):
     def addLogger(self, config):
         logger = IndicatorLogger(config, self.__stats)
         self.__panels['__logger__'] = logger
-
 
     def onAvatarBecomePlayer(self):
         BigWorld.logInfo(MOD_NAME, 'onAvatarBecomePlayer', None)
@@ -57,6 +56,10 @@ class Indicator(object):
             if getattr(panel, 'updateScreenPosition', None) and callable(panel.updateScreenPosition):
                 panel.updateScreenPosition()
 
+    def onCrosshairViewChanged(self, viewID):
+        BigWorld.logInfo(MOD_NAME, 'crosshairViewChanged: {}'.format(CROSSHAIR_VIEW_SYMBOL[viewID]), None)
+        self.changeView(viewID)
+
     def onCrosshairPositionChanged(self, x, y):
         for panel in self.__panels.values():
             if getattr(panel, 'updateCrosshairPosition', None) and callable(panel.updateCrosshairPosition):
@@ -73,10 +76,11 @@ class Indicator(object):
         ctl.onVehicleStateUpdated += self.onVehicleStateUpdated
         # CrosshairDataProxy in gui.battle_control.controllers.crosshair_proxy
         ctl = self.session.shared.crosshair
+        ctl.onCrosshairViewChanged += self.onCrosshairViewChanged
         ctl.onCrosshairPositionChanged += self.onCrosshairPositionChanged
         #ctl.onCrosshairSizeChanged += lambda width, height: BigWorld.logInfo(MOD_NAME, 'crosshairSizeChanged: {}, {}'.format(width, height), None)
-        #ctl.onCrosshairViewChanged += lambda viewID: BigWorld.logInfo(MOD_NAME, 'crosshairViewChanged: {}'.format(viewID), None)
         g_guiResetters.add(self.onScreenResolutionChanged)
+        self.changeView(ctl.getViewID())
     
     def removeHandler(self):
         if not self.__isSetHandler:
@@ -92,6 +96,7 @@ class Indicator(object):
         # CrosshairDataProxy in gui.battle_control.controllers.crosshair_proxy
         ctl = self.session.shared.crosshair
         if ctl:
+            ctl.onCrosshairViewChanged -= self.onCrosshairViewChanged
             ctl.onCrosshairPositionChanged -= self.onCrosshairPositionChanged
 
     def start(self):
@@ -119,3 +124,9 @@ class Indicator(object):
     def update(self):
         for panel in self.__panels.values():
             panel.update()
+
+    def changeView(self, viewID):
+        BigWorld.logInfo(MOD_NAME, 'changeView: {}'.format(CROSSHAIR_VIEW_SYMBOL[viewID]), None)
+        for panel in self.__panels.values():
+            if getattr(panel, 'changeView', None) and callable(panel.changeView):
+                panel.changeView(viewID)
