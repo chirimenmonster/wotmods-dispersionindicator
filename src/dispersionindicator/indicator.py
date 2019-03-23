@@ -74,8 +74,8 @@ class Indicator(object):
         # CrosshairDataProxy in gui.battle_control.controllers.crosshair_proxy
         ctl = self.session.shared.crosshair
         ctl.onCrosshairPositionChanged += self.onCrosshairPositionChanged
-        ctl.onCrosshairSizeChanged += lambda width, height: BigWorld.logInfo(MOD_NAME, 'crosshairSizeChanged: {}, {}'.format(width, height), None)
-        ctl.onCrosshairViewChanged += lambda viewID: BigWorld.logInfo(MOD_NAME, 'crosshairViewChanged: {}'.format(viewID), None)
+        #ctl.onCrosshairSizeChanged += lambda width, height: BigWorld.logInfo(MOD_NAME, 'crosshairSizeChanged: {}, {}'.format(width, height), None)
+        #ctl.onCrosshairViewChanged += lambda viewID: BigWorld.logInfo(MOD_NAME, 'crosshairViewChanged: {}'.format(viewID), None)
         g_guiResetters.add(self.onScreenResolutionChanged)
     
     def removeHandler(self):
@@ -86,13 +86,13 @@ class Indicator(object):
         self.session = dependency.instance(IBattleSessionProvider)
         # VehicleStateController in gui.battle_control.controllers.vehicle_state_ctrl
         ctl = self.session.shared.vehicleState
-        ctl.onVehicleControlling -= self.onVehicleControlling
-        ctl.onVehicleStateUpdated -= self.onVehicleStateUpdated
+        if ctl:
+            ctl.onVehicleControlling -= self.onVehicleControlling
+            ctl.onVehicleStateUpdated -= self.onVehicleStateUpdated
         # CrosshairDataProxy in gui.battle_control.controllers.crosshair_proxy
         ctl = self.session.shared.crosshair
-        ctl.onCrosshairPositionChanged -= self.onCrosshairPositionChanged
-        ctl.onCrosshairSizeChanged -= lambda width, height: BigWorld.logInfo(MOD_NAME, 'crosshairSizeChanged: {}, {}'.format(width, height), None)
-        ctl.onCrosshairViewChanged -= lambda viewID: BigWorld.logInfo(MOD_NAME, 'crosshairViewChanged: {}'.format(viewID), None)
+        if ctl:
+            ctl.onCrosshairPositionChanged -= self.onCrosshairPositionChanged
 
     def start(self):
         if self.__populated:
