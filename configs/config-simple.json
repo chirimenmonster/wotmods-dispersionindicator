@@ -2,29 +2,29 @@
     "panels": {
         "panel_0": {
             "style": {
-                "horizontalAnchor": "LEFT",
-                "verticalAnchor":   "CENTER",
-                "referencePoint":   "CROSSHAIR",
+                "horizontalAnchor":             "LEFT",
+                "verticalAnchor":               "CENTER",
+                "referencePoint":               "CROSSHAIR",
                 "crosshairOffset_ARCADE":       [ 164,  1 ],
-                "crosshairOffset_SNIPER":       [ 270,  3 ],
+                "crosshairOffset_SNIPER":       [ 268,  0 ],
                 "crosshairOffset_STRATEGIC":    [ 162, 32 ],
-                "statsWidth":       36,
-                "textColor":        [ 255, 255, 0 ],
-                "filter":           "DROPSHADOW",
-                "alpha":            0.8,
-                "fontsize":         16,
-                "paddingTop":       0,
-                "paddingBottom":    0,
-                "paddingLeft":      0,
-                "paddingRight":     0
+                "statsWidth":                   36,
+                "textColor":                    [ 255, 255, 0 ],
+                "filter":                       "DROPSHADOW",
+                "alpha":                        0.8,
+                "fontsize":                     16,
+                "paddingTop":                   0,
+                "paddingBottom":                0,
+                "paddingLeft":                  0,
+                "paddingRight":                 0
             },
-            "stats_defs": {
+            "statsDefs": {
                 "aimingTimeConverging": {
-                    "status":   "aimingTimeConverging",
-                    "title":    "",
-                    "format":   "{:.2f}",
-                    "factor":   1.0,
-                    "unit":     ""
+                    "status":       "aimingTimeConverging",
+                    "title":        "",
+                    "format":       "{:.2f}",
+                    "factor":       1.0,
+                    "unit":         ""
                 }
             },
             "items": [

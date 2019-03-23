@@ -17,7 +17,7 @@ class Indicator(object):
     def __init__(self, config):
         self.__panels = {}
         self.__stats = g_dispersionStats
-        updateInterval = config['default']['update_interval']
+        updateInterval = config['default']['updateInterval']
         self._timeInterval = TimeInterval(updateInterval, self, 'update')
         self.__isSetHandler = False
         self.__populated = False

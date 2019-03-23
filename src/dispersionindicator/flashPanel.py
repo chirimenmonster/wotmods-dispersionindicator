@@ -18,7 +18,7 @@ class IndicatorFlashText(object):
         self.screenOffset = style['screenOffset']
         self.crosshairOffset = { id:style.get('crosshairOffset_' + symbol, style['crosshairOffset']) for id, symbol in CROSSHAIR_VIEW_SYMBOL.items() }
         print self.crosshairOffset
-        self.statsdefs = config['stats_defs']
+        self.statsdefs = config['statsDefs']
         flash = Flash(SWF_FILE, path=SWF_PATH)
         flash.movie.backgroundAlpha = 0.0
         flash.movie.scaleMode = 'NoScale'
@@ -88,7 +88,7 @@ class IndicatorFlashText(object):
         if refPoint[1] == 'CENTER':
             x = center[0] + self.screenOffset[0] + offsetX
         elif refPoint[1] == 'LEFT':
-            x = self.screenOffset[0][0] + offsetX
+            x = self.screenOffset[0] + offsetX
         elif refPoint[1] == 'RIGHT':
             x = screen[0] + self.screenOffset[0] + offsetX
         if refPoint[2] == 'CENTER':

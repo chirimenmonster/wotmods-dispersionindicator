@@ -2,29 +2,35 @@
     "default": {
         "colour":           [ 255, 255, 0 ],
         "alpha":            0.8,
-        "lineHeight":      16,
-        "statsWidth":      56
+        "lineHeight":       16,
+        "statsWidth":       56
     },
     "panels": {
         "panel_0": {
             "style": {
-                "horizontalAnchor": "LEFT",
-                "verticalAnchor":   "CENTER",
-                "referencePoint":   "CROSSHAIR",
-                "panel_offset":     [ 120, 1 ],
-                "statsWidth":       40,
-                "textColor":        [ 255, 255, 0 ],
-                "filter":           "DROPSHADOW",
-                "alpha":            0.8,
-                "fontsize":         16
+                "horizontalAnchor":             "LEFT",
+                "verticalAnchor":               "CENTER",
+                "referencePoint":               "CROSSHAIR",
+                "crosshairOffset_ARCADE":       [ 164,  1 ],
+                "crosshairOffset_SNIPER":       [ 268,  0 ],
+                "crosshairOffset_STRATEGIC":    [ 162, 32 ],
+                "statsWidth":                   36,
+                "textColor":                    [ 255, 255, 0 ],
+                "filter":                       "DROPSHADOW",
+                "alpha":                        0.8,
+                "fontsize":                     16,
+                "paddingTop":                   0,
+                "paddingBottom":                0,
+                "paddingLeft":                  0,
+                "paddingRight":                 0
             },
-            "stats_defs": {
+            "statsDefs": {
                 "aimingTimeConverging": {
-                    "status":   "aimingTimeConverging",
-                    "title":    "",
-                    "format":   "{:.2f}",
-                    "factor":   1.0,
-                    "unit":     ""
+                    "status":       "aimingTimeConverging",
+                    "title":        "",
+                    "format":       "{:.2f}",
+                    "factor":       1.0,
+                    "unit":         ""
                 }
             },
             "items": [
@@ -33,11 +39,12 @@
         },
         "panel_1": {
             "style": {
-                "horizontalAnchor": "LEFT",
-                "verticalAnchor":   "BOTTOM",
-                "referencePoint":   "SCREEN_LEFT_BOTTOM",
-                "panel_offset":     [ 320, -100 ],
-                "backgroundColor":  [ 0, 0, 0, 0.4 ]
+                "horizontalAnchor":             "LEFT",
+                "verticalAnchor":               "BOTTOM",
+                "referencePoint":               "SCREEN_LEFT_BOTTOM",
+                "screenOffset":                 [ 420, -100 ],
+                "backgroundColor":              [ 0, 0, 0, 0.4 ],
+                "backgroundAlpha":              0.4
             },
             "items":   [
                 "scoreDispersion",
@@ -61,11 +68,12 @@
         },
         "panel_2": {
             "style": {
-                "horizontalAnchor": "RIGHT",
-                "verticalAnchor":   "BOTTOM",
-                "referencePoint":   "SCREEN_RIGHT_BOTTOM",
-                "panel_offset":     [ -320, -100 ],
-                "backgroundColor":  [ 0, 0, 0, 0.4 ]
+                "horizontalAnchor":             "RIGHT",
+                "verticalAnchor":               "BOTTOM",
+                "referencePoint":               "SCREEN_RIGHT_BOTTOM",
+                "screenOffset":                 [ -420, -100 ],
+                "backgroundColor":              [ 0, 0, 0, 0.4 ],
+                "backgroundAlpha":              0.4
             },
             "items":   [
                 "vehicleSpeed",

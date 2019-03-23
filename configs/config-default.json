@@ -1,23 +1,23 @@
 {
     "default": {
-        "update_interval":  0.1,
-        "colour":           [ 255, 255, 0 ],
-        "alpha":            0.8,
-        "font":             "$FieldFont",
-        "fontsize":         14,
-        "lineHeight":       18,
-        "paddinTop":        2,
-        "paddingBottom":    2,
-        "paddingLeft":      4,
-        "paddingRight":     4,
-        "statsWidth":       56,
-        "horizontalAnchor": "RIGHT",
-        "verticalAnchor":   "TOP",
-        "referencePoint":   "SCREEN_CENTER",
-        "screenOffset":     [ -160, 50 ],
-        "crosshairOffset":  [ 164,   1 ]
+        "updateInterval":              0.1,
+        "textColor":                    [ 255, 255, 0 ],
+        "alpha":                        0.8,
+        "font":                         "$FieldFont",
+        "fontsize":                     14,
+        "lineHeight":                   18,
+        "paddinTop":                    2,
+        "paddingBottom":                2,
+        "paddingLeft":                  4,
+        "paddingRight":                 4,
+        "statsWidth":                   56,
+        "horizontalAnchor":             "RIGHT",
+        "verticalAnchor":               "TOP",
+        "referencePoint":               "SCREEN_CENTER",
+        "screenOffset":                 [ -160, 50 ],
+        "crosshairOffset":              [ 164,   1 ]
     },
-    "stats_defs": {
+    "statsDefs": {
         "currTime": {
             "status":   "currTime",
             "title":     "Current Time",

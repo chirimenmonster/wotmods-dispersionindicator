@@ -14,7 +14,7 @@ from dispersionindicator.indicator import Indicator
 def init():
     try:
         BigWorld.logInfo(MOD_NAME, '{} initialize'.format(MOD_NAME), None)
-        config = { 'default': {}, 'stats_defs': {}, 'panels': {} }
+        config = { 'default': {}, 'statsDefs': {}, 'panels': {} }
 
         def encode_key(data):
             ascii_encode = lambda x: x.encode('ascii') if isinstance(x, unicode) else x
@@ -27,7 +27,7 @@ def init():
             section = ResMgr.openSection(file)
             data = json.loads(section.asString, object_hook=encode_key)
             config['default'].update(data.get('default', {}))
-            config['stats_defs'].update(data.get('stats_defs', {}))
+            config['statsDefs'].update(data.get('statsDefs', {}))
             config['panels'] = data.get('panels', {})
             config['logs'] = data.get('logs', {})
         print json.dumps(config, indent=2)
@@ -36,15 +36,15 @@ def init():
             localConfig = { 'style': {} }
             localConfig['style'].update(config['default'])
             localConfig['style'].update(paneldef.get('style', {}))
-            localConfig['stats_defs'] = {}
-            localConfig['stats_defs'].update(config['stats_defs'])
-            localConfig['stats_defs'].update(paneldef.get('stats_defs', {}))
+            localConfig['statsDefs'] = {}
+            localConfig['statsDefs'].update(config['statsDefs'])
+            localConfig['statsDefs'].update(paneldef.get('statsDefs', {}))
             localConfig['items'] = paneldef['items']
             indicator.addFlashPanel(name, localConfig)
         if len(config.get('logs', {})):
             localConfig = {}
             localConfig['items'] = config['logs'].values()[0]['items']
-            localConfig['stats_defs'] = config['stats_defs']
+            localConfig['statsDefs'] = config['statsDefs']
             indicator.addLogger(localConfig)
         g_playerEvents.onAvatarBecomePlayer += indicator.onAvatarBecomePlayer
         g_playerEvents.onAvatarBecomeNonPlayer += indicator.onAvatarBecomeNonPlayer
