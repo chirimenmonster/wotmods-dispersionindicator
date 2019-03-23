@@ -5,12 +5,14 @@
                 "horizontalAnchor": "LEFT",
                 "verticalAnchor":   "CENTER",
                 "referencePoint":   "CROSSHAIR",
-                "panel_offset":     [ 120, 1 ],
-                "statsWidth":       40,
+                "panel_offset":     [ 164, 3 ],
+                "statsWidth":       36,
                 "textColor":        [ 255, 255, 0 ],
                 "filter":           "DROPSHADOW",
                 "alpha":            0.8,
-                "fontsize":         16
+                "fontsize":         16,
+                "paddingLeft":      0,
+                "paddingRight":     0
             },
             "stats_defs": {
                 "aimingTimeConverging": {
