@@ -57,12 +57,10 @@ class IndicatorFlashText(object):
    
     def update(self):
         data = getattr(self.stats, 'aimingTimeConverging', 0.0)
-        #BigWorld.logInfo(MOD_NAME, 'frashText.update', None)
         for config in self.__config:
             name = config['name']
             text = config['func']()
             self.flash.movie.root.as_setValue(name, text)
-        #self.flash.movie.root.as_setValue('aimingTimeConverging', '{:.2f}'.format(data))
 
     def updateScreenPosition(self):
         refPoint = self.referencePoint.split('_')
@@ -96,7 +94,7 @@ class IndicatorFlashText(object):
             y = self.panel_offset[1] + offsetY
         elif refPoint[2] == 'BOTTOM':
             y = screen[1] + self.panel_offset[1] + offsetY
-        BigWorld.logInfo(MOD_NAME, 'frashText.updatePosition ({}, {})'.format(x, y), None)
+        #BigWorld.logInfo(MOD_NAME, 'frashText.updatePosition ({}, {})'.format(x, y), None)
         self.flash.movie.root.as_setPosition(int(x), int(y))
 
     def updateCrosshairPosition(self, x, y):
@@ -113,8 +111,7 @@ class IndicatorFlashText(object):
             offsetY = - height
         elif self.verticalAnchor == 'CENTER':
             offsetY = - height / 2
-        print self.flash.movie.root.fieldWidth, self.flash.movie.root.fieldHeight
         x = x + self.panel_offset[0] + offsetX
         y = y + self.panel_offset[1] + offsetY
-        BigWorld.logInfo(MOD_NAME, 'frashText.updateCrosshairPosition ({}, {})'.format(x, y), None)
+        #BigWorld.logInfo(MOD_NAME, 'frashText.updateCrosshairPosition ({}, {})'.format(x, y), None)
         self.flash.movie.root.as_setPosition(int(x), int(y))

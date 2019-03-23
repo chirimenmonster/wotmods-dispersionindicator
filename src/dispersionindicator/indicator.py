@@ -19,6 +19,7 @@ class Indicator(object):
         self.__stats = g_dispersionStats
         updateInterval = config['default']['update_interval']
         self._timeInterval = TimeInterval(updateInterval, self, 'update')
+        self.__isSetHandler = False
         self.__populated = False
 
     def addFlashPanel(self, name, config):
@@ -32,34 +33,25 @@ class Indicator(object):
 
     def onAvatarBecomePlayer(self):
         BigWorld.logInfo(MOD_NAME, 'onAvatarBecomePlayer', None)
-        #avatar = BigWorld.player()
-        #avatar.onVehicleEnterWorld += lambda _: self.populate()
-        self.session = dependency.instance(IBattleSessionProvider)
-        # VehicleStateController in gui.battle_control.controllers.vehicle_state_ctrl
-        ctl = self.session.shared.vehicleState
-        ctl.onVehicleControlling += self.onVehicleControlling
-        #
-        ctl = self.session.shared.crosshair
-        ctl.onCrosshairPositionChanged += self.onCrosshairPositionChanged
-        ctl.onCrosshairSizeChanged += lambda width, height: BigWorld.logInfo(MOD_NAME, 'crosshairSizeChanged: {}, {}'.format(width, height), None)
-        ctl.onCrosshairViewChanged += lambda viewID: BigWorld.logInfo(MOD_NAME, 'crosshairViewChanged: {}'.format(viewID), None)
-        g_guiResetters.add(self.onScreenResolutionChanged)
+        self.addHandler()
         for panel in self.__panels.values():
             panel.init()
 
     def onAvatarBecomeNonPlayer(self):
         BigWorld.logInfo(MOD_NAME, 'onAvatarBecomeNonPlayer', None)
         self.stop()
-        g_guiResetters.discard(self.onScreenResolutionChanged)
-        ctl = self.session.shared.crosshair
-        if ctl:
-            ctl.onVehicleStateUpdated -= self.onVehicleStateUpdated
-            ctl.onVehicleControlling -= self.onVehicleControlling
+        self.removeHandler()
 
     def onVehicleControlling(self, vehicle):
         BigWorld.logInfo(MOD_NAME, 'onVehicleControlling: {}'.format(vehicle), None)
         self.start()
 
+    def onVehicleStateUpdated(self, stateID, value):
+        if stateID == VEHICLE_VIEW_STATE.DESTROYED:
+            BigWorld.logInfo(MOD_NAME, 'onVehicleStateUpdated: VEHICLE_VIEW_STATE.DESTROYED', None)
+            self.stop()
+            self.removeHandler()
+    
     def onScreenResolutionChanged(self):
         for panel in self.__panels.values():
             if getattr(panel, 'updateScreenPosition', None) and callable(panel.updateScreenPosition):
@@ -69,6 +61,38 @@ class Indicator(object):
         for panel in self.__panels.values():
             if getattr(panel, 'updateCrosshairPosition', None) and callable(panel.updateCrosshairPosition):
                 panel.updateCrosshairPosition(x, y)
+
+    def addHandler(self):
+        if self.__isSetHandler:
+            return
+        self.__isSetHandler = True
+        self.session = dependency.instance(IBattleSessionProvider)
+        # VehicleStateController in gui.battle_control.controllers.vehicle_state_ctrl
+        ctl = self.session.shared.vehicleState
+        ctl.onVehicleControlling += self.onVehicleControlling
+        ctl.onVehicleStateUpdated += self.onVehicleStateUpdated
+        # CrosshairDataProxy in gui.battle_control.controllers.crosshair_proxy
+        ctl = self.session.shared.crosshair
+        ctl.onCrosshairPositionChanged += self.onCrosshairPositionChanged
+        ctl.onCrosshairSizeChanged += lambda width, height: BigWorld.logInfo(MOD_NAME, 'crosshairSizeChanged: {}, {}'.format(width, height), None)
+        ctl.onCrosshairViewChanged += lambda viewID: BigWorld.logInfo(MOD_NAME, 'crosshairViewChanged: {}'.format(viewID), None)
+        g_guiResetters.add(self.onScreenResolutionChanged)
+    
+    def removeHandler(self):
+        if not self.__isSetHandler:
+            return
+        self.__isSetHandler = False
+        g_guiResetters.remove(self.onScreenResolutionChanged)
+        self.session = dependency.instance(IBattleSessionProvider)
+        # VehicleStateController in gui.battle_control.controllers.vehicle_state_ctrl
+        ctl = self.session.shared.vehicleState
+        ctl.onVehicleControlling -= self.onVehicleControlling
+        ctl.onVehicleStateUpdated -= self.onVehicleStateUpdated
+        # CrosshairDataProxy in gui.battle_control.controllers.crosshair_proxy
+        ctl = self.session.shared.crosshair
+        ctl.onCrosshairPositionChanged -= self.onCrosshairPositionChanged
+        ctl.onCrosshairSizeChanged -= lambda width, height: BigWorld.logInfo(MOD_NAME, 'crosshairSizeChanged: {}, {}'.format(width, height), None)
+        ctl.onCrosshairViewChanged -= lambda viewID: BigWorld.logInfo(MOD_NAME, 'crosshairViewChanged: {}'.format(viewID), None)
 
     def start(self):
         if self.__populated:
@@ -91,7 +115,7 @@ class Indicator(object):
             self._timeInterval.stop()
         for panel in self.__panels.values():
             panel.stop()
-
+        
     def update(self):
         for panel in self.__panels.values():
             panel.update()
