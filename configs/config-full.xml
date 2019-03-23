@@ -1,9 +1,11 @@
 <root>
     <default>
-        <textColor>0xFFFF00</textColor>
-        <lineHeight>16</lineHeight>
-        <statsWidth>56</statsWidth>
-        <alpha>0.8</alpha>
+        <style>
+            <textColor>FFFF00</textColor>
+            <lineHeight>16</lineHeight>
+            <statsWidth>56</statsWidth>
+            <alpha>0.8</alpha>
+        </style>
     </default>
     <view>
         <panel>
@@ -14,7 +16,7 @@
                 <offset>120, 1</offset>
                 <statsWidth>40</statsWidth>
                 <fontSize>16</fontSize>
-                <textColor>0xFFFF00</textColor>
+                <textColor>FFFF00</textColor>
                 <textFilter>DROPSHADOW</textFilter>
                 <alpha>0.8</alpha>
             </style>

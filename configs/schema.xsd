@@ -1,0 +1,55 @@
+<?xml version="1.0" ?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:element name="root">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element name="default" minOccurs="0">
+                    <xsd:complexType>
+                        <xsd:all>
+                            <xsd:element ref="style" minOccurs="0" />
+                        </xsd:all>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="statsDefs" minOccurs="0" />
+                <xsd:element name="view" minOccurs="0">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element ref="panel" maxOccurs="unbounded" />
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="logger" minOccurs="0" />
+            </xsd:all>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="panel">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element name="id" />
+                <xsd:element name="statsDefs" minOccurs="0" />
+                <xsd:element ref="style" minOccurs="0" />
+                <xsd:element name="display" />
+            </xsd:all>
+        </xsd:complexType>        
+    </xsd:element>
+    
+    <xsd:element name="style">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element name="textColor" type="xsd:hexBinary" minOccurs="0" />
+                <xsd:element name="lineHeight" minOccurs="0" />
+                <xsd:element name="statsWidth" minOccurs="0" />
+                <xsd:element name="alpha" type="xsd:decimal" minOccurs="0" />
+                <xsd:element name="align" minOccurs="0" />
+                <xsd:element name="referncePoint" minOccurs="0" />
+                <xsd:element name="offset" minOccurs="0" />
+                <xsd:element name="fontSize" minOccurs="0" />
+                <xsd:element name="textFilter" minOccurs="0" />
+                <xsd:element name="backgroundColor" minOccurs="0" />
+                <xsd:element name="backgroundAlpha" minOccurs="0" />
+            </xsd:all>
+        </xsd:complexType>
+    </xsd:element>
+
+</xsd:schema>
