@@ -12,7 +12,7 @@ from constants import MOD_NAME, LOG_FILE
 class IndicatorLogger(object):
     def __init__(self, config, stats):
         self.stats = stats
-        self.statsdefs = config['stats_defs']
+        self.statsdefs = config['statsDefs']
         self.names = [ self.statsdefs[key]['status'] for key in config['items'] ]
 
     def init(self):
