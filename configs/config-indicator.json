@@ -1,10 +1,4 @@
 {
-    "default": {
-        "colour":           [ 255, 255, 0 ],
-        "alpha":            0.8,
-        "lineHeight":       16,
-        "statsWidth":       56
-    },
     "panels": {
         "indicator_timeConverging": {
             "style": {
@@ -65,58 +59,6 @@
             },
             "items": [
                 "vehicleRYaw"
-            ]
-        },
-        "panel_0": {
-            "style": {
-                "horizontalAnchor":             "LEFT",
-                "verticalAnchor":               "BOTTOM",
-                "referencePoint":               "SCREEN_LEFT_BOTTOM",
-                "screenOffset":                 [ 420, -100 ],
-                "backgroundColor":              [ 0, 0, 0, 0.4 ],
-                "backgroundAlpha":              0.4
-            },
-            "items":   [
-                "scoreDispersion",
-                "aimingTimeConverging",
-                "modifiedAimingFactor",
-                "aimingFactor",
-                "dAngleAiming",
-                "dAngleIdeal",
-                "shotDispersionAngle",
-                "currTime",
-                "aimingStartTime",
-                "aimingStartFactor",
-                "aimingTime",
-                "additiveFactor",
-                "multFactor",
-                "factorsMovement",
-                "factorsRotation",
-                "factorsTurretRotation",
-                "shotFactor"
-            ]
-        },
-        "panel_1": {
-            "style": {
-                "horizontalAnchor":             "RIGHT",
-                "verticalAnchor":               "BOTTOM",
-                "referencePoint":               "SCREEN_RIGHT_BOTTOM",
-                "screenOffset":                 [ -420, -100 ],
-                "backgroundColor":              [ 0, 0, 0, 0.4 ],
-                "backgroundAlpha":              0.4
-            },
-            "items":   [
-                "vehicleSpeed",
-                "vehicleRSpeed",
-                "engineRPM",
-                "engineRelativeRPM",
-                "turretRotationSpeed",
-                "vehicleYaw",
-                "vehiclePitch",
-                "vehicleRoll",
-                "vehicleRYaw",
-                "turretYaw",
-                "gunPitch"
             ]
         }
     }

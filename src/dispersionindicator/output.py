@@ -6,7 +6,7 @@ import BigWorld
 import GUI
 from gui import g_guiResetters
 
-from constants import MOD_NAME, LOG_FILE
+from mod_constants import MOD_NAME, LOG_FILE
 
 
 class IndicatorLogger(object):

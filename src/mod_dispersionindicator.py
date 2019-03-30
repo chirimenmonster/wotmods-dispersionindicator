@@ -7,7 +7,7 @@ from debug_utils import LOG_CURRENT_EXCEPTION
 from PlayerEvents import g_playerEvents
 from Avatar import PlayerAvatar
 
-from dispersionindicator.constants import MOD_NAME, CONFIG_FILES
+from dispersionindicator.mod_constants import MOD_NAME, CONFIG_FILES
 from dispersionindicator.indicator import Indicator
 
 

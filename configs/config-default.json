@@ -1,6 +1,6 @@
 {
     "default": {
-        "updateInterval":              0.1,
+        "updateInterval":               0.1,
         "textColor":                    [ 255, 255, 0 ],
         "alpha":                        0.8,
         "font":                         "$FieldFont",

@@ -3,7 +3,7 @@ import BigWorld
 import GUI
 from gui.Scaleform.Flash import Flash
 
-from constants import MOD_NAME, CONSTANT, CROSSHAIR_VIEW_SYMBOL
+from mod_constants import MOD_NAME, CONSTANT, CROSSHAIR_VIEW_SYMBOL
 
 SWF_FILE = 'IndicatorPanel.swf'
 SWF_PATH = '${flash_dir}'
@@ -39,7 +39,8 @@ class IndicatorFlashText(object):
                 'name':         key,
                 'label':        setting['title'],
                 'unit':         setting['unit'],
-                'func':         lambda n=name, f=factor, t=template, s=self.stats: t.format(getattr(s, n, 0.0) * f),
+                'func':         lambda n=name, f=factor, s=self.stats: getattr(s, n, 0.0) * f,
+                'format':       template
             })
         print style
         flash.movie.root.as_createPanel(self.__config, style)
@@ -49,20 +50,24 @@ class IndicatorFlashText(object):
     def init(self):
         BigWorld.logInfo(MOD_NAME, 'flashText.init', None)
         self.updateScreenPosition()
+        for config in self.__config:
+            name = config['name']
+            text = config['format'].format(0)
+            self.flash.movie.root.as_setValue(name, text)
 
     def start(self):
-        BigWorld.logInfo(MOD_NAME, 'flashText.start', None)
+        #BigWorld.logInfo(MOD_NAME, 'flashText.start', None)
         self.flash.active(True)
 
     def stop(self):
-        BigWorld.logInfo(MOD_NAME, 'flashText.stop', None)
+        #BigWorld.logInfo(MOD_NAME, 'flashText.stop', None)
         self.flash.active(False)
    
     def update(self):
         data = getattr(self.stats, 'aimingTimeConverging', 0.0)
         for config in self.__config:
             name = config['name']
-            text = config['func']()
+            text = config['format'].format(config['func']())
             self.flash.movie.root.as_setValue(name, text)
 
     def updateScreenPosition(self):
@@ -103,7 +108,7 @@ class IndicatorFlashText(object):
     def updateCrosshairPosition(self, x, y):
         if self.referencePoint != 'CROSSHAIR':
             return
-        BigWorld.logInfo(MOD_NAME, 'flashText.updateCrosshairPosition ({}, {})'.format(x, y), None)
+        #BigWorld.logInfo(MOD_NAME, 'flashText.updateCrosshairPosition ({}, {})'.format(x, y), None)
         offsetX = offsetY = 0
         width = self.flash.movie.root.fieldWidth
         height = self.flash.movie.root.fieldHeight
@@ -117,7 +122,6 @@ class IndicatorFlashText(object):
             offsetY = - height / 2
         x = x + self.crosshairOffset[self.__viewID][0] + offsetX
         y = y + self.crosshairOffset[self.__viewID][1] + offsetY
-        #BigWorld.logInfo(MOD_NAME, 'flashText.updateCrosshairPosition ({}, {})'.format(x, y), None)
         self.flash.movie.root.as_setPosition(int(x), int(y))
 
     def changeView(self, viewID):

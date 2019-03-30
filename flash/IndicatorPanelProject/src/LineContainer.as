@@ -84,7 +84,7 @@ package
 		public function init(label:String, unit:String, valueWidth:int, style:Object):void
 		{
 			assignLabelField(labelField, style);
-			labelField.htmlText = label;
+			labelField.text = label;
 			labelField.x = 0;
 			
 			assignValueField(valueField, style);
@@ -93,11 +93,11 @@ package
 			assignUnitField(unitField, style);
 			
 			unitField.x = valueField.x + valueField.width;
-			unitField.htmlText = unit;
+			unitField.text = unit;
 
 			anchorX = unitField.x
 			anchorY = unitField.y
-			valueField.htmlText = '(' + width + ',' + height + ')' + '(' + labelField.height + ',' + valueField.height + ',' + unitField.height + ')';
+			valueField.text = "";
 		}
 		
 		public function setFilters(filters:Array):void

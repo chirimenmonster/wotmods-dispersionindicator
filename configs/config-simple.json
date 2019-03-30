@@ -1,6 +1,6 @@
 {
     "panels": {
-        "panel_0": {
+        "indicator_timeConverging": {
             "style": {
                 "horizontalAnchor":             "LEFT",
                 "verticalAnchor":               "CENTER",

@@ -1,5 +1,7 @@
 
 import math
+
+from constants import ARENA_PERIOD
 from gui.battle_control.battle_constants import CROSSHAIR_VIEW_ID
 
 MOD_NAME = '${name}'
@@ -25,3 +27,10 @@ CROSSHAIR_VIEW_SYMBOL = {
     CROSSHAIR_VIEW_ID.POSTMORTEM:   'POSTMORTEM'
 }
 
+ARENA_PERIOD_SYMBOL = {
+    ARENA_PERIOD.IDLE:          'IDLE',
+    ARENA_PERIOD.WAITING :      'WAITING',
+    ARENA_PERIOD.PREBATTLE:     'PREBATTLE',
+    ARENA_PERIOD.BATTLE:        'BATTLE',
+    ARENA_PERIOD.AFTERBATTLE:   'AFTERBATTLE'
+}

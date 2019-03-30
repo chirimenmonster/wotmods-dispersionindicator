@@ -5,7 +5,7 @@ import BigWorld
 from Avatar import PlayerAvatar
 from gun_rotation_shared import decodeGunAngles
 
-from constants import MOD_NAME
+from mod_constants import MOD_NAME
 from events import overrideMethod
 
 g_dispersionStats = None
@@ -76,7 +76,12 @@ class DispersionStats(object):
         self.vehicleRoll = matrix.roll
         camera = BigWorld.camera()
         cameraDirection = camera.direction
-        self.vehicleRYaw = self.vehicleYaw - cameraDirection.yaw
+        rYaw = self.vehicleYaw - cameraDirection.yaw
+        if rYaw > math.pi:
+            rYaw -= math.pi * 2
+        elif rYaw < -math.pi:
+            rYaw += math.pi * 2
+        self.vehicleRYaw = rYaw
 
     def _updateGunAngles(self, avatar):
         vehicle = avatar.vehicle
