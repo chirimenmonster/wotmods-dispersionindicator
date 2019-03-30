@@ -26,6 +26,7 @@ class IndicatorFlashText(object):
         flash.component.wg_inputKeyMode = 2
         flash.component.focus = False
         flash.component.moveFocus = False
+        flash.component.position.z = style['positionZ']
         self.__config = []
         for key in config['items']:
             setting = self.statsdefs[key]

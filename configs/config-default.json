@@ -15,7 +15,8 @@
         "verticalAnchor":               "TOP",
         "referencePoint":               "SCREEN_CENTER",
         "screenOffset":                 [ -160, 50 ],
-        "crosshairOffset":              [ 164,   1 ]
+        "crosshairOffset":              [ 164,   1 ],
+        "positionZ":                    0.5
     },
     "statsDefs": {
         "currTime": {
