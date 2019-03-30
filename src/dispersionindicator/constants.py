@@ -1,4 +1,5 @@
 
+import math
 from gui.battle_control.battle_constants import CROSSHAIR_VIEW_ID
 
 MOD_NAME = '${name}'
@@ -12,7 +13,8 @@ CONFIG_FILES = [
 LOG_FILE = '${log_file}'
 
 CONSTANT = {
-    'MS_TO_KMH':    3600.0 / 1000.0
+    'MS_TO_KMH':    3600.0 / 1000.0,
+    'RAD_TO_DEG':   180.0 / math.pi
 }
 
 CROSSHAIR_VIEW_SYMBOL = {

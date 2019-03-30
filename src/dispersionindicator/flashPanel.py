@@ -17,7 +17,6 @@ class IndicatorFlashText(object):
         self.verticalAnchor = style['verticalAnchor']
         self.screenOffset = style['screenOffset']
         self.crosshairOffset = { id:style.get('crosshairOffset_' + symbol, style['crosshairOffset']) for id, symbol in CROSSHAIR_VIEW_SYMBOL.items() }
-        print self.crosshairOffset
         self.statsdefs = config['statsDefs']
         flash = Flash(SWF_FILE, path=SWF_PATH)
         flash.movie.backgroundAlpha = 0.0
@@ -122,5 +121,4 @@ class IndicatorFlashText(object):
 
     def changeView(self, viewID):
         self.__viewID = viewID
-        print viewID
         return

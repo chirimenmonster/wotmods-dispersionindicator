@@ -60,6 +60,48 @@
             "factor":   1.0,
             "unit":     "rpm"
         },
+        "vehicleYaw": {
+            "status":   "vehicleYaw",
+            "title":    "Vehicle Yaw",
+            "format":   "{:.2f}",
+            "factor":   "RAD_TO_DEG",
+            "unit":     "deg"
+        },
+        "vehiclePitch": {
+            "status":   "vehiclePitch",
+            "title":    "Vehicle Pitch",
+            "format":   "{:.2f}",
+            "factor":   "RAD_TO_DEG",
+            "unit":     "deg"
+        },
+        "vehicleRoll": {
+            "status":   "vehicleRoll",
+            "title":    "Vehicle Roll",
+            "format":   "{:.2f}",
+            "factor":   "RAD_TO_DEG",
+            "unit":     "deg"
+        },
+        "vehicleRYaw": {
+            "status":   "vehicleRYaw",
+            "title":    "Vehicle RYaw",
+            "format":   "{:.2f}",
+            "factor":   "RAD_TO_DEG",
+            "unit":     "deg"
+        },
+        "turretYaw": {
+            "status":   "turretYaw",
+            "title":    "Turret Yaw",
+            "format":   "{:.2f}",
+            "factor":   "RAD_TO_DEG",
+            "unit":     "deg"
+        },
+        "gunPitch": {
+            "status":   "gunPitch",
+            "title":    "Gun Pitch",
+            "format":   "{:.2f}",
+            "factor":   "RAD_TO_DEG",
+            "unit":     "deg"
+        },
         "turretRotationSpeed": {
             "status":   "turretRotationSpeed",
             "title":    "Turret Rot. Speed",

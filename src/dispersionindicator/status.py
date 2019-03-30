@@ -1,12 +1,15 @@
 
 import math
+import Math
 import BigWorld
 from Avatar import PlayerAvatar
+from gun_rotation_shared import decodeGunAngles
 
 from constants import MOD_NAME
 from events import overrideMethod
 
 g_dispersionStats = None
+
 
 @overrideMethod(PlayerAvatar, 'getOwnVehicleShotDispersionAngle')
 def playerAvatar_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpeed, withShot = 0):
@@ -30,7 +33,15 @@ def playerAvatar_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpee
             g_dispersionStats._updateVehicleEngineState(avatar)
         except:
             BigWorld.logWarning(MOD_NAME, 'fail to _updateVehicleEngineState', None)
-    return result
+        try:
+            g_dispersionStats._updateGunAngles(avatar)
+        except:
+            BigWorld.logWarning(MOD_NAME, 'fail to _updateGunAngles', None)
+        try:
+            g_dispersionStats._updateVehicleDirection(avatar)
+        except:
+            BigWorld.logWarning(MOD_NAME, 'fail to _updateVehicleDirection', None)
+        return result
 
 
 class DispersionStats(object):
@@ -57,6 +68,24 @@ class DispersionStats(object):
         self.factorsMovement = aimingInfo[4]
         self.factorsRotation = aimingInfo[5]
         self.aimingTime = aimingInfo[6]
+
+    def _updateVehicleDirection(self, avatar):
+        matrix = Math.Matrix(avatar.getOwnVehicleMatrix())
+        self.vehicleYaw = matrix.yaw
+        self.vehiclePitch = matrix.pitch
+        self.vehicleRoll = matrix.roll
+        camera = BigWorld.camera()
+        cameraDirection = camera.direction
+        self.vehicleRYaw = self.vehicleYaw - cameraDirection.yaw
+
+    def _updateGunAngles(self, avatar):
+        vehicle = avatar.vehicle
+        vd = vehicle.typeDescriptor
+        #gunOffs = vd.turret.gunPosition
+        #turretOffs = vd.hull.turretPositions[0] + vd.chassis.hullPosition
+        turretYaw, gunPitch = decodeGunAngles(vehicle.gunAnglesPacked, vd.gun.pitchLimits['absolute'])
+        self.turretYaw = turretYaw
+        self.gunPitch = gunPitch
 
     def _updateVehicleSpeeds(self, avatar):
         vehicleSpeed, vehicleRSpeed = avatar.getOwnVehicleSpeeds(True)

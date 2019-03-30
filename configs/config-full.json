@@ -80,7 +80,13 @@
                 "vehicleRSpeed",
                 "engineRPM",
                 "engineRelativeRPM",
-                "turretRotationSpeed"
+                "turretRotationSpeed",
+                "vehicleYaw",
+                "vehiclePitch",
+                "vehicleRoll",
+                "vehicleRYaw",
+                "turretYaw",
+                "gunPitch"
             ]
         }
     }
