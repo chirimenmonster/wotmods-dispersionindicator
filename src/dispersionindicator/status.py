@@ -2,6 +2,7 @@
 import math
 import Math
 import BigWorld
+from debug_utils import LOG_CURRENT_EXCEPTION
 from Avatar import PlayerAvatar
 from gun_rotation_shared import decodeGunAngles
 
@@ -20,26 +21,32 @@ def playerAvatar_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpee
         try:
             g_dispersionStats._updateDispersionAngle(avatar, dispersionAngle, turretRotationSpeed, withShot)
         except:
+            LOG_CURRENT_EXCEPTION()
             BigWorld.logWarning(MOD_NAME, 'fail to _updateDispersionAngle', None)
         try:
             g_dispersionStats._updateAimingInfo(avatar)
         except:
+            LOG_CURRENT_EXCEPTION()
             BigWorld.logWarning(MOD_NAME, 'fail to _updateAimingInfo', None)
         try:
             g_dispersionStats._updateVehicleSpeeds(avatar)
         except:
+            LOG_CURRENT_EXCEPTION()
             BigWorld.logWarning(MOD_NAME, 'fail to _updateVehicleSpeeds', None)
         try:
             g_dispersionStats._updateVehicleEngineState(avatar)
         except:
+            LOG_CURRENT_EXCEPTION()
             BigWorld.logWarning(MOD_NAME, 'fail to _updateVehicleEngineState', None)
         try:
             g_dispersionStats._updateGunAngles(avatar)
         except:
+            LOG_CURRENT_EXCEPTION()
             BigWorld.logWarning(MOD_NAME, 'fail to _updateGunAngles', None)
         try:
             g_dispersionStats._updateVehicleDirection(avatar)
         except:
+            LOG_CURRENT_EXCEPTION()
             BigWorld.logWarning(MOD_NAME, 'fail to _updateVehicleDirection', None)
         return result
 
@@ -84,7 +91,8 @@ class DispersionStats(object):
         self.vehicleRYaw = rYaw
 
     def _updateGunAngles(self, avatar):
-        vehicle = avatar.vehicle
+        #vehicle = avatar.vehicle
+        vehicle = avatar.getVehicleAttached()
         vd = vehicle.typeDescriptor
         #gunOffs = vd.turret.gunPosition
         #turretOffs = vd.hull.turretPositions[0] + vd.chassis.hullPosition
@@ -98,7 +106,8 @@ class DispersionStats(object):
         self.vehicleRSpeed = vehicleRSpeed
 
     def _updateVehicleEngineState(self, avatar):
-        detailedEngineState = avatar.vehicle.appearance._CompoundAppearance__detailedEngineState
+        vehicle = avatar.getVehicleAttached()
+        detailedEngineState = vehicle.appearance._CompoundAppearance__detailedEngineState
         self.engineRPM = detailedEngineState.rpm
         self.engineRelativeRPM = detailedEngineState.relativeRPM
 

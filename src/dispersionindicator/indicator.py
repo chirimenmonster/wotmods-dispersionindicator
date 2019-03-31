@@ -24,7 +24,7 @@ class Indicator(object):
         self.__populated = False
 
     def addFlashPanel(self, name, config):
-        flash = IndicatorFlashText(config, self.__stats)
+        flash = IndicatorFlashText(config, self.__stats, name)
         self.__panels[name] = flash
 
     def addLogger(self, config):
@@ -37,12 +37,14 @@ class Indicator(object):
         print arena
         arena.onPeriodChange += self.onArenaPeriodChange
         self.addHandler()
-        for panel in self.__panels.values():
+        BigWorld.logInfo(MOD_NAME, 'panel init', None)
+        for name, panel in self.__panels.items():
             panel.init()
 
     def onAvatarBecomeNonPlayer(self):
         BigWorld.logInfo(MOD_NAME, 'onAvatarBecomeNonPlayer', None)
         self.stop()
+        self.invisiblePanel()
         self.removeHandler()
 
     def onVehicleControlling(self, vehicle):

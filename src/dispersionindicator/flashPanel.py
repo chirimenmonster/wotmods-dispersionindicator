@@ -9,8 +9,9 @@ SWF_FILE = 'IndicatorPanel.swf'
 SWF_PATH = '${flash_dir}'
 
 class IndicatorFlashText(object):
-    def __init__(self, config, stats):
+    def __init__(self, config, stats, name):
         self.stats = stats
+        self.name = name
         style = config['style']
         self.referencePoint = style['referencePoint']
         self.horizontalAnchor = style['horizontalAnchor']
@@ -48,7 +49,7 @@ class IndicatorFlashText(object):
         self.__viewID = 0
 
     def init(self):
-        BigWorld.logInfo(MOD_NAME, 'flashText.init', None)
+        BigWorld.logInfo(MOD_NAME, 'flashText.init: "{}"'.format(self.name), None)
         self.updateScreenPosition()
         for config in self.__config:
             name = config['name']
@@ -56,11 +57,11 @@ class IndicatorFlashText(object):
             self.flash.movie.root.as_setValue(name, text)
 
     def start(self):
-        #BigWorld.logInfo(MOD_NAME, 'flashText.start', None)
+        BigWorld.logInfo(MOD_NAME, 'flashText.start: "{}"'.format(self.name), None)
         self.flash.active(True)
 
     def stop(self):
-        #BigWorld.logInfo(MOD_NAME, 'flashText.stop', None)
+        BigWorld.logInfo(MOD_NAME, 'flashText.stop: "{}"'.format(self.name), None)
         self.flash.active(False)
    
     def update(self):
