@@ -1,33 +1,32 @@
 
+import weakref
 import BigWorld
 import GUI
-from gui.Scaleform.Flash import Flash
+from gui.app_loader import g_appLoader
+from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
+from gui.Scaleform.framework.entities.View import ViewKey
 
 from mod_constants import MOD_NAME, CONSTANT, CROSSHAIR_VIEW_SYMBOL
+from view.panelview import PANEL_VIEW_ALIAS
 
 SWF_FILE = 'IndicatorPanel.swf'
 SWF_PATH = '${flash_dir}'
 
 class IndicatorFlashText(object):
     def __init__(self, config, stats, name):
+        self.setPanelStyle(config, stats, name)
+
+    def setPanelStyle(self, config, stats, name):
         self.stats = stats
         self.name = name
-        style = config['style']
+        self.__style = style = config['style']
         self.referencePoint = style['referencePoint']
         self.horizontalAnchor = style['horizontalAnchor']
         self.verticalAnchor = style['verticalAnchor']
         self.screenOffset = style['screenOffset']
         self.crosshairOffset = { id:style.get('crosshairOffset_' + symbol, style['crosshairOffset']) for id, symbol in CROSSHAIR_VIEW_SYMBOL.items() }
         self.statsdefs = config['statsDefs']
-        flash = Flash(SWF_FILE, path=SWF_PATH)
-        flash.movie.backgroundAlpha = 0.0
-        flash.movie.scaleMode = 'NoScale'
-        flash.component.heightMode = 'PIXEL'
-        flash.component.widthMode = 'PIXEL'
-        flash.component.wg_inputKeyMode = 2
-        flash.component.focus = False
-        flash.component.moveFocus = False
-        flash.component.position.z = style['positionZ']
+
         self.__config = []
         for key in config['items']:
             setting = self.statsdefs[key]
@@ -43,43 +42,67 @@ class IndicatorFlashText(object):
                 'func':         lambda n=name, f=factor, s=self.stats: getattr(s, n, 0.0) * f,
                 'format':       template
             })
-        print style
-        flash.movie.root.as_createPanel(self.__config, style)
-        self.flash = flash 
-        self.__viewID = 0
-
+    
     def init(self):
         BigWorld.logInfo(MOD_NAME, 'flashText.init: "{}"'.format(self.name), None)
-        self.updateScreenPosition()
-        for config in self.__config:
-            name = config['name']
-            text = config['format'].format(0)
-            self.flash.movie.root.as_setValue(name, text)
+        name = self.name
+        app = g_appLoader.getDefBattleApp()
+        if not app:
+            BigWorld.logInfo(MOD_NAME, 'not found app', None)
+            return
+        app.loadView(SFViewLoadParams(PANEL_VIEW_ALIAS, name))
+        pyEntity = app.containerManager.getViewByKey(ViewKey(PANEL_VIEW_ALIAS, name))
+        if not pyEntity:
+            BigWorld.logInfo(MOD_NAME, 'not found ViewKey: "{}"'.format(ViewKey(PANEL_VIEW_ALIAS, name)), None)
+            self.__pyEntity = None
+            return
+        pyEntity.setConfig(self.__config, self.__style)
+        self.__pyEntity = weakref.proxy(pyEntity)
+        #self.__pyEntity.as_createPanelS(self.__config, self.__style)
+        self.__viewID = 0
+
 
     def start(self):
         BigWorld.logInfo(MOD_NAME, 'flashText.start: "{}"'.format(self.name), None)
-        self.flash.active(True)
+        for config in self.__config:
+            name = config['name']
+            text = config['format'].format(0)
+            self.__pyEntity.as_setValueS(name, text)
+        self.updateScreenPosition()
+        #self.__pyEntity.active(True)
 
     def stop(self):
         BigWorld.logInfo(MOD_NAME, 'flashText.stop: "{}"'.format(self.name), None)
-        self.flash.active(False)
+        #self.__pyEntity.active(False)
    
+    def _getIndicatorSize(self):
+        BigWorld.logInfo(MOD_NAME, 'flashText.getIndicatorSize', None)
+        width, height = self.__pyEntity.getPanelSize()
+        BigWorld.logInfo(MOD_NAME, 'flashText.getIndicatorSize: {}, {}'.format(width, height), None)
+        return width, height
+    
+    def _setIndicatorPosition(self, x, y):
+        self.__pyEntity.as_setPositionS(int(x), int(y))
+
+    def _setIndicatorValue(self, name, value):
+        self.__pyEntity.as_setValueS(name, value)
+
     def update(self):
         data = getattr(self.stats, 'aimingTimeConverging', 0.0)
         for config in self.__config:
             name = config['name']
             text = config['format'].format(config['func']())
-            self.flash.movie.root.as_setValue(name, text)
+            self._setIndicatorValue(name, text)
 
     def updateScreenPosition(self):
+        BigWorld.logInfo(MOD_NAME, 'flashText.updateScreenPosition', None)
+        width, height = self._getIndicatorSize()
         refPoint = self.referencePoint.split('_')
         if refPoint[0] != 'SCREEN':
             return
         if len(refPoint) == 2 and refPoint[1] == 'CENTER':
             refPoint.append('CENTER')
         offsetX = offsetY = 0
-        width = self.flash.movie.root.fieldWidth
-        height = self.flash.movie.root.fieldHeight
         if self.horizontalAnchor == 'RIGHT':
             offsetX = - width
         elif self.horizontalAnchor == 'CENTER':
@@ -103,16 +126,15 @@ class IndicatorFlashText(object):
             y = self.screenOffset[1] + offsetY
         elif refPoint[2] == 'BOTTOM':
             y = screen[1] + self.screenOffset[1] + offsetY
-        #BigWorld.logInfo(MOD_NAME, 'flashText.updatePosition ({}, {})'.format(x, y), None)
-        self.flash.movie.root.as_setPosition(int(x), int(y))
+        BigWorld.logInfo(MOD_NAME, 'flashText.updatePosition ({}, {})'.format(x, y), None)
+        self._setIndicatorPosition(x, y)
 
     def updateCrosshairPosition(self, x, y):
         if self.referencePoint != 'CROSSHAIR':
             return
-        #BigWorld.logInfo(MOD_NAME, 'flashText.updateCrosshairPosition ({}, {})'.format(x, y), None)
+        BigWorld.logInfo(MOD_NAME, 'flashText.updateCrosshairPosition ({}, {})'.format(x, y), None)
         offsetX = offsetY = 0
-        width = self.flash.movie.root.fieldWidth
-        height = self.flash.movie.root.fieldHeight
+        width, height = self._getIndicatorSize()
         if self.horizontalAnchor == 'RIGHT':
             offsetX = - width
         elif self.horizontalAnchor == 'CENTER':
@@ -123,7 +145,8 @@ class IndicatorFlashText(object):
             offsetY = - height / 2
         x = x + self.crosshairOffset[self.__viewID][0] + offsetX
         y = y + self.crosshairOffset[self.__viewID][1] + offsetY
-        self.flash.movie.root.as_setPosition(int(x), int(y))
+        BigWorld.logInfo(MOD_NAME, 'flashText.updatePosition ({}, {})'.format(x, y), None)
+        self._setIndicatorPosition(x, y)
 
     def changeView(self, viewID):
         self.__viewID = viewID

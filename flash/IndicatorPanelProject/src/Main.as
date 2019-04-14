@@ -1,9 +1,14 @@
 package
 {
+    import net.wg.infrastructure.base.AbstractWindowView;
+    import net.wg.infrastructure.base.AbstractView;
+
 	import flash.display.Sprite;
 	import flash.display.StageScaleMode;
 	import flash.display.StageAlign;
-	import flash.events.Event;
+	import flash.events.Event;      
+    import flash.utils.getQualifiedClassName;
+    
 	import LineContainer;
 	import PanelContainer;
 	
@@ -11,82 +16,75 @@ package
 	 * ...
 	 * @author Chirimen
 	 */
-	public class Main extends Sprite 
+	public class Main extends AbstractView
 	{
+        private var className:String = null;
+		private var panel:PanelContainer;
+        private var _config:Array;
+        private var _style:Object;
+
 		public var fieldWidth:int = 0;
 		public var fieldHeight:int = 0;
+        
+        public var getConfig:Function = null;
 		
-		private var panel:PanelContainer;
-		
-		public function Main() 
+        public function Main() : void
+        {
+            className = getQualifiedClassName(this);
+			DebugUtils.LOG_DEBUG_FORMAT("%s: %s", className, "constructor");
+            super();
+        }
+        
+		private function createPanel() : void
 		{
-			if (stage) init();
-			else addEventListener(Event.ADDED_TO_STAGE, init);
-		}
-		
-		private function init(e:Event = null):void 
-		{
-			removeEventListener(Event.ADDED_TO_STAGE, init);
-			// entry point
-			stage.scaleMode = StageScaleMode.NO_SCALE;
-			stage.align = StageAlign.TOP_LEFT;
-			
-			//test();
-		}
-				
-		public function as_createPanel(config:Array, style:Object):void
-		{
-			panel = new PanelContainer(config, style);
-			stage.addChild(panel);
+			DebugUtils.LOG_DEBUG_FORMAT("%s: %s", className, "createPanel");
+			panel = new PanelContainer(_config, _style);
+			panel.alpha = _style.alpha;
+			addChild(panel);
 			fieldWidth = panel.fieldWidth;
 			fieldHeight = panel.fieldHeight;
-			panel.alpha = style.alpha;
+			DebugUtils.LOG_DEBUG_FORMAT("%s: %s", className, "createPanel: done");
 		}
 		
-		public function as_setValue(name:String = null, text:String = null):void
+        override protected function onPopulate() : void
+        {
+			DebugUtils.LOG_DEBUG_FORMAT("%s: %s", className, "onPopulate");
+            getConfig();
+            createPanel();
+            super.onPopulate();
+        }
+        
+        override protected function draw() : void
+        {
+			DebugUtils.LOG_DEBUG_FORMAT("%s: %s", className, "draw");
+            super.draw();
+        }
+            
+        override protected function onDispose() : void
+        {
+			DebugUtils.LOG_DEBUG_FORMAT("%s: %s", className, "onDispose");
+            super.onDispose();
+        }
+
+		public function as_setConfig(config:Array, style:Object) : void
+        {
+			DebugUtils.LOG_DEBUG_FORMAT("%s: %s", className, "as_setConfig");
+            _config = config;
+            _style = style;
+        }
+
+		public function as_setValue(name:String = null, text:String = null) : void
 		{
+			DebugUtils.LOG_DEBUG_FORMAT("%s: %s", className, "as_setValue");
 			var child:LineContainer = panel.getChildByName(name) as LineContainer;
 			child.valueField.text = text;
 		}
 
-		public function as_setPosition(x:int = 0, y:int = 0):void
+		public function as_setPosition(x:int = 0, y:int = 0) : void
 		{
+			DebugUtils.LOG_DEBUG_FORMAT("%s: %s", className, "as_setPosition");
 			panel.x = x;
 			panel.y = y;
-		}
-		
-		public function test():void
-		{
-			var config:Array = [
-				{
-					"name":         "test",
-					"label":        "Test",
-					'unit':         "(suffix)"
-				},
-				{
-					"name":         "test",
-					"label":        "Test",
-					'unit':         "(suffix)"
-				}
-			];
-			var style:Object = {
-				"font": 			"default_small.font",
-				"fontsize":			14,
-				"statsWidth": 		150,
-				"alpha": 			0.8,
-				"panel_offset": 	[ -200, -20],
-				"horizontalAnchor":	"RIGHT",
-				"verticalAnchor": 	"TOP",
-				"colour": 			[255, 255, 0],
-				"backgroundColor": 	[0, 0, 0, 0.4],
-				"paddingTop": 		4,
-				"paddingBottom": 	4,
-				"paddingLeft": 		4,
-				"paddingRight": 	4,
-				"lineHeight": 		18,
-				"textColor": 		[255, 255, 0]				
-			};
-			as_createPanel(config, style)
 		}
 		
 	}
