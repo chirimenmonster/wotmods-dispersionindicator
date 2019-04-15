@@ -29,7 +29,7 @@ class PanelView(View):
         self.flashObject.as_setPosition(x, y)
 
     def as_setValueS(self, name, value):
-        BigWorld.logInfo(MOD_NAME, 'as_setValueS: ({}, {})'.format(name, value), None)
+        #BigWorld.logInfo(MOD_NAME, 'as_setValueS: ({}, {})'.format(name, value), None)
         self.flashObject.as_setValue(name, value)
 
     def getPanelSize(self):

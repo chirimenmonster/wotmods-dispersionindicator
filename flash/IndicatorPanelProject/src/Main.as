@@ -43,7 +43,6 @@ package
 			addChild(panel);
 			fieldWidth = panel.fieldWidth;
 			fieldHeight = panel.fieldHeight;
-			DebugUtils.LOG_DEBUG_FORMAT("%s: %s", className, "createPanel: done");
 		}
 		
         override protected function onPopulate() : void
@@ -75,7 +74,7 @@ package
 
 		public function as_setValue(name:String = null, text:String = null) : void
 		{
-			DebugUtils.LOG_DEBUG_FORMAT("%s: %s", className, "as_setValue");
+			//DebugUtils.LOG_DEBUG_FORMAT("%s: %s", className, "as_setValue");
 			var child:LineContainer = panel.getChildByName(name) as LineContainer;
 			child.valueField.text = text;
 		}
