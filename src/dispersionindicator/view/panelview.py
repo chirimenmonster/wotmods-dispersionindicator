@@ -16,27 +16,33 @@ _logger.setLevel(logging.DEBUG)
 
 
 class PanelView(View):
-    def setConfig(self, config, style):
-        self.__config = config
-        self.__style = style
+    def __init__(self, *args, **kwargs):
+        super(PanelView, self).__init__(*args, **kwargs)
+        self.__isVisible = True
 
-    def getConfig(self):
-        BigWorld.logInfo(MOD_NAME, 'getConfig', None)
-        self.flashObject.as_setConfig(self.__config, self.__style)
+    def as_setConfigS(self, settings):
+        BigWorld.logInfo(MOD_NAME, 'as_setConfigS', None)
+        self.flashObject.as_setConfig(settings)
 
     def as_setPositionS(self, x, y):
-        BigWorld.logInfo(MOD_NAME, 'as_setPositionS: ({}, {})'.format(x, y), None)
+        #BigWorld.logInfo(MOD_NAME, 'as_setPositionS: ({}, {})'.format(x, y), None)
         self.flashObject.as_setPosition(x, y)
 
     def as_setValueS(self, name, value):
         #BigWorld.logInfo(MOD_NAME, 'as_setValueS: ({}, {})'.format(name, value), None)
         self.flashObject.as_setValue(name, value)
 
-    def getPanelSize(self):
-        BigWorld.logInfo(MOD_NAME, 'getPanelSize', None)
-        width = int(self.flashObject.fieldWidth)
-        height = int(self.flashObject.fieldHeight)
-        return width, height
+    def as_getPanelSizeS(self):
+        #BigWorld.logInfo(MOD_NAME, 'as_getPanelSizeS', None)
+        result = self.flashObject.as_getPanelSize()
+        return result.width, result.height
+
+    def setVisible(self, isVisible):
+        BigWorld.logInfo(MOD_NAME, 'PanelView: setVisible', None)
+        if self.__isVisible == isVisible:
+            return
+        self.__isVisible = isVisible
+        self.flashObject.visible = isVisible
 
 
 PANEL_VIEW_SETTINGS = ViewSettings(

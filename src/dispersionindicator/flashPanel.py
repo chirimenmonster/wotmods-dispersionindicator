@@ -1,4 +1,5 @@
 
+import json
 import weakref
 import BigWorld
 import GUI
@@ -27,6 +28,7 @@ class IndicatorFlashText(object):
         self.crosshairOffset = { id:style.get('crosshairOffset_' + symbol, style['crosshairOffset']) for id, symbol in CROSSHAIR_VIEW_SYMBOL.items() }
         self.statsdefs = config['statsDefs']
 
+        self.__guiSettings = { 'style': style, 'stats': [] }
         self.__config = []
         for key in config['items']:
             setting = self.statsdefs[key]
@@ -42,6 +44,11 @@ class IndicatorFlashText(object):
                 'func':         lambda n=name, f=factor, s=self.stats: getattr(s, n, 0.0) * f,
                 'format':       template
             })
+            self.__guiSettings['stats'].append({
+                'name':         key,
+                'label':        setting['title'],
+                'unit':         setting['unit']
+            })
     
     def init(self):
         BigWorld.logInfo(MOD_NAME, 'flashText.init: "{}"'.format(self.name), None)
@@ -56,11 +63,15 @@ class IndicatorFlashText(object):
             BigWorld.logInfo(MOD_NAME, 'not found ViewKey: "{}"'.format(ViewKey(PANEL_VIEW_ALIAS, name)), None)
             self.__pyEntity = None
             return
-        pyEntity.setConfig(self.__config, self.__style)
+        pyEntity.onCreate += self.setConfig
         self.__pyEntity = weakref.proxy(pyEntity)
-        #self.__pyEntity.as_createPanelS(self.__config, self.__style)
         self.__viewID = 0
 
+    def setConfig(self, pyEntity):
+        BigWorld.logInfo(MOD_NAME, 'flashText.setConfig: "{}"'.format(self.name), None)
+        print json.dumps(self.__guiSettings, indent=2)
+        #pyEntity.as_setConfigS(self.__config, self.__style)
+        pyEntity.as_setConfigS(self.__guiSettings)
 
     def start(self):
         BigWorld.logInfo(MOD_NAME, 'flashText.start: "{}"'.format(self.name), None)
@@ -69,16 +80,19 @@ class IndicatorFlashText(object):
             text = config['format'].format(0)
             self.__pyEntity.as_setValueS(name, text)
         self.updateScreenPosition()
-        #self.__pyEntity.active(True)
+        self.__pyEntity.setVisible(True)
 
     def stop(self):
         BigWorld.logInfo(MOD_NAME, 'flashText.stop: "{}"'.format(self.name), None)
-        #self.__pyEntity.active(False)
+        try:
+            self.__pyEntity.setVisible(False)
+        except weakref.ReferenceError:
+            pass
    
     def _getIndicatorSize(self):
-        BigWorld.logInfo(MOD_NAME, 'flashText.getIndicatorSize', None)
-        width, height = self.__pyEntity.getPanelSize()
-        BigWorld.logInfo(MOD_NAME, 'flashText.getIndicatorSize: {}, {}'.format(width, height), None)
+        #BigWorld.logInfo(MOD_NAME, 'flashText.getIndicatorSize', None)
+        width, height = self.__pyEntity.as_getPanelSizeS()
+        #BigWorld.logInfo(MOD_NAME, 'flashText.getIndicatorSize: {}, {}'.format(width, height), None)
         return width, height
     
     def _setIndicatorPosition(self, x, y):
@@ -95,7 +109,7 @@ class IndicatorFlashText(object):
             self._setIndicatorValue(name, text)
 
     def updateScreenPosition(self):
-        BigWorld.logInfo(MOD_NAME, 'flashText.updateScreenPosition', None)
+        #BigWorld.logInfo(MOD_NAME, 'flashText.updateScreenPosition', None)
         width, height = self._getIndicatorSize()
         refPoint = self.referencePoint.split('_')
         if refPoint[0] != 'SCREEN':
@@ -126,13 +140,13 @@ class IndicatorFlashText(object):
             y = self.screenOffset[1] + offsetY
         elif refPoint[2] == 'BOTTOM':
             y = screen[1] + self.screenOffset[1] + offsetY
-        BigWorld.logInfo(MOD_NAME, 'flashText.updatePosition ({}, {})'.format(x, y), None)
+        #BigWorld.logInfo(MOD_NAME, 'flashText.updatePosition ({}, {})'.format(x, y), None)
         self._setIndicatorPosition(x, y)
 
     def updateCrosshairPosition(self, x, y):
         if self.referencePoint != 'CROSSHAIR':
             return
-        BigWorld.logInfo(MOD_NAME, 'flashText.updateCrosshairPosition ({}, {})'.format(x, y), None)
+        #BigWorld.logInfo(MOD_NAME, 'flashText.updateCrosshairPosition ({}, {})'.format(x, y), None)
         offsetX = offsetY = 0
         width, height = self._getIndicatorSize()
         if self.horizontalAnchor == 'RIGHT':
@@ -145,7 +159,7 @@ class IndicatorFlashText(object):
             offsetY = - height / 2
         x = x + self.crosshairOffset[self.__viewID][0] + offsetX
         y = y + self.crosshairOffset[self.__viewID][1] + offsetY
-        BigWorld.logInfo(MOD_NAME, 'flashText.updatePosition ({}, {})'.format(x, y), None)
+        #BigWorld.logInfo(MOD_NAME, 'flashText.updatePosition ({}, {})'.format(x, y), None)
         self._setIndicatorPosition(x, y)
 
     def changeView(self, viewID):
