@@ -18,37 +18,33 @@ class IndicatorFlashText(object):
         self.setPanelStyle(config, stats, name)
 
     def setPanelStyle(self, config, stats, name):
-        self.stats = stats
+        self.__stats = stats
         self.name = name
-        self.__style = style = config['style']
+        style = config['style']
         self.referencePoint = style['referencePoint']
         self.horizontalAnchor = style['horizontalAnchor']
         self.verticalAnchor = style['verticalAnchor']
         self.screenOffset = style['screenOffset']
         self.crosshairOffset = { id:style.get('crosshairOffset_' + symbol, style['crosshairOffset']) for id, symbol in CROSSHAIR_VIEW_SYMBOL.items() }
         self.statsdefs = config['statsDefs']
-
         self.__guiSettings = { 'style': style, 'stats': [] }
-        self.__config = []
+        self.__statsSource = {}
         for key in config['items']:
             setting = self.statsdefs[key]
-            name = setting['status']
+            statsName = setting['status']
             factor = setting['factor']
             template = setting['format']
             if isinstance(factor, str) or isinstance(factor, unicode):
                 factor = CONSTANT.get(factor, 1.0)
-            self.__config.append({
-                'name':         key,
-                'label':        setting['title'],
-                'unit':         setting['unit'],
-                'func':         lambda n=name, f=factor, s=self.stats: getattr(s, n, 0.0) * f,
-                'format':       template
-            })
             self.__guiSettings['stats'].append({
                 'name':         key,
                 'label':        setting['title'],
                 'unit':         setting['unit']
             })
+            self.__statsSource[key] = {
+                'func':         lambda n=statsName, f=factor, s=self.__stats: getattr(s, n, 0.0) * f,
+                'format':       template
+            }
     
     def init(self):
         BigWorld.logInfo(MOD_NAME, 'flashText.init: "{}"'.format(self.name), None)
@@ -70,15 +66,13 @@ class IndicatorFlashText(object):
     def setConfig(self, pyEntity):
         BigWorld.logInfo(MOD_NAME, 'flashText.setConfig: "{}"'.format(self.name), None)
         print json.dumps(self.__guiSettings, indent=2)
-        #pyEntity.as_setConfigS(self.__config, self.__style)
         pyEntity.as_setConfigS(self.__guiSettings)
 
     def start(self):
         BigWorld.logInfo(MOD_NAME, 'flashText.start: "{}"'.format(self.name), None)
-        for config in self.__config:
-            name = config['name']
+        for name, config in self.__statsSource.items():
             text = config['format'].format(0)
-            self.__pyEntity.as_setValueS(name, text)
+            self._setIndicatorValue(name, text)
         self.updateScreenPosition()
         self.__pyEntity.setVisible(True)
 
@@ -102,9 +96,7 @@ class IndicatorFlashText(object):
         self.__pyEntity.as_setValueS(name, value)
 
     def update(self):
-        data = getattr(self.stats, 'aimingTimeConverging', 0.0)
-        for config in self.__config:
-            name = config['name']
+        for name, config in self.__statsSource.items():
             text = config['format'].format(config['func']())
             self._setIndicatorValue(name, text)
 
