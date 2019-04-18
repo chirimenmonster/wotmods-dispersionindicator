@@ -18,32 +18,14 @@ class Indicator(object):
     def __init__(self, config):
         self.__panels = {}
         self.__stats = g_dispersionStats
-        updateInterval = config['default']['updateInterval']
+        updateInterval = config['common']['updateInterval']
         self._timeInterval = TimeInterval(updateInterval, self, 'update')
         self.__isSetHandler = False
         self.__populated = False
         for name, paneldef in config['panels'].items():
-            localConfig = { 'style': {} }
-            localConfig['style'].update(config['default'])
-            localConfig['style'].update(paneldef.get('style', {}))
-            localConfig['statsDefs'] = {}
-            localConfig['statsDefs'].update(config['statsDefs'])
-            localConfig['statsDefs'].update(paneldef.get('statsDefs', {}))
-            localConfig['items'] = paneldef['items']
-            self.addFlashPanel(name, localConfig)
-        if len(config.get('logs', {})):
-            localConfig = {}
-            localConfig['items'] = config['logs'].values()[0]['items']
-            localConfig['statsDefs'] = config['statsDefs']
-            self.addLogger(localConfig)
-
-    def addFlashPanel(self, name, config):
-        flash = IndicatorFlashText(config, self.__stats, name)
-        self.__panels[name] = flash
-
-    def addLogger(self, config):
-        logger = IndicatorLogger(config, self.__stats)
-        self.__panels['__logger__'] = logger
+            self.__panels[name] = IndicatorFlashText(paneldef, self.__stats, name)
+        if 'logs' in config:
+            self.__panels['__logger__'] = IndicatorLogger(config['logs'], self.__stats)
 
     def initPanel(self):
         BigWorld.logInfo(MOD_NAME, 'initPanel', None)
