@@ -1,10 +1,10 @@
-package 
+package com.chirimen.dispersionindicator
 {
 	import Math;
 	import flash.display.Sprite;
 	import flash.filters.DropShadowFilter;
 
-	import LineContainer;
+	import com.chirimen.dispersionindicator.LineContainer;
 	
 	/**
 	 * ...

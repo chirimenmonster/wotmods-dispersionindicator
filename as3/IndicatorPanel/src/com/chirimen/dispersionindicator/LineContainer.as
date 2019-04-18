@@ -1,4 +1,4 @@
-package 
+package com.chirimen.dispersionindicator
 {
 	import flash.display.Sprite;
 	import flash.text.TextField;

@@ -5,14 +5,14 @@
             "method":   "apply",
             "root":     "",
             "reldir":   "",
-            "files":    [ "src/meta.xml" ]
+            "files":    [ "meta.xml" ]
         },
         {
             "method":   "apply+python",
             "root":     "res",
             "reldir":   "scripts/client/gui/mods",
             "include":  "\\.py$$",
-            "dirs":     [ "src" ]
+            "dirs":     [ "python" ]
         },
         {
             "method":   "copy",
@@ -32,7 +32,7 @@
             "method":   "plain",
             "root":     "res",
             "reldir":   "${flash_dir}",
-            "files":    [ "flash/IndicatorPanelProject/bin/IndicatorPanel.swf" ]
+            "files":    [ "as3/IndicatorPanel/bin/IndicatorPanel.swf" ]
         }
     ]
 }

@@ -1,4 +1,4 @@
-package
+package com.chirimen.dispersionindicator
 {
     import net.wg.infrastructure.base.AbstractWindowView;
     import net.wg.infrastructure.base.AbstractView;
@@ -9,21 +9,21 @@ package
 	import flash.events.Event;      
     import flash.utils.getQualifiedClassName;
     
-	import LineContainer;
-	import PanelContainer;
+	import com.chirimen.dispersionindicator.LineContainer;
+	import com.chirimen.dispersionindicator.PanelContainer;
 	
 	/**
 	 * ...
 	 * @author Chirimen
 	 */
-	public class Main extends AbstractView
+	public class IndicatorPanel extends AbstractView
 	{
         private var className:String = null;
 		private var panel:PanelContainer;
         private var _config:Array;
         private var _style:Object;
         	
-        public function Main() : void
+        public function IndicatorPanel() : void
         {
             className = getQualifiedClassName(this);
 			DebugUtils.LOG_DEBUG_FORMAT("%s: %s", className, "constructor");

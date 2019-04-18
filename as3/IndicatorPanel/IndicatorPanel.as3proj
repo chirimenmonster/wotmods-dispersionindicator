@@ -80,7 +80,7 @@
   </library>
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>
-    <compile path="src\Main.as" />
+    <compile path="src\com\chirimen\dispersionindicator\IndicatorPanel.as" />
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>
