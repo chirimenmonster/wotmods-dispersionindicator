@@ -4,28 +4,21 @@ import json
 import BigWorld
 import ResMgr
 from debug_utils import LOG_CURRENT_EXCEPTION
-from PlayerEvents import g_playerEvents
-from Avatar import PlayerAvatar
-from gui.shared import g_eventBus, events
-from gui.app_loader.settings import APP_NAME_SPACE
 from gui.Scaleform.framework import g_entitiesFactories
 
 from dispersionindicator.mod_constants import MOD_NAME, CONFIG_FILES
-from dispersionindicator.indicator import Indicator
+from dispersionindicator.manager import IndicatorManager
 from dispersionindicator.view.panelview import PANEL_VIEW_SETTINGS
 
-g_settings = {}
-g_indicator = None
+g_indicatorManager = None
 
 def init():
-    global g_indicator
-    global g_settings
+    global g_indicatorManager
     try:
         BigWorld.logInfo(MOD_NAME, '{} initialize'.format(MOD_NAME), None)
-        g_settings = _readConfig()
+        settings = _readConfig()
+        g_indicatorManager = manager = IndicatorManager(settings)
         g_entitiesFactories.addSettings(PANEL_VIEW_SETTINGS)
-        g_eventBus.addListener(events.AppLifeCycleEvent.INITIALIZED, onAppInitialized)
-        g_eventBus.addListener(events.AppLifeCycleEvent.DESTROYED, onAppDestroyed)
     except:
         LOG_CURRENT_EXCEPTION()
 
@@ -47,7 +40,7 @@ def _readConfig():
         config['statsDefs'].update(data.get('statsDefs', {}))
         config['panels'] = data.get('panels', {})
         config['logs'] = data.get('logs', {})
-    print json.dumps(config, indent=2)
+    #print json.dumps(config, indent=2)
 
     settings = { 'common': {}, 'panels': {} }
     settings['common']['updateInterval'] = config['default']['updateInterval']
@@ -66,20 +59,3 @@ def _readConfig():
         settings['logs'] = { 'statsDefs': statsDef, 'items': items }
     return settings
 
-
-def onAppInitialized(event):
-    if event.ns != APP_NAME_SPACE.SF_BATTLE:
-        return
-    BigWorld.logInfo(MOD_NAME, 'AppLifeCycleEvent.INITIALIZED: SF_BATTLE', None)
-    global g_indicator
-    g_indicator = Indicator(g_settings)
-    g_indicator.initPanel()
-
-def onAppDestroyed(event):
-    if event.ns != APP_NAME_SPACE.SF_BATTLE:
-        return
-    BigWorld.logInfo(MOD_NAME, 'AppLifeCycleEvent.DESTROYED: SF_BATTLE', None)
-    global g_indicator
-    if g_indicator:
-        g_indicator.finiPanel()
-        g_indicator = None

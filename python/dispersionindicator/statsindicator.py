@@ -13,7 +13,7 @@ from view.panelview import PANEL_VIEW_ALIAS
 SWF_FILE = 'IndicatorPanel.swf'
 SWF_PATH = '${flash_dir}'
 
-class IndicatorFlashText(object):
+class StatsIndicator(object):
     def __init__(self, config, stats, name):
         self.setPanelStyle(config, stats, name)
 
@@ -65,7 +65,7 @@ class IndicatorFlashText(object):
 
     def setConfig(self, pyEntity):
         BigWorld.logInfo(MOD_NAME, 'flashText.setConfig: "{}"'.format(self.name), None)
-        print json.dumps(self.__guiSettings, indent=2)
+        #print json.dumps(self.__guiSettings, indent=2)
         pyEntity.as_setConfigS(self.__guiSettings)
 
     def start(self):

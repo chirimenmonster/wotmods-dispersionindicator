@@ -5,33 +5,38 @@ from constants import ARENA_PERIOD
 from gui import g_guiResetters
 from helpers import dependency
 from skeletons.gui.battle_session import IBattleSessionProvider
+from gui.shared import g_eventBus, events
 from gui.shared.utils.TimeInterval import TimeInterval
+from gui.app_loader.settings import APP_NAME_SPACE
 from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE, CROSSHAIR_VIEW_ID
 
 from mod_constants import MOD_NAME, CONSTANT, CROSSHAIR_VIEW_SYMBOL, ARENA_PERIOD_SYMBOL
 from status import g_dispersionStats
-from output import IndicatorLogger
-from flashPanel import IndicatorFlashText
+from statsindicator import StatsIndicator
+from statslogger import StatsLogger
 
 
-class Indicator(object):
+class IndicatorManager(object):
     def __init__(self, config):
+        self.__config = config
         self.__panels = {}
         self.__stats = g_dispersionStats
-        updateInterval = config['common']['updateInterval']
-        self._timeInterval = TimeInterval(updateInterval, self, 'update')
         self.__isSetHandler = False
-        self.__populated = False
-        for name, paneldef in config['panels'].items():
-            self.__panels[name] = IndicatorFlashText(paneldef, self.__stats, name)
-        if 'logs' in config:
-            self.__panels['__logger__'] = IndicatorLogger(config['logs'], self.__stats)
+        self.__visible = False
+        interval = config['common']['updateInterval']
+        self._timeInterval = TimeInterval(interval, self, 'onWatchStats')
+        g_eventBus.addListener(events.AppLifeCycleEvent.INITIALIZED, self.onAppInitialized)
+        g_eventBus.addListener(events.AppLifeCycleEvent.DESTROYED, self.onAppDestroyed)
 
     def initPanel(self):
         BigWorld.logInfo(MOD_NAME, 'initPanel', None)
         arena = BigWorld.player().arena
         arena.onPeriodChange += self.onArenaPeriodChange
         self.addHandler()
+        for name, paneldef in self.__config['panels'].items():
+            self.__panels[name] = StatsIndicator(paneldef, self.__stats, name)
+        if 'logs' in self.__config:
+            self.__panels['__logger__'] = IndicatorLogger(self.__config['logs'], self.__stats)
         for name, panel in self.__panels.items():
             panel.init()
 
@@ -40,6 +45,77 @@ class Indicator(object):
         self.stopIntervalTimer()
         self.invisiblePanel()
         self.removeHandler()
+        self._panels = {}
+
+    def addHandler(self):
+        if self.__isSetHandler:
+            return
+        self.__isSetHandler = True
+        session = dependency.instance(IBattleSessionProvider)
+        ctl = session.shared.vehicleState
+        ctl.onVehicleStateUpdated += self.onVehicleStateUpdated
+        ctl = session.shared.crosshair
+        ctl.onCrosshairViewChanged += self.onCrosshairViewChanged
+        ctl.onCrosshairPositionChanged += self.onCrosshairPositionChanged
+        g_guiResetters.add(self.onScreenResolutionChanged)
+    
+    def removeHandler(self):
+        if not self.__isSetHandler:
+            return
+        self.__isSetHandler = False
+        session = dependency.instance(IBattleSessionProvider)
+        ctl = session.shared.vehicleState
+        if ctl:
+            ctl.onVehicleStateUpdated -= self.onVehicleStateUpdated
+        ctl = session.shared.crosshair
+        if ctl:
+            ctl.onCrosshairViewChanged -= self.onCrosshairViewChanged
+            ctl.onCrosshairPositionChanged -= self.onCrosshairPositionChanged
+        g_guiResetters.remove(self.onScreenResolutionChanged)
+
+    def visiblePanel(self):
+        if self.__visible:
+            return
+        self.__visible = True
+        BigWorld.logInfo(MOD_NAME, 'panel.start', None)
+        for panel in self.__panels.values():
+            panel.start()
+
+    def invisiblePanel(self):
+        if not self.__visible:
+            return
+        self.__visible = False
+        BigWorld.logInfo(MOD_NAME, 'panel.stop', None)
+        for panel in self.__panels.values():
+            panel.stop()
+
+    def startIntervalTimer(self):
+        if not self._timeInterval.isStarted():
+            BigWorld.logInfo(MOD_NAME, 'TimeInterval: start', None)
+            self._timeInterval.start()
+
+    def stopIntervalTimer(self):
+        if self._timeInterval.isStarted():
+            BigWorld.logInfo(MOD_NAME, 'TimeInterval: stop', None)
+            self._timeInterval.stop()
+
+    def changeView(self, viewID):
+        #BigWorld.logInfo(MOD_NAME, 'changeView: {}'.format(CROSSHAIR_VIEW_SYMBOL[viewID]), None)
+        for panel in self.__panels.values():
+            if getattr(panel, 'changeView', None) and callable(panel.changeView):
+                panel.changeView(viewID)
+
+    def onAppInitialized(self, event):
+        if event.ns != APP_NAME_SPACE.SF_BATTLE:
+            return
+        BigWorld.logInfo(MOD_NAME, 'AppLifeCycleEvent.INITIALIZED: SF_BATTLE', None)
+        self.initPanel()
+
+    def onAppDestroyed(self, event):
+        if event.ns != APP_NAME_SPACE.SF_BATTLE:
+            return
+        BigWorld.logInfo(MOD_NAME, 'AppLifeCycleEvent.DESTROYED: SF_BATTLE', None)
+        self.finiPanel()
 
     def onArenaPeriodChange(self, period, periodEndTime, periodLength, periodAdditionalInfo):
         BigWorld.logInfo(MOD_NAME, 'onArenaPeriodChange: {}'.format(ARENA_PERIOD_SYMBOL[period]), None)
@@ -48,12 +124,14 @@ class Indicator(object):
         elif period == ARENA_PERIOD.BATTLE:
             self.startIntervalTimer()
         elif period == ARENA_PERIOD.AFTERBATTLE:
+            self.stopIntervalTimer()
             self.invisiblePanel()
 
     def onVehicleStateUpdated(self, stateID, value):
         if stateID == VEHICLE_VIEW_STATE.DESTROYED:
             BigWorld.logInfo(MOD_NAME, 'onVehicleStateUpdated: VEHICLE_VIEW_STATE.DESTROYED', None)
-            self.finiPanel()
+            self.stopIntervalTimer()
+            self.invisiblePanel()
     
     def onScreenResolutionChanged(self):
         for panel in self.__panels.values():
@@ -69,71 +147,7 @@ class Indicator(object):
             if getattr(panel, 'updateCrosshairPosition', None) and callable(panel.updateCrosshairPosition):
                 panel.updateCrosshairPosition(x, y)
 
-    def addHandler(self):
-        if self.__isSetHandler:
-            return
-        self.__isSetHandler = True
-        session = dependency.instance(IBattleSessionProvider)
-        # VehicleStateController in gui.battle_control.controllers.vehicle_state_ctrl
-        ctl = session.shared.vehicleState
-        ctl.onVehicleStateUpdated += self.onVehicleStateUpdated
-        # CrosshairDataProxy in gui.battle_control.controllers.crosshair_proxy
-        ctl = session.shared.crosshair
-        ctl.onCrosshairViewChanged += self.onCrosshairViewChanged
-        ctl.onCrosshairPositionChanged += self.onCrosshairPositionChanged
-        #ctl.onCrosshairSizeChanged += lambda width, height: BigWorld.logInfo(MOD_NAME, 'crosshairSizeChanged: {}, {}'.format(width, height), None)
-        g_guiResetters.add(self.onScreenResolutionChanged)
-        self.changeView(ctl.getViewID())
-    
-    def removeHandler(self):
-        if not self.__isSetHandler:
-            return
-        self.__isSetHandler = False
-        g_guiResetters.remove(self.onScreenResolutionChanged)
-        session = dependency.instance(IBattleSessionProvider)
-        # VehicleStateController in gui.battle_control.controllers.vehicle_state_ctrl
-        ctl = session.shared.vehicleState
-        if ctl:
-            ctl.onVehicleStateUpdated -= self.onVehicleStateUpdated
-        # CrosshairDataProxy in gui.battle_control.controllers.crosshair_proxy
-        ctl = session.shared.crosshair
-        if ctl:
-            ctl.onCrosshairViewChanged -= self.onCrosshairViewChanged
-            ctl.onCrosshairPositionChanged -= self.onCrosshairPositionChanged
-
-    def visiblePanel(self):
-        if self.__populated:
-            return
-        self.__populated = True
-        BigWorld.logInfo(MOD_NAME, 'panel.start', None)
-        for panel in self.__panels.values():
-            panel.start()
-
-    def invisiblePanel(self):
-        if not self.__populated:
-            return
-        self.__populated = False
-        BigWorld.logInfo(MOD_NAME, 'panel.stop', None)
-        for panel in self.__panels.values():
-            panel.stop()
-
-
-    def startIntervalTimer(self):
-        if not self._timeInterval.isStarted():
-            BigWorld.logInfo(MOD_NAME, 'TimeInterval: start', None)
-            self._timeInterval.start()
-
-    def stopIntervalTimer(self):
-        if self._timeInterval.isStarted():
-            BigWorld.logInfo(MOD_NAME, 'TimeInterval: stop', None)
-            self._timeInterval.stop()
-        
-    def update(self):
+    def onWatchStats(self):
         for panel in self.__panels.values():
             panel.update()
 
-    def changeView(self, viewID):
-        #BigWorld.logInfo(MOD_NAME, 'changeView: {}'.format(CROSSHAIR_VIEW_SYMBOL[viewID]), None)
-        for panel in self.__panels.values():
-            if getattr(panel, 'changeView', None) and callable(panel.changeView):
-                panel.changeView(viewID)
