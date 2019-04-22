@@ -27,6 +27,8 @@ class IndicatorManager(object):
         self._timeInterval = TimeInterval(interval, self, 'onWatchStats')
         g_eventBus.addListener(events.AppLifeCycleEvent.INITIALIZED, self.onAppInitialized)
         g_eventBus.addListener(events.AppLifeCycleEvent.DESTROYED, self.onAppDestroyed)
+        # Embedded file name: scripts/client/gui/app_loader/loader.py
+        # _AppLoader.onGUISpaceEntered +=
 
     def initPanel(self):
         BigWorld.logInfo(MOD_NAME, 'initPanel', None)

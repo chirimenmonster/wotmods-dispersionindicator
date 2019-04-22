@@ -14,6 +14,8 @@ SWF_FILE = 'IndicatorPanel.swf'
 SWF_PATH = '${flash_dir}'
 
 class StatsIndicator(object):
+    className = 'StatsIndicator'
+
     def __init__(self, config, stats, name):
         self.setPanelStyle(config, stats, name)
 
@@ -47,7 +49,7 @@ class StatsIndicator(object):
             }
     
     def init(self):
-        BigWorld.logInfo(MOD_NAME, 'flashText.init: "{}"'.format(self.name), None)
+        BigWorld.logInfo(MOD_NAME, '{}.init: "{}"'.format(self.className, self.name), None)
         name = self.name
         app = g_appLoader.getDefBattleApp()
         if not app:
@@ -64,12 +66,13 @@ class StatsIndicator(object):
         self.__viewID = 0
 
     def setConfig(self, pyEntity):
-        BigWorld.logInfo(MOD_NAME, 'flashText.setConfig: "{}"'.format(self.name), None)
+        BigWorld.logInfo(MOD_NAME, '{}.setConfig: "{}"'.format(self.className, self.name), None)
         #print json.dumps(self.__guiSettings, indent=2)
         pyEntity.as_setConfigS(self.__guiSettings)
+        pyEntity.setVisible(False)
 
     def start(self):
-        BigWorld.logInfo(MOD_NAME, 'flashText.start: "{}"'.format(self.name), None)
+        BigWorld.logInfo(MOD_NAME, '{}.start: "{}"'.format(self.className, self.name), None)
         for name, config in self.__statsSource.items():
             text = config['format'].format(0)
             self._setIndicatorValue(name, text)
@@ -77,16 +80,16 @@ class StatsIndicator(object):
         self.__pyEntity.setVisible(True)
 
     def stop(self):
-        BigWorld.logInfo(MOD_NAME, 'flashText.stop: "{}"'.format(self.name), None)
+        BigWorld.logInfo(MOD_NAME, '{}.stop: "{}"'.format(self.className, self.name), None)
         try:
             self.__pyEntity.setVisible(False)
         except weakref.ReferenceError:
             pass
    
     def _getIndicatorSize(self):
-        #BigWorld.logInfo(MOD_NAME, 'flashText.getIndicatorSize', None)
+        #BigWorld.logInfo(MOD_NAME, '{}.getIndicatorSize'.format(self.classname), None)
         width, height = self.__pyEntity.as_getPanelSizeS()
-        #BigWorld.logInfo(MOD_NAME, 'flashText.getIndicatorSize: {}, {}'.format(width, height), None)
+        #BigWorld.logInfo(MOD_NAME, '{}: {}, {}'.format(self.className, width, height), None)
         return width, height
     
     def _setIndicatorPosition(self, x, y):
@@ -101,7 +104,7 @@ class StatsIndicator(object):
             self._setIndicatorValue(name, text)
 
     def updateScreenPosition(self):
-        #BigWorld.logInfo(MOD_NAME, 'flashText.updateScreenPosition', None)
+        #BigWorld.logInfo(MOD_NAME, '{}.updateScreenPosition'.format(self.className, None)
         width, height = self._getIndicatorSize()
         refPoint = self.referencePoint.split('_')
         if refPoint[0] != 'SCREEN':
@@ -132,13 +135,13 @@ class StatsIndicator(object):
             y = self.screenOffset[1] + offsetY
         elif refPoint[2] == 'BOTTOM':
             y = screen[1] + self.screenOffset[1] + offsetY
-        #BigWorld.logInfo(MOD_NAME, 'flashText.updatePosition ({}, {})'.format(x, y), None)
+        #BigWorld.logInfo(MOD_NAME, '{}.updatePosition ({}, {})'.format(self.className, x, y), None)
         self._setIndicatorPosition(x, y)
 
     def updateCrosshairPosition(self, x, y):
         if self.referencePoint != 'CROSSHAIR':
             return
-        #BigWorld.logInfo(MOD_NAME, 'flashText.updateCrosshairPosition ({}, {})'.format(x, y), None)
+        #BigWorld.logInfo(MOD_NAME, '{}.updateCrosshairPosition ({}, {})'.format(self.className, x, y), None)
         offsetX = offsetY = 0
         width, height = self._getIndicatorSize()
         if self.horizontalAnchor == 'RIGHT':
@@ -151,7 +154,7 @@ class StatsIndicator(object):
             offsetY = - height / 2
         x = x + self.crosshairOffset[self.__viewID][0] + offsetX
         y = y + self.crosshairOffset[self.__viewID][1] + offsetY
-        #BigWorld.logInfo(MOD_NAME, 'flashText.updatePosition ({}, {})'.format(x, y), None)
+        #BigWorld.logInfo(MOD_NAME, '{}.updatePosition ({}, {})'.format(self.className, x, y), None)
         self._setIndicatorPosition(x, y)
 
     def changeView(self, viewID):
