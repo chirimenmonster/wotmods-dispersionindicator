@@ -63,12 +63,13 @@ class StatsIndicator(object):
             return
         pyEntity.onCreate += self.setConfig
         self.__pyEntity = weakref.proxy(pyEntity)
-        self.__viewID = 0
 
     def setConfig(self, pyEntity):
         BigWorld.logInfo(MOD_NAME, '{}.setConfig: "{}"'.format(self.className, self.name), None)
         #print json.dumps(self.__guiSettings, indent=2)
         pyEntity.as_setConfigS(self.__guiSettings)
+        align = [ self.horizontalAnchor, self.verticalAnchor ]
+        pyEntity.setReferencePoint(self.referencePoint, align, self.screenOffset, self.crosshairOffset)
         pyEntity.setVisible(False)
 
     def start(self):
@@ -76,7 +77,6 @@ class StatsIndicator(object):
         for name, config in self.__statsSource.items():
             text = config['format'].format(0)
             self._setIndicatorValue(name, text)
-        self.updateScreenPosition()
         self.__pyEntity.setVisible(True)
 
     def stop(self):
@@ -86,15 +86,6 @@ class StatsIndicator(object):
         except weakref.ReferenceError:
             pass
    
-    def _getIndicatorSize(self):
-        #BigWorld.logInfo(MOD_NAME, '{}.getIndicatorSize'.format(self.classname), None)
-        width, height = self.__pyEntity.as_getPanelSizeS()
-        #BigWorld.logInfo(MOD_NAME, '{}: {}, {}'.format(self.className, width, height), None)
-        return width, height
-    
-    def _setIndicatorPosition(self, x, y):
-        self.__pyEntity.as_setPositionS(int(x), int(y))
-
     def _setIndicatorValue(self, name, value):
         self.__pyEntity.as_setValueS(name, value)
 
@@ -102,61 +93,20 @@ class StatsIndicator(object):
         for name, config in self.__statsSource.items():
             text = config['format'].format(config['func']())
             self._setIndicatorValue(name, text)
-
-    def updateScreenPosition(self):
-        #BigWorld.logInfo(MOD_NAME, '{}.updateScreenPosition'.format(self.className, None)
-        width, height = self._getIndicatorSize()
-        refPoint = self.referencePoint.split('_')
-        if refPoint[0] != 'SCREEN':
-            return
-        if len(refPoint) == 2 and refPoint[1] == 'CENTER':
-            refPoint.append('CENTER')
-        offsetX = offsetY = 0
-        if self.horizontalAnchor == 'RIGHT':
-            offsetX = - width
-        elif self.horizontalAnchor == 'CENTER':
-            offsetX = - width / 2
-        if self.verticalAnchor == 'BOTTOM':
-            offsetY = - height
-        elif self.verticalAnchor == 'CENTER':
-            offsetY = - height / 2
-        screen = GUI.screenResolution()
-        center = ( screen[0] / 2, screen[1] / 2)
-        x = y = 0
-        if refPoint[1] == 'CENTER':
-            x = center[0] + self.screenOffset[0] + offsetX
-        elif refPoint[1] == 'LEFT':
-            x = self.screenOffset[0] + offsetX
-        elif refPoint[1] == 'RIGHT':
-            x = screen[0] + self.screenOffset[0] + offsetX
-        if refPoint[2] == 'CENTER':
-            y = center[1] + self.screenOffset[1] + offsetY
-        elif refPoint[2] == 'TOP':
-            y = self.screenOffset[1] + offsetY
-        elif refPoint[2] == 'BOTTOM':
-            y = screen[1] + self.screenOffset[1] + offsetY
-        #BigWorld.logInfo(MOD_NAME, '{}.updatePosition ({}, {})'.format(self.className, x, y), None)
-        self._setIndicatorPosition(x, y)
+    
+    def updateScreenPosition(self, width, height):
+        self.__screenSize = [ width, height ]
+        if self.__pyEntity:
+            self.__pyEntity.setScreenResolution(width, height)
+            self.__pyEntity.calcPositionByScreen()
 
     def updateCrosshairPosition(self, x, y):
-        if self.referencePoint != 'CROSSHAIR':
-            return
-        #BigWorld.logInfo(MOD_NAME, '{}.updateCrosshairPosition ({}, {})'.format(self.className, x, y), None)
-        offsetX = offsetY = 0
-        width, height = self._getIndicatorSize()
-        if self.horizontalAnchor == 'RIGHT':
-            offsetX = - width
-        elif self.horizontalAnchor == 'CENTER':
-            offsetX = - width / 2
-        if self.verticalAnchor == 'BOTTOM':
-            offsetY = - height
-        elif self.verticalAnchor == 'CENTER':
-            offsetY = - height / 2
-        x = x + self.crosshairOffset[self.__viewID][0] + offsetX
-        y = y + self.crosshairOffset[self.__viewID][1] + offsetY
-        #BigWorld.logInfo(MOD_NAME, '{}.updatePosition ({}, {})'.format(self.className, x, y), None)
-        self._setIndicatorPosition(x, y)
+        self.__crosshairPosition = [ x, y ]
+        if self.__pyEntity:
+            self.__pyEntity.setCrosshairPosition(x, y)
+            self.__pyEntity.calcPositionByCrosshair()
 
     def changeView(self, viewID):
-        self.__viewID = viewID
-        return
+        self.__crosshairView = viewID
+        if self.__pyEntity:
+            self.__pyEntity.setCrosshairView(viewID)

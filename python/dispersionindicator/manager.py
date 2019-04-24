@@ -7,7 +7,8 @@ from helpers import dependency
 from skeletons.gui.battle_session import IBattleSessionProvider
 from gui.shared import g_eventBus, events
 from gui.shared.utils.TimeInterval import TimeInterval
-from gui.app_loader.settings import APP_NAME_SPACE
+from gui.app_loader import g_appLoader
+from gui.app_loader.settings import APP_NAME_SPACE, GUI_GLOBAL_SPACE_ID
 from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE, CROSSHAIR_VIEW_ID
 
 from mod_constants import MOD_NAME, CONSTANT, CROSSHAIR_VIEW_SYMBOL, ARENA_PERIOD_SYMBOL
@@ -28,7 +29,8 @@ class IndicatorManager(object):
         g_eventBus.addListener(events.AppLifeCycleEvent.INITIALIZED, self.onAppInitialized)
         g_eventBus.addListener(events.AppLifeCycleEvent.DESTROYED, self.onAppDestroyed)
         # Embedded file name: scripts/client/gui/app_loader/loader.py
-        # _AppLoader.onGUISpaceEntered +=
+        g_appLoader.onGUISpaceEntered += self.onGUISpaceEntered
+        g_appLoader.onGUISpaceLeft += self.onGUISpaceLeft
 
     def initPanel(self):
         BigWorld.logInfo(MOD_NAME, 'initPanel', None)
@@ -41,6 +43,7 @@ class IndicatorManager(object):
             self.__panels['__logger__'] = IndicatorLogger(self.__config['logs'], self.__stats)
         for name, panel in self.__panels.items():
             panel.init()
+        self.updateScreenPosition()
 
     def finiPanel(self):
         BigWorld.logInfo(MOD_NAME, 'finiPanel', None)
@@ -107,6 +110,13 @@ class IndicatorManager(object):
             if getattr(panel, 'changeView', None) and callable(panel.changeView):
                 panel.changeView(viewID)
 
+    def updateScreenPosition(self):
+        width, height = GUI.screenResolution()
+        BigWorld.logInfo(MOD_NAME, 'updateScreenPosition: ({}, {})'.format(width, height), None)
+        for panel in self.__panels.values():
+            if getattr(panel, 'updateScreenPosition', None) and callable(panel.updateScreenPosition):
+                panel.updateScreenPosition(width, height)
+
     def onAppInitialized(self, event):
         if event.ns != APP_NAME_SPACE.SF_BATTLE:
             return
@@ -118,6 +128,17 @@ class IndicatorManager(object):
             return
         BigWorld.logInfo(MOD_NAME, 'AppLifeCycleEvent.DESTROYED: SF_BATTLE', None)
         self.finiPanel()
+
+    def onGUISpaceEntered(self, spaceID):
+        if spaceID != GUI_GLOBAL_SPACE_ID.BATTLE:
+            return
+        BigWorld.logInfo(MOD_NAME, 'onGUISpaceEnterd: {}'.format(spaceID), None)
+        #self.initPanel()
+    
+    def onGUISpaceLeft(self, spaceID):
+        if spaceID != GUI_GLOBAL_SPACE_ID.BATTLE:
+            return
+        BigWorld.logInfo(MOD_NAME, 'onGUISpaceLeft: {}'.format(spaceID), None)
 
     def onArenaPeriodChange(self, period, periodEndTime, periodLength, periodAdditionalInfo):
         BigWorld.logInfo(MOD_NAME, 'onArenaPeriodChange: {}'.format(ARENA_PERIOD_SYMBOL[period]), None)
@@ -136,15 +157,18 @@ class IndicatorManager(object):
             self.invisiblePanel()
     
     def onScreenResolutionChanged(self):
+        width, height = GUI.screenResolution()
+        BigWorld.logInfo(MOD_NAME, 'onScreenResolutionChanged: ({}, {})'.format(width, height), None)
         for panel in self.__panels.values():
             if getattr(panel, 'updateScreenPosition', None) and callable(panel.updateScreenPosition):
-                panel.updateScreenPosition()
+                panel.updateScreenPosition(width, height)
 
     def onCrosshairViewChanged(self, viewID):
         #BigWorld.logInfo(MOD_NAME, 'crosshairViewChanged: {}'.format(CROSSHAIR_VIEW_SYMBOL[viewID]), None)
         self.changeView(viewID)
 
     def onCrosshairPositionChanged(self, x, y):
+        BigWorld.logInfo(MOD_NAME, 'onCrosshairPositionChanged: ({}, {})'.format(x, y), None)
         for panel in self.__panels.values():
             if getattr(panel, 'updateCrosshairPosition', None) and callable(panel.updateCrosshairPosition):
                 panel.updateCrosshairPosition(x, y)
