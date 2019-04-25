@@ -3,13 +3,11 @@ import os
 import csv
 
 import BigWorld
-import GUI
-from gui import g_guiResetters
 
 from mod_constants import MOD_NAME, LOG_FILE
 
 
-class IndicatorLogger(object):
+class StatsLogger(object):
     def __init__(self, config, stats):
         self.stats = stats
         self.statsdefs = config['statsDefs']
