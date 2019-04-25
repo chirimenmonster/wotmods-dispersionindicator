@@ -57,10 +57,6 @@ class StatsIndicator(object):
             return
         app.loadView(SFViewLoadParams(PANEL_VIEW_ALIAS, name))
         pyEntity = app.containerManager.getViewByKey(ViewKey(PANEL_VIEW_ALIAS, name))
-        if not pyEntity:
-            BigWorld.logInfo(MOD_NAME, 'not found ViewKey: "{}"'.format(ViewKey(PANEL_VIEW_ALIAS, name)), None)
-            self.__pyEntity = None
-            return
         pyEntity.onCreate += self.setConfig
         self.__pyEntity = weakref.proxy(pyEntity)
 
@@ -70,14 +66,13 @@ class StatsIndicator(object):
         pyEntity.as_setConfigS(self.__guiSettings)
         align = [ self.horizontalAnchor, self.verticalAnchor ]
         pyEntity.setReferencePoint(self.referencePoint, align, self.screenOffset, self.crosshairOffset)
-        pyEntity.setVisible(False)
+        self.__pyEntity.calcPosition()
 
     def start(self):
         BigWorld.logInfo(MOD_NAME, '{}.start: "{}"'.format(self.className, self.name), None)
         for name, config in self.__statsSource.items():
             text = config['format'].format(0)
             self._setIndicatorValue(name, text)
-        self.__pyEntity.setVisible(True)
 
     def stop(self):
         BigWorld.logInfo(MOD_NAME, '{}.stop: "{}"'.format(self.className, self.name), None)

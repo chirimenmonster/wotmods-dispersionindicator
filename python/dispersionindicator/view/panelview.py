@@ -3,6 +3,7 @@ import logging
 import BigWorld
 from gui.Scaleform.framework import ViewSettings, ViewTypes, ScopeTemplates
 from gui.Scaleform.framework.entities.View import View
+from gui.battle_control.battle_constants import CROSSHAIR_VIEW_ID
 
 MOD_NAME = '${name}'
 
@@ -19,12 +20,7 @@ class PanelView(View):
     def __init__(self, *args, **kwargs):
         super(PanelView, self).__init__(*args, **kwargs)
         self.__reference = None
-        self.__crosshairView = 0
-        self.onCreated += self.__onCreated
-
-    def __onCreated(self, pyView):
-        BigWorld.logInfo(MOD_NAME, 'PanelView: onCreated', None)
-        self.flashObject.visible = False
+        self.__crosshairView = CROSSHAIR_VIEW_ID.UNDEFINED
 
     def as_setConfigS(self, settings):
         BigWorld.logInfo(MOD_NAME, 'PanelView: as_setConfigS', None)
@@ -42,10 +38,6 @@ class PanelView(View):
         #BigWorld.logInfo(MOD_NAME, 'PanelView: as_getPanelSizeS', None)
         result = self.flashObject.as_getPanelSize()
         return result.width, result.height
-
-    def setVisible(self, isVisible):
-        BigWorld.logInfo(MOD_NAME, 'PanelView: setVisible: {}'.format(isVisible), None)
-        self.flashObject.visible = isVisible
 
     def setReferencePoint(self, referencePoint, align, offset, crosshairOffset):
         BigWorld.logInfo(MOD_NAME, 'PanelView: setReferencePoint: {}'.format(referencePoint), None)
@@ -107,7 +99,7 @@ class PanelView(View):
         elif self.__referencePoint[1] == 'TOP':
             y = self.__offset[1] + offsetY
         elif self.__referencePoint[1] == 'BOTTOM':
-            y = self.__screen[1] + self.__offset[1] + offsetY
+            y = self.__screenSize[1] + self.__offset[1] + offsetY
         #BigWorld.logInfo(MOD_NAME, '{}.updatePosition ({}, {})'.format(self.className, x, y), None)
         self.as_setPositionS(x, y)
 

@@ -28,8 +28,8 @@ package com.chirimen.dispersionindicator
         {
             DebugUtils.LOG_DEBUG_FORMAT("%s: %s", className, "onPopulate");
             super.onPopulate();
-            panel = new PanelContainer(_config, _style);
-            addChild(panel);
+            //panel = new PanelContainer(_config, _style);
+            //addChild(panel);
         }
 
         public function as_setConfig(settings:Object) : void
@@ -37,6 +37,8 @@ package com.chirimen.dispersionindicator
             DebugUtils.LOG_DEBUG_FORMAT("%s: %s", className, "as_setConfig");
             _config = settings.stats;
             _style = settings.style;
+            panel = new PanelContainer(_config, _style);
+            addChild(panel);
         }
 
         public function as_setValue(name:String = null, text:String = null) : void
@@ -55,7 +57,7 @@ package com.chirimen.dispersionindicator
 	
         public function as_getPanelSize() : Object
         {
-            //DebugUtils.LOG_DEBUG_FORMAT("%s: %s", className, "as_getPanelSize");
+            DebugUtils.LOG_DEBUG_FORMAT("%s: %s", className, "as_getPanelSize");
             return { width: panel.fieldWidth, height: panel.fieldHeight };   
         }
 
