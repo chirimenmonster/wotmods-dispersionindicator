@@ -26,7 +26,7 @@ class IndicatorManager(object):
         self.__visible = False
         self.__crosshairPosition = [ 0, 0 ]
         interval = config['common']['updateInterval']
-        self._timeInterval = TimeInterval(interval, self, 'onWatchStats')
+        self.__timeInterval = TimeInterval(interval, self, 'onWatchStats')
         g_eventBus.addListener(events.AppLifeCycleEvent.INITIALIZED, self.onAppInitialized)
         g_eventBus.addListener(events.AppLifeCycleEvent.DESTROYED, self.onAppDestroyed)
         # Embedded file name: scripts/client/gui/app_loader/loader.py
@@ -35,15 +35,11 @@ class IndicatorManager(object):
 
     def initPanel(self):
         BigWorld.logInfo(MOD_NAME, 'initPanel', None)
-        arena = BigWorld.player().arena
-        arena.onPeriodChange += self.onArenaPeriodChange
         self.addHandler()
         for name, paneldef in self.__config['panels'].items():
             self.__panels[name] = StatsIndicator(paneldef, self.__stats, name)
         if 'logs' in self.__config:
-            self.__panels['__logger__'] = IndicatorLogger(self.__config['logs'], self.__stats)
-        for name, panel in self.__panels.items():
-            panel.init()
+            self.__panels['__logger__'] = StatsLogger(self.__config['logs'], self.__stats)
         self.updateScreenPosition()
         self.updateCrosshairPosition()
 
@@ -58,6 +54,8 @@ class IndicatorManager(object):
         if self.__isSetHandler:
             return
         self.__isSetHandler = True
+        arena = BigWorld.player().arena
+        arena.onPeriodChange += self.onArenaPeriodChange
         session = dependency.instance(IBattleSessionProvider)
         ctl = session.shared.vehicleState
         ctl.onVehicleStateUpdated += self.onVehicleStateUpdated
@@ -70,6 +68,8 @@ class IndicatorManager(object):
         if not self.__isSetHandler:
             return
         self.__isSetHandler = False
+        arena = BigWorld.player().arena
+        arena.onPeriodChange -= self.onArenaPeriodChange
         session = dependency.instance(IBattleSessionProvider)
         ctl = session.shared.vehicleState
         if ctl:
@@ -97,14 +97,14 @@ class IndicatorManager(object):
             panel.stop()
 
     def startIntervalTimer(self):
-        if not self._timeInterval.isStarted():
+        if not self.__timeInterval.isStarted():
             BigWorld.logInfo(MOD_NAME, 'TimeInterval: start', None)
-            self._timeInterval.start()
+            self.__timeInterval.start()
 
     def stopIntervalTimer(self):
-        if self._timeInterval.isStarted():
+        if self.__timeInterval.isStarted():
             BigWorld.logInfo(MOD_NAME, 'TimeInterval: stop', None)
-            self._timeInterval.stop()
+            self.__timeInterval.stop()
 
     def changeView(self, viewID):
         #BigWorld.logInfo(MOD_NAME, 'changeView: {}'.format(CROSSHAIR_VIEW_SYMBOL[viewID]), None)
@@ -136,7 +136,7 @@ class IndicatorManager(object):
         if event.ns != APP_NAME_SPACE.SF_BATTLE:
             return
         BigWorld.logInfo(MOD_NAME, 'AppLifeCycleEvent.DESTROYED: SF_BATTLE', None)
-        self.finiPanel()
+        #self.finiPanel()
 
     def onGUISpaceEntered(self, spaceID):
         if spaceID != GUI_GLOBAL_SPACE_ID.BATTLE:
@@ -148,6 +148,7 @@ class IndicatorManager(object):
         if spaceID != GUI_GLOBAL_SPACE_ID.BATTLE:
             return
         BigWorld.logInfo(MOD_NAME, 'onGUISpaceLeft: {}'.format(spaceID), None)
+        self.finiPanel()
 
     def onArenaPeriodChange(self, period, periodEndTime, periodLength, periodAdditionalInfo):
         BigWorld.logInfo(MOD_NAME, 'onArenaPeriodChange: {}'.format(ARENA_PERIOD_SYMBOL[period]), None)

@@ -5,7 +5,7 @@ from gui.Scaleform.framework import ViewSettings, ViewTypes, ScopeTemplates
 from gui.Scaleform.framework.entities.View import View
 from gui.battle_control.battle_constants import CROSSHAIR_VIEW_ID
 
-MOD_NAME = '${name}'
+from mod_constants import MOD_NAME, CONSTANT, CROSSHAIR_VIEW_SYMBOL
 
 PANEL_VIEW_ALIAS = 'DispersionIndicatorPanel'
 PANEL_VIEW_SWF_FILE_PATH = 'dispersionindicator/IndicatorPanel.swf'
@@ -17,14 +17,32 @@ _logger.setLevel(logging.DEBUG)
 
 
 class PanelView(View):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, settings=None, *args, **kwargs):
         super(PanelView, self).__init__(*args, **kwargs)
-        self.__reference = None
+        self.__settings = settings
+        style = settings['style']
+        r = style['referencePoint'].split('_')
+        if r[0] == 'SCREEN':
+            if len(r) == 2 and r[1] == 'CENTER':
+                r.append('CENTER')
+            self.__reference = r[0]
+            self.__referencePoint = [ r[1], r[2] ]
+        elif r[0] == 'CROSSHAIR':
+            self.__reference = r[0]
+        else:
+            raise 'unknown referncePoint: {}'.format(style['referencePoint'])
+        self.__align = [ style['horizontalAnchor'], style['verticalAnchor'] ]
+        self.__offset = style['offset']
+        self.__crosshairOffset = {}
+        for id, symbol in CROSSHAIR_VIEW_SYMBOL.items():
+            self.__crosshairOffset[id] = style.get('crosshairOffset_' + symbol, style['crosshairOffset'])
         self.__crosshairView = CROSSHAIR_VIEW_ID.UNDEFINED
+        self.onCreate += self.setConfig
 
-    def as_setConfigS(self, settings):
-        BigWorld.logInfo(MOD_NAME, 'PanelView: as_setConfigS', None)
-        self.flashObject.as_setConfig(settings)
+    def setConfig(self):
+        BigWorld.logInfo(MOD_NAME, 'PanelView: setConfig', None)
+        self.flashObject.as_setConfig(self.__settings)
+        self.calcPosition()
 
     def as_setPositionS(self, x, y):
         #BigWorld.logInfo(MOD_NAME, 'PanelView: as_setPositionS: ({}, {})'.format(x, y), None)
@@ -39,22 +57,6 @@ class PanelView(View):
         result = self.flashObject.as_getPanelSize()
         return result.width, result.height
 
-    def setReferencePoint(self, referencePoint, align, offset, crosshairOffset):
-        BigWorld.logInfo(MOD_NAME, 'PanelView: setReferencePoint: {}'.format(referencePoint), None)
-        r = referencePoint.split('_')
-        if r[0] == 'SCREEN':
-            if len(r) == 2 and r[1] == 'CENTER':
-                r.append('CENTER')
-            self.__reference = r[0]
-            self.__referencePoint = [ r[1], r[2] ]
-        elif r[0] == 'CROSSHAIR':
-            self.__reference = r[0]
-        else:
-            raise 'unknown referncePoint: {}'.format(referencePoint)
-        self.__align = align
-        self.__offset = offset
-        self.__crosshairOffset = crosshairOffset
-
     def setScreenResolution(self, width, height):
         self.__screenSize = [ width, height ]
 
@@ -63,6 +65,10 @@ class PanelView(View):
 
     def setCrosshairView(self, crosshairView):
         self.__crosshairView = crosshairView
+
+    def setVisible(self, isVisible):
+        BigWorld.logInfo(MOD_NAME, 'PanelView: setVisible: {}'.format(isVisible), None)
+        self.flashObject.visible = isVisible
 
     def calcPosition(self):
         BigWorld.logInfo(MOD_NAME, 'PanelView: calcPosition: {}'.format(self.__reference), None)
@@ -122,7 +128,6 @@ class PanelView(View):
         y = self.__crosshairPosition[1] + self.__crosshairOffset[self.__crosshairView][1] + offsetY
         #BigWorld.logInfo(MOD_NAME, '{}.updatePosition ({}, {})'.format(self.className, x, y), None)
         self.as_setPositionS(x, y)
-
 
 
 PANEL_VIEW_SETTINGS = ViewSettings(
