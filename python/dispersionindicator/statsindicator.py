@@ -17,9 +17,9 @@ SWF_PATH = '${flash_dir}'
 
 
 class StatsIndicatorMeta(object):
-    def __init__(self, vehicleStats):
+    def __init__(self, collector):
         self.className = self.__class__.__name__
-        self.__vehicleStats = vehicleStats
+        self.__vehicleStats = collector
         
     @property
     def vehicleStats(self):
@@ -48,8 +48,8 @@ class StatsIndicatorMeta(object):
 
 
 class StatsIndicator(StatsIndicatorMeta):
-    def __init__(self, config, vehicleStats, name):
-        super(StatsIndicator, self).__init__(vehicleStats)
+    def __init__(self, config, collector, name):
+        super(StatsIndicator, self).__init__(collector)
         self.name = name
         self.statsdefs = config['statsDefs']
         self.__guiSettings = {}

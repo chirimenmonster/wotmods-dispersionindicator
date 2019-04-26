@@ -12,7 +12,7 @@ from gui.app_loader.settings import APP_NAME_SPACE, GUI_GLOBAL_SPACE_ID
 from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE, CROSSHAIR_VIEW_ID
 
 from mod_constants import MOD_NAME, CONSTANT, CROSSHAIR_VIEW_SYMBOL, ARENA_PERIOD_SYMBOL
-from status import g_dispersionStats
+from statscollector import g_statscollector
 from statsindicator import StatsIndicator
 from statslogger import StatsLogger
 
@@ -21,7 +21,7 @@ class IndicatorManager(object):
     def __init__(self, config):
         self.__config = config
         self.__panels = []
-        self.__stats = g_dispersionStats
+        self.__stats = g_statscollector
         self.__isSetHandler = False
         self.__visible = False
         self.__crosshairPosition = [ 0, 0 ]

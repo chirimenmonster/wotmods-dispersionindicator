@@ -7,51 +7,52 @@ from Avatar import PlayerAvatar
 from gun_rotation_shared import decodeGunAngles
 
 from mod_constants import MOD_NAME
-from events import overrideMethod
+from hook import overrideMethod
 
-g_dispersionStats = None
+g_statscollector = None
 
 
 @overrideMethod(PlayerAvatar, 'getOwnVehicleShotDispersionAngle')
 def playerAvatar_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpeed, withShot = 0):
     dispersionAngle = result = orig(self, turretRotationSpeed, withShot)
-    if g_dispersionStats:
+    if g_statscollector:
         avatar = self
-        g_dispersionStats.currTime = BigWorld.time()
+        collector = g_statscollector
+        collector.currTime = BigWorld.time()
         try:
-            g_dispersionStats._updateDispersionAngle(avatar, dispersionAngle, turretRotationSpeed, withShot)
+            collector._updateDispersionAngle(avatar, dispersionAngle, turretRotationSpeed, withShot)
         except:
             LOG_CURRENT_EXCEPTION()
             BigWorld.logWarning(MOD_NAME, 'fail to _updateDispersionAngle', None)
         try:
-            g_dispersionStats._updateAimingInfo(avatar)
+            collector._updateAimingInfo(avatar)
         except:
             LOG_CURRENT_EXCEPTION()
             BigWorld.logWarning(MOD_NAME, 'fail to _updateAimingInfo', None)
         try:
-            g_dispersionStats._updateVehicleSpeeds(avatar)
+            collector._updateVehicleSpeeds(avatar)
         except:
             LOG_CURRENT_EXCEPTION()
             BigWorld.logWarning(MOD_NAME, 'fail to _updateVehicleSpeeds', None)
         try:
-            g_dispersionStats._updateVehicleEngineState(avatar)
+            collector._updateVehicleEngineState(avatar)
         except:
             LOG_CURRENT_EXCEPTION()
             BigWorld.logWarning(MOD_NAME, 'fail to _updateVehicleEngineState', None)
         try:
-            g_dispersionStats._updateGunAngles(avatar)
+            collector._updateGunAngles(avatar)
         except:
             LOG_CURRENT_EXCEPTION()
             BigWorld.logWarning(MOD_NAME, 'fail to _updateGunAngles', None)
         try:
-            g_dispersionStats._updateVehicleDirection(avatar)
+            collector._updateVehicleDirection(avatar)
         except:
             LOG_CURRENT_EXCEPTION()
             BigWorld.logWarning(MOD_NAME, 'fail to _updateVehicleDirection', None)
         return result
 
 
-class DispersionStats(object):
+class StatsCollector(object):
     def _updateDispersionAngle(self, avatar, dispersionAngle, turretRotationSpeed, withShot):
         self.dAngleAiming = dispersionAngle[0]
         self.dAngleIdeal = dispersionAngle[1]
@@ -131,4 +132,4 @@ class DispersionStats(object):
         fc = self.modifiedAimingFactor
         return (fc ** k - 1.0) / (fm ** k - 1.0) * 100.0
 
-g_dispersionStats = DispersionStats()
+g_statscollector = StatsCollector()

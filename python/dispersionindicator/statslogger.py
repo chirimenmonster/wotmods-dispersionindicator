@@ -9,8 +9,8 @@ from mod_constants import MOD_NAME, LOG_FILE
 
 
 class StatsLogger(StatsIndicatorMeta):
-    def __init__(self, config, vehicleStats):
-        super(StatsLogger, self).__init__(vehicleStats)
+    def __init__(self, config, collector):
+        super(StatsLogger, self).__init__(collector)
         statsdefs = config['statsDefs']
         self.names = [ statsdefs[key]['status'] for key in config['items'] ]
 
