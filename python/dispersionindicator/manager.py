@@ -20,7 +20,7 @@ from statslogger import StatsLogger
 class IndicatorManager(object):
     def __init__(self, config):
         self.__config = config
-        self.__panels = {}
+        self.__panels = []
         self.__stats = g_dispersionStats
         self.__isSetHandler = False
         self.__visible = False
@@ -29,7 +29,6 @@ class IndicatorManager(object):
         self.__timeInterval = TimeInterval(interval, self, 'onWatchStats')
         g_eventBus.addListener(events.AppLifeCycleEvent.INITIALIZED, self.onAppInitialized)
         g_eventBus.addListener(events.AppLifeCycleEvent.DESTROYED, self.onAppDestroyed)
-        # Embedded file name: scripts/client/gui/app_loader/loader.py
         g_appLoader.onGUISpaceEntered += self.onGUISpaceEntered
         g_appLoader.onGUISpaceLeft += self.onGUISpaceLeft
 
@@ -37,9 +36,9 @@ class IndicatorManager(object):
         BigWorld.logInfo(MOD_NAME, 'initPanel', None)
         self.addHandler()
         for name, paneldef in self.__config['panels'].items():
-            self.__panels[name] = StatsIndicator(paneldef, self.__stats, name)
+            self.__panels.append(StatsIndicator(paneldef, self.__stats, name))
         if 'logs' in self.__config:
-            self.__panels['__logger__'] = StatsLogger(self.__config['logs'], self.__stats)
+            self.__panels.append(StatsLogger(self.__config['logs'], self.__stats))
         self.updateScreenPosition()
         self.updateCrosshairPosition()
 
@@ -48,7 +47,7 @@ class IndicatorManager(object):
         self.stopIntervalTimer()
         self.invisiblePanel()
         self.removeHandler()
-        self._panels = {}
+        self._panels = []
 
     def addHandler(self):
         if self.__isSetHandler:
@@ -68,8 +67,11 @@ class IndicatorManager(object):
         if not self.__isSetHandler:
             return
         self.__isSetHandler = False
-        arena = BigWorld.player().arena
-        arena.onPeriodChange -= self.onArenaPeriodChange
+        player = BigWorld.player()
+        if player:
+            arena = player.arena
+            if arena:
+                arena.onPeriodChange -= self.onArenaPeriodChange
         session = dependency.instance(IBattleSessionProvider)
         ctl = session.shared.vehicleState
         if ctl:
@@ -85,7 +87,7 @@ class IndicatorManager(object):
             return
         self.__visible = True
         BigWorld.logInfo(MOD_NAME, 'panel.start', None)
-        for panel in self.__panels.values():
+        for panel in self.__panels:
             panel.start()
 
     def invisiblePanel(self):
@@ -93,7 +95,7 @@ class IndicatorManager(object):
             return
         self.__visible = False
         BigWorld.logInfo(MOD_NAME, 'panel.stop', None)
-        for panel in self.__panels.values():
+        for panel in self.__panels:
             panel.stop()
 
     def startIntervalTimer(self):
@@ -108,23 +110,20 @@ class IndicatorManager(object):
 
     def changeView(self, viewID):
         #BigWorld.logInfo(MOD_NAME, 'changeView: {}'.format(CROSSHAIR_VIEW_SYMBOL[viewID]), None)
-        for panel in self.__panels.values():
-            if getattr(panel, 'changeView', None) and callable(panel.changeView):
-                panel.changeView(viewID)
+        for panel in self.__panels:
+            panel.changeView(viewID)
 
     def updateScreenPosition(self):
         width, height = GUI.screenResolution()
-        BigWorld.logInfo(MOD_NAME, 'updateScreenPosition: ({}, {})'.format(width, height), None)
-        for panel in self.__panels.values():
-            if getattr(panel, 'updateScreenPosition', None) and callable(panel.updateScreenPosition):
-                panel.updateScreenPosition(width, height)
+        #BigWorld.logInfo(MOD_NAME, 'updateScreenPosition: ({}, {})'.format(width, height), None)
+        for panel in self.__panels:
+            panel.updateScreenPosition(width, height)
 
     def updateCrosshairPosition(self):
         x, y = self.__crosshairPosition
-        BigWorld.logInfo(MOD_NAME, 'updateCrosshairPosition: ({}, {})'.format(x, y), None)
-        for panel in self.__panels.values():
-            if getattr(panel, 'updateCrosshairPosition', None) and callable(panel.updateScreenPosition):
-                panel.updateCrosshairPosition(x, y)
+        #BigWorld.logInfo(MOD_NAME, 'updateCrosshairPosition: ({}, {})'.format(x, y), None)
+        for panel in self.__panels:
+            panel.updateCrosshairPosition(x, y)
 
     def onAppInitialized(self, event):
         if event.ns != APP_NAME_SPACE.SF_BATTLE:
@@ -136,7 +135,7 @@ class IndicatorManager(object):
         if event.ns != APP_NAME_SPACE.SF_BATTLE:
             return
         BigWorld.logInfo(MOD_NAME, 'AppLifeCycleEvent.DESTROYED: SF_BATTLE', None)
-        #self.finiPanel()
+        self.finiPanel()
 
     def onGUISpaceEntered(self, spaceID):
         if spaceID != GUI_GLOBAL_SPACE_ID.BATTLE:
@@ -168,23 +167,21 @@ class IndicatorManager(object):
     
     def onScreenResolutionChanged(self):
         width, height = GUI.screenResolution()
-        BigWorld.logInfo(MOD_NAME, 'onScreenResolutionChanged: ({}, {})'.format(width, height), None)
-        for panel in self.__panels.values():
-            if getattr(panel, 'updateScreenPosition', None) and callable(panel.updateScreenPosition):
-                panel.updateScreenPosition(width, height)
+        #BigWorld.logInfo(MOD_NAME, 'onScreenResolutionChanged: ({}, {})'.format(width, height), None)
+        for panel in self.__panels:
+            panel.updateScreenPosition(width, height)
 
     def onCrosshairViewChanged(self, viewID):
         #BigWorld.logInfo(MOD_NAME, 'crosshairViewChanged: {}'.format(CROSSHAIR_VIEW_SYMBOL[viewID]), None)
         self.changeView(viewID)
 
     def onCrosshairPositionChanged(self, x, y):
-        BigWorld.logInfo(MOD_NAME, 'onCrosshairPositionChanged: ({}, {})'.format(x, y), None)
+        #BigWorld.logInfo(MOD_NAME, 'onCrosshairPositionChanged: ({}, {})'.format(x, y), None)
         self.__crosshairPosition = [ x, y ]
-        for panel in self.__panels.values():
-            if getattr(panel, 'updateCrosshairPosition', None) and callable(panel.updateCrosshairPosition):
-                panel.updateCrosshairPosition(x, y)
+        for panel in self.__panels:
+            panel.updateCrosshairPosition(x, y)
 
     def onWatchStats(self):
-        for panel in self.__panels.values():
+        for panel in self.__panels:
             panel.update()
 

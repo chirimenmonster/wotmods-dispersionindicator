@@ -10,7 +10,7 @@ from mod_constants import MOD_NAME, LOG_FILE
 
 class StatsLogger(StatsIndicatorMeta):
     def __init__(self, config, vehicleStats):
-        super(StatsIndicator, self).__init__(vehicleStats)
+        super(StatsLogger, self).__init__(vehicleStats)
         statsdefs = config['statsDefs']
         self.names = [ statsdefs[key]['status'] for key in config['items'] ]
 
@@ -24,15 +24,15 @@ class StatsLogger(StatsIndicatorMeta):
    
     def update(self):
         data = [ self.getStatus(key, 1.0) for key in self.names ]
-        BigWorld.logInfo(MOD_NAME, '{}.update: {}'.format(self.className, data), None)
+        #BigWorld.logInfo(MOD_NAME, '{}.update: {}'.format(self.className, data), None)
         self.__strage.append(data)
     
     def outputLog(self):
         log_dir = os.path.dirname(LOG_FILE)
         if not os.path.isdir(log_dir):
-            BigWorld.logInfo(MOD_NAME, '{}.outputLog: make dir {}'.format(self.classname, log_dir), None)
+            BigWorld.logInfo(MOD_NAME, '{}.outputLog: make dir {}'.format(self.className, log_dir), None)
             os.makedirs(log_dir)
-        BigWorld.logInfo(MOD_NAME, '{}.outputPLog: put file: {}, {}'.format(self.classNam, LOG_FILE, len(self.__strage)), None)
+        BigWorld.logInfo(MOD_NAME, '{}.outputLog: save file: {}, {}'.format(self.className, LOG_FILE, len(self.__strage)), None)
         with open(LOG_FILE, 'wb') as fp:
             writer = csv.writer(fp, dialect='excel')
             writer.writerow(self.names)

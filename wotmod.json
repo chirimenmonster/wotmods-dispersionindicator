@@ -40,8 +40,7 @@
             "method":   "plain",
             "root":     "res",
             "reldir":   "${flash_dir}",
-            "exclude":  "\\.swf$$",
-            "dirs":    [ "as3/IndicatorPanel/bin/IndicatorPanel.swf" ]
+            "files":    [ "as3/IndicatorPanel/bin/IndicatorPanel.swf" ]
         }
     ]
 }
