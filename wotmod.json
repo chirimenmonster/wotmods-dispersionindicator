@@ -12,6 +12,14 @@
             "root":     "res",
             "reldir":   "scripts/client/gui/mods",
             "include":  "\\.py$$",
+            "exclude":  "mod_constants\\.py$$",
+            "dirs":     [ "python" ]
+        },
+        {
+            "method":   "apply+python",
+            "root":     "res",
+            "reldir":   "scripts/client/gui/mods",
+            "include":  "mod_constants\\.py$$",
             "dirs":     [ "python" ]
         },
         {
