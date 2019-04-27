@@ -5,7 +5,8 @@ from functools import partial
 
 import BigWorld
 import GUI
-from gui.app_loader import g_appLoader
+from helpers import dependency
+from skeletons.gui.app_loader import IAppLoader
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.Scaleform.framework.entities.View import ViewKey
 
@@ -70,7 +71,8 @@ class StatsIndicator(StatsIndicatorMeta):
                 'func':         partial(self.getStatus, key, factor),
                 'format':       setting['format']
             }
-        app = g_appLoader.getDefBattleApp()
+        appLoader = dependency.instance(IAppLoader)
+        app = appLoader.getDefBattleApp()
         if not app:
             BigWorld.logInfo(MOD_NAME, '{}.init: not found app'.format(self.className), None)
             return

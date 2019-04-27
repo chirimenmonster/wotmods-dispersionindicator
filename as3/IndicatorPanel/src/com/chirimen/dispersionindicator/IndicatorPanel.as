@@ -20,13 +20,13 @@ package com.chirimen.dispersionindicator
         public function IndicatorPanel() : void
         {
             className = getQualifiedClassName(this);
-            DebugUtils.LOG_DEBUG_FORMAT("%s: %s", className, "constructor");
+            DebugUtils.LOG_DEBUG("%s: %s", className, "constructor");
             super();
         }
 		
         override protected function onPopulate() : void
         {
-            DebugUtils.LOG_DEBUG_FORMAT("%s: %s", className, "onPopulate");
+            DebugUtils.LOG_DEBUG("%s: %s", className, "onPopulate");
             super.onPopulate();
             //panel = new PanelContainer(_config, _style);
             //addChild(panel);
@@ -34,7 +34,7 @@ package com.chirimen.dispersionindicator
 
         public function as_setConfig(settings:Object) : void
         {
-            DebugUtils.LOG_DEBUG_FORMAT("%s: %s", className, "as_setConfig");
+            DebugUtils.LOG_DEBUG("%s: %s", className, "as_setConfig");
             _config = settings.stats;
             _style = settings.style;
             panel = new PanelContainer(_config, _style);
@@ -43,21 +43,21 @@ package com.chirimen.dispersionindicator
 
         public function as_setValue(name:String = null, text:String = null) : void
         {
-            //DebugUtils.LOG_DEBUG_FORMAT("%s: %s", className, "as_setValue");
+            //DebugUtils.LOG_DEBUG("%s: %s", className, "as_setValue");
             var child:LineContainer = panel.getChildByName(name) as LineContainer;
             child.valueField.text = text;
         }
 
         public function as_setPosition(x:int = 0, y:int = 0) : void
         {
-            //DebugUtils.LOG_DEBUG_FORMAT("%s: %s", className, "as_setPosition");
+            //DebugUtils.LOG_DEBUG("%s: %s", className, "as_setPosition");
             panel.x = x;
             panel.y = y;
         }
 	
         public function as_getPanelSize() : Object
         {
-            DebugUtils.LOG_DEBUG_FORMAT("%s: %s", className, "as_getPanelSize");
+            DebugUtils.LOG_DEBUG("%s: %s", className, "as_getPanelSize");
             return { width: panel.fieldWidth, height: panel.fieldHeight };   
         }
 

@@ -4,11 +4,11 @@ import GUI
 from constants import ARENA_PERIOD
 from gui import g_guiResetters
 from helpers import dependency
+from skeletons.gui.app_loader import IAppLoader, GuiGlobalSpaceID
 from skeletons.gui.battle_session import IBattleSessionProvider
 from gui.shared import g_eventBus, events
 from gui.shared.utils.TimeInterval import TimeInterval
-from gui.app_loader import g_appLoader
-from gui.app_loader.settings import APP_NAME_SPACE, GUI_GLOBAL_SPACE_ID
+from gui.app_loader.settings import APP_NAME_SPACE
 from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE, CROSSHAIR_VIEW_ID
 
 from mod_constants import MOD_NAME, CONSTANT, CROSSHAIR_VIEW_SYMBOL, ARENA_PERIOD_SYMBOL
@@ -29,8 +29,9 @@ class IndicatorManager(object):
         self.__timeInterval = TimeInterval(interval, self, 'onWatchStats')
         g_eventBus.addListener(events.AppLifeCycleEvent.INITIALIZED, self.onAppInitialized)
         g_eventBus.addListener(events.AppLifeCycleEvent.DESTROYED, self.onAppDestroyed)
-        g_appLoader.onGUISpaceEntered += self.onGUISpaceEntered
-        g_appLoader.onGUISpaceLeft += self.onGUISpaceLeft
+        appLoader = dependency.instance(IAppLoader)
+        appLoader.onGUISpaceEntered += self.onGUISpaceEntered
+        appLoader.onGUISpaceLeft += self.onGUISpaceLeft
 
     def initPanel(self):
         BigWorld.logInfo(MOD_NAME, 'initPanel', None)
@@ -138,13 +139,13 @@ class IndicatorManager(object):
         self.finiPanel()
 
     def onGUISpaceEntered(self, spaceID):
-        if spaceID != GUI_GLOBAL_SPACE_ID.BATTLE:
+        if spaceID != GuiGlobalSpaceID.BATTLE:
             return
         BigWorld.logInfo(MOD_NAME, 'onGUISpaceEnterd: {}'.format(spaceID), None)
         self.initPanel()
     
     def onGUISpaceLeft(self, spaceID):
-        if spaceID != GUI_GLOBAL_SPACE_ID.BATTLE:
+        if spaceID != GuiGlobalSpaceID.BATTLE:
             return
         BigWorld.logInfo(MOD_NAME, 'onGUISpaceLeft: {}'.format(spaceID), None)
         self.finiPanel()
