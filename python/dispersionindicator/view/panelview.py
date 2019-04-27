@@ -10,11 +10,6 @@ from ..mod_constants import MOD_NAME, CONSTANT, CROSSHAIR_VIEW_SYMBOL
 PANEL_VIEW_ALIAS = 'DispersionIndicatorPanel'
 PANEL_VIEW_SWF_FILE_PATH = 'dispersionindicator/IndicatorPanel.swf'
 
-#for name in [ 'gui.Scalform.framework.entities.View', 'gui.Scaleform.Flash' ]:
-#    logging.getLogger(name).setLevel(logging.DEBUG)
-#_logger = logging.getLogger(__name__)
-#_logger.setLevel(logging.DEBUG)
-
 
 class PanelView(View):
     def __init__(self, config=None, *args, **kwargs):
