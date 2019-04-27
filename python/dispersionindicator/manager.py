@@ -61,6 +61,7 @@ class IndicatorManager(object):
         ctl = session.shared.crosshair
         ctl.onCrosshairViewChanged += self.onCrosshairViewChanged
         ctl.onCrosshairPositionChanged += self.onCrosshairPositionChanged
+        self.__crosshairPosition = list(ctl.getScaledPosition())
         g_guiResetters.add(self.onScreenResolutionChanged)
     
     def removeHandler(self):
@@ -172,11 +173,11 @@ class IndicatorManager(object):
             panel.updateScreenPosition(width, height)
 
     def onCrosshairViewChanged(self, viewID):
-        #BigWorld.logInfo(MOD_NAME, 'crosshairViewChanged: {}'.format(CROSSHAIR_VIEW_SYMBOL[viewID]), None)
+        BigWorld.logInfo(MOD_NAME, 'crosshairViewChanged: {}'.format(CROSSHAIR_VIEW_SYMBOL[viewID]), None)
         self.changeView(viewID)
 
     def onCrosshairPositionChanged(self, x, y):
-        #BigWorld.logInfo(MOD_NAME, 'onCrosshairPositionChanged: ({}, {})'.format(x, y), None)
+        BigWorld.logInfo(MOD_NAME, 'onCrosshairPositionChanged: ({}, {})'.format(x, y), None)
         self.__crosshairPosition = [ x, y ]
         for panel in self.__panels:
             panel.updateCrosshairPosition(x, y)
