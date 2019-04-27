@@ -16,20 +16,12 @@ package com.chirimen.dispersionindicator
         private var panel:PanelContainer;
         private var _config:Array = null;
         private var _style:Object = null;
-        	
+
         public function IndicatorPanel() : void
         {
             className = getQualifiedClassName(this);
             DebugUtils.LOG_DEBUG("%s: %s", className, "constructor");
             super();
-        }
-		
-        override protected function onPopulate() : void
-        {
-            DebugUtils.LOG_DEBUG("%s: %s", className, "onPopulate");
-            super.onPopulate();
-            //panel = new PanelContainer(_config, _style);
-            //addChild(panel);
         }
 
         public function as_setConfig(settings:Object) : void
