@@ -3,4 +3,12 @@
 [Lateset Release](../../releases/latest)
 
 ## screenshot
-![image](https://user-images.githubusercontent.com/11075065/54751909-b112b080-4c1f-11e9-883e-655e042a28b1.png)
+
+### while view
+![image](https://user-images.githubusercontent.com/11075065/56848251-91a72b80-6921-11e9-95c3-e0d9cd63726a.png)
+
+### convergence time of gun's dispersion
+![image](https://user-images.githubusercontent.com/11075065/56848277-e9de2d80-6921-11e9-8ea0-99af434f7dfb.png)
+
+### angle of hull
+![image](https://user-images.githubusercontent.com/11075065/56848288-09755600-6922-11e9-9422-d164fe511836.png)
