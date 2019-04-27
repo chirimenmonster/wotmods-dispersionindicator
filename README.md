@@ -12,3 +12,6 @@
 
 ### angle of hull
 ![image](https://user-images.githubusercontent.com/11075065/56848288-09755600-6922-11e9-9422-d164fe511836.png)
+
+### customize (config-full.json)
+![image](https://user-images.githubusercontent.com/11075065/56848391-645b7d00-6923-11e9-9682-7b1218157b94.png)
