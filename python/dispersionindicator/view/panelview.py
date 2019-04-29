@@ -5,11 +5,13 @@ from gui.Scaleform.framework import ViewSettings, ViewTypes, ScopeTemplates
 from gui.Scaleform.framework.entities.View import View
 from gui.battle_control.battle_constants import CROSSHAIR_VIEW_ID
 
-from ..mod_constants import MOD_NAME, CONSTANT, CROSSHAIR_VIEW_SYMBOL
+from ..mod_constants import MOD, CONSTANT, CROSSHAIR_VIEW_SYMBOL
+
+_logger = logging.getLogger(MOD.NAME)
+#_logger.setLevel(logging.DEBUG)
 
 PANEL_VIEW_ALIAS = 'DispersionIndicatorPanel'
 PANEL_VIEW_SWF_FILE_PATH = 'dispersionindicator/IndicatorPanel.swf'
-
 
 class PanelView(View):
     def __init__(self, config=None, *args, **kwargs):
@@ -38,26 +40,26 @@ class PanelView(View):
         self.onCreated += self.afterCreate
 
     def beforeCreate(self, pyEntity):
-        #BigWorld.logInfo(MOD_NAME, '{}.beforeCreate'.format(self.className), None)
+        _logger.debug('%s.beforeCreate', self.className)
         self.flashObject.as_setConfig(self.__settings)
 
     def afterCreate(self, pyEntity):
-        #BigWorld.logInfo(MOD_NAME, '{}.afterCreate'.format(self.className), None)
+        _logger.debug('%s.afterCreate', self.className)
         self.__wasPopulated = True
         self.setPosition()
     
     def as_setPositionS(self, x, y):
-        #BigWorld.logInfo(MOD_NAME, '{}.as_setPositionS: ({}, {})'.format(self.className, x, y), None)
+        _logger.debug('%s.as_setPositionS: (%d, %d)', self.className, x, y)
         self.flashObject.as_setPosition(x, y)
 
     def as_setValueS(self, name, value):
         if not self.__wasPopulated:
             return
-        #BigWorld.logInfo(MOD_NAME, '{}.as_setValueS: ({}, {})'.format(self.className, name, value), None)
+        _logger.debug('%s.as_setValueS: name=%s, value=%s', self.className, name, value)
         self.flashObject.as_setValue(name, value)
 
     def as_getPanelSizeS(self):
-        #BigWorld.logInfo(MOD_NAME, '{}.as_getPanelSizeS'.format(self.className), None)
+        _logger.debug('%s.as_getPanelSizeS', self.className)
         result = self.flashObject.as_getPanelSize()
         return result.width, result.height
 
@@ -71,12 +73,12 @@ class PanelView(View):
         self.__crosshairView = crosshairView
 
     def setVisible(self, isVisible):
-        #BigWorld.logInfo(MOD_NAME, '{}.setVisible: {}'.format(self.className, isVisible), None)
+        _logger.debug('%s.setVisible: %s', self.className, isVisible)
         if self.flashObject:
             self.flashObject.visible = isVisible
 
     def setPosition(self):
-        #BigWorld.logInfo(MOD_NAME, '{}.setPosition: {}'.format(self.className, self.__reference), None)
+        _logger.debug('%s.setPosition: %s', self.className, self.__reference)
         if self.__reference == 'SCREEN':
             self.setPositionByScreen()
         elif self.__reference == 'CROSSHAIR':
@@ -87,7 +89,7 @@ class PanelView(View):
             return
         if self.__reference != 'SCREEN':
             return
-        #BigWorld.logInfo(MOD_NAME, '{}.setPositionByScreen: {}'.format(self.className, self.__align), None)
+        _logger.debug('%s.setPositionByScreen: %s', self.className, self.__align)
         width, height = self.as_getPanelSizeS()
         offsetX = offsetY = 0
         halign, valign = self.__align
@@ -113,7 +115,7 @@ class PanelView(View):
             y = self.__offset[1] + offsetY
         elif self.__referencePoint[1] == 'BOTTOM':
             y = self.__screenSize[1] + self.__offset[1] + offsetY
-        #BigWorld.logInfo(MOD_NAME, '{}.setPositionByScreen ({}, {})'.format(self.className, x, y), None)
+        _logger.debug('%s.setPositionByScreen (%d, %d)', self.className, x, y)
         self.as_setPositionS(x, y)
 
     def setPositionByCrosshair(self):
@@ -121,7 +123,7 @@ class PanelView(View):
             return
         if self.__reference != 'CROSSHAIR':
             return
-        #BigWorld.logInfo(MOD_NAME, '{}.setPositionByCrosshair'.format(self.className), None)
+        _logger.debug('%s.setPositionByCrosshair', self.className)
         width, height = self.as_getPanelSizeS()
         offsetX = offsetY = 0
         halign, valign = self.__align
@@ -135,7 +137,7 @@ class PanelView(View):
             offsetY = - height / 2
         x = self.__crosshairPosition[0] + self.__crosshairOffset[self.__crosshairView][0] + offsetX
         y = self.__crosshairPosition[1] + self.__crosshairOffset[self.__crosshairView][1] + offsetY
-        #BigWorld.logInfo(MOD_NAME, '{}.setPositionByCrosshair ({}, {})'.format(self.className, x, y), None)
+        _logger.debug('%s.setPositionByCrosshair (%d, %d)', self.className, x, y)
         self.as_setPositionS(x, y)
 
 

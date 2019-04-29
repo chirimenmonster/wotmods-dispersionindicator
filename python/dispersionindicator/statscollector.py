@@ -1,4 +1,5 @@
 
+import logging
 import math
 import Math
 import BigWorld
@@ -6,8 +7,10 @@ from debug_utils import LOG_CURRENT_EXCEPTION
 from Avatar import PlayerAvatar
 from gun_rotation_shared import decodeGunAngles
 
-from mod_constants import MOD_NAME
+from mod_constants import MOD
 from hook import overrideMethod
+
+_logger = logging.getLogger(MOD.NAME)
 
 g_statscollector = None
 
@@ -23,32 +26,32 @@ def playerAvatar_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpee
             collector._updateDispersionAngle(avatar, dispersionAngle, turretRotationSpeed, withShot)
         except:
             LOG_CURRENT_EXCEPTION()
-            BigWorld.logWarning(MOD_NAME, 'fail to _updateDispersionAngle', None)
+            _logger.warning('fail to _updateDispersionAngle')
         try:
             collector._updateAimingInfo(avatar)
         except:
             LOG_CURRENT_EXCEPTION()
-            BigWorld.logWarning(MOD_NAME, 'fail to _updateAimingInfo', None)
+            _logger.warning('fail to _updateAimingInfo')
         try:
             collector._updateVehicleSpeeds(avatar)
         except:
             LOG_CURRENT_EXCEPTION()
-            BigWorld.logWarning(MOD_NAME, 'fail to _updateVehicleSpeeds', None)
+            _logger.warning('fail to _updateVehicleSpeeds')
         try:
             collector._updateVehicleEngineState(avatar)
         except:
             LOG_CURRENT_EXCEPTION()
-            BigWorld.logWarning(MOD_NAME, 'fail to _updateVehicleEngineState', None)
+            _logger.warning('fail to _updateVehicleEngineState')
         try:
             collector._updateGunAngles(avatar)
         except:
             LOG_CURRENT_EXCEPTION()
-            BigWorld.logWarning(MOD_NAME, 'fail to _updateGunAngles', None)
+            _logger.warning('fail to _updateGunAngles')
         try:
             collector._updateVehicleDirection(avatar)
         except:
             LOG_CURRENT_EXCEPTION()
-            BigWorld.logWarning(MOD_NAME, 'fail to _updateVehicleDirection', None)
+            _logger.warning('fail to _updateVehicleDirection')
         return result
 
 

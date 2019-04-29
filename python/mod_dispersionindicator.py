@@ -1,21 +1,24 @@
 
+import logging
 import math
 import json
-import BigWorld
 import ResMgr
 from debug_utils import LOG_CURRENT_EXCEPTION
 from gui.Scaleform.framework import g_entitiesFactories
 
-from dispersionindicator.mod_constants import MOD_NAME, CONFIG_FILES
+from dispersionindicator.mod_constants import MOD, CONFIG_FILES
 from dispersionindicator.manager import IndicatorManager
 from dispersionindicator.view.panelview import PANEL_VIEW_SETTINGS
+
+_logger = logging.getLogger(MOD.NAME)
+#_logger.setLevel(logging.DEBUG)
 
 g_indicatorManager = None
 
 def init():
     global g_indicatorManager
     try:
-        BigWorld.logInfo(MOD_NAME, '{} initialize'.format(MOD_NAME), None)
+        _logger.info('initialize: %s %s', MOD.PACKAGE_ID, MOD.VERSION)
         settings = _readConfig()
         g_indicatorManager = manager = IndicatorManager(settings)
         g_entitiesFactories.addSettings(PANEL_VIEW_SETTINGS)
@@ -33,7 +36,7 @@ def _readConfig():
     for file in CONFIG_FILES:
         if not ResMgr.isFile(file):
             continue
-        BigWorld.logInfo(MOD_NAME, 'load config file: {}'.format(file), None)
+        _logger.info('load config file: %s', file)
         section = ResMgr.openSection(file)
         data = json.loads(section.asString, object_hook=encode_key)
         config['default'].update(data.get('default', {}))
