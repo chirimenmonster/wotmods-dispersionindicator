@@ -3,8 +3,13 @@ import math
 
 from constants import ARENA_PERIOD
 from gui.battle_control.battle_constants import CROSSHAIR_VIEW_ID
+from gui.app_loader.settings import GUI_GLOBAL_SPACE_ID
 
-MOD_NAME = '${name}'
+class MOD:
+    ID = '${mod_id}'
+    PACKAGE_ID = '${package_id}'
+    NAME = '${name}'
+    VERSION = '${version}'
 
 CONFIG_FILES = [
     '${resource_dir}/default.json',
@@ -33,4 +38,14 @@ ARENA_PERIOD_SYMBOL = {
     ARENA_PERIOD.PREBATTLE:     'PREBATTLE',
     ARENA_PERIOD.BATTLE:        'BATTLE',
     ARENA_PERIOD.AFTERBATTLE:   'AFTERBATTLE'
+}
+
+GUI_GLOBAL_SPACE_SYMBOL = {
+    GUI_GLOBAL_SPACE_ID.UNDEFINED:      'UNDEFINED',
+    GUI_GLOBAL_SPACE_ID.WAITING:        'WAITING',
+    GUI_GLOBAL_SPACE_ID.INTRO_VIDEO:    'INTRO_VIDEO',
+    GUI_GLOBAL_SPACE_ID.LOGIN:          'LOGIN',
+    GUI_GLOBAL_SPACE_ID.LOBBY:          'LOBBY',
+    GUI_GLOBAL_SPACE_ID.BATTLE_LOADING: 'BATTLE_LOADING',
+    GUI_GLOBAL_SPACE_ID.BATTLE:         'BATTLE',
 }

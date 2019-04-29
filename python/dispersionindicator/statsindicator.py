@@ -1,16 +1,18 @@
 
+import logging
 import json
 import weakref
 from functools import partial
 
-import BigWorld
 import GUI
 from gui.app_loader import g_appLoader
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.Scaleform.framework.entities.View import ViewKey
 
-from mod_constants import MOD_NAME, CONSTANT, CROSSHAIR_VIEW_SYMBOL
+from mod_constants import MOD, CONSTANT, CROSSHAIR_VIEW_SYMBOL
 from view.panelview import PANEL_VIEW_ALIAS
+
+_logger = logging.getLogger(MOD.NAME)
 
 SWF_FILE = 'IndicatorPanel.swf'
 SWF_PATH = '${flash_dir}'
@@ -72,20 +74,20 @@ class StatsIndicator(StatsIndicatorMeta):
             }
         app = g_appLoader.getDefBattleApp()
         if not app:
-            BigWorld.logInfo(MOD_NAME, '{}.init: not found app'.format(self.className), None)
+            _logger.info('%s.init: not found app', self.className)
             return
         app.loadView(SFViewLoadParams(PANEL_VIEW_ALIAS, name), config=self.__guiSettings)
         pyEntity = app.containerManager.getViewByKey(ViewKey(PANEL_VIEW_ALIAS, name))
         self.__pyEntity = weakref.proxy(pyEntity)
 
     def start(self):
-        BigWorld.logInfo(MOD_NAME, '{}.start: "{}"'.format(self.className, self.name), None)
+        _logger.info('%s.start: "%s"', self.className, self.name)
         for name, config in self.__statsSource.items():
             text = config['format'].format(0)
             self.__setIndicatorValue(name, text)
 
     def stop(self):
-        BigWorld.logInfo(MOD_NAME, '{}.stop: "{}"'.format(self.className, self.name), None)
+        _logger.info('%s.stop: "%s"', self.className, self.name)
         try:
             self.__pyEntity.setVisible(False)
         except weakref.ReferenceError:
