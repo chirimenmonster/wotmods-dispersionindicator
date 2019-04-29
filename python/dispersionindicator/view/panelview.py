@@ -55,7 +55,7 @@ class PanelView(View):
     def as_setValueS(self, name, value):
         if not self.__wasPopulated:
             return
-        _logger.debug('%s.as_setValueS: name=%s, value=%s', self.className, name, value)
+        #_logger.debug('%s.as_setValueS: name=%s, value=%s', self.className, name, value)
         self.flashObject.as_setValue(name, value)
 
     def as_getPanelSizeS(self):

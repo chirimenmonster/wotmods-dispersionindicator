@@ -11,15 +11,27 @@ from dispersionindicator.manager import IndicatorManager
 from dispersionindicator.view.panelview import PANEL_VIEW_SETTINGS
 
 _logger = logging.getLogger(MOD.NAME)
-#_logger.setLevel(logging.DEBUG)
 
 g_indicatorManager = None
+
+def getLogLevel(name):
+    logLevel = {
+        'CRITICAL':     logging.CRITICAL,
+        'ERROR':        logging.ERROR,
+        'WARNING':      logging.WARNING,
+        'INFO':         logging.INFO,
+        'DEBUG':        logging.DEBUG,
+        'NOTSET':       logging.NOTSET
+    }
+    return logLevel.get(name, logging.INFO)
 
 def init():
     global g_indicatorManager
     try:
         _logger.info('initialize: %s %s', MOD.PACKAGE_ID, MOD.VERSION)
         settings = _readConfig()
+        logLevel = getLogLevel(settings['common'].get('logLevel', 'INFO'))
+        _logger.setLevel(logLevel)
         g_indicatorManager = manager = IndicatorManager(settings)
         g_entitiesFactories.addSettings(PANEL_VIEW_SETTINGS)
     except:
@@ -46,6 +58,7 @@ def _readConfig():
     #print json.dumps(config, indent=2)
 
     settings = { 'common': {}, 'panels': {} }
+    settings['common']['logLevel'] = config['default']['logLevel']
     settings['common']['updateInterval'] = config['default']['updateInterval']
     for name, paneldef in config['panels'].items():
         style = {}

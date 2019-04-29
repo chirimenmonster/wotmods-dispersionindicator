@@ -26,7 +26,7 @@ class StatsLogger(StatsIndicatorMeta):
    
     def update(self):
         data = [ self.getStatus(key, 1.0) for key in self.names ]
-        _logger.debug('%s.update: %s', self.className, data)
+        #_logger.debug('%s.update: %s', self.className, data)
         self.__strage.append(data)
     
     def outputLog(self):
