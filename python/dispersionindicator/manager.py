@@ -38,7 +38,7 @@ class IndicatorManager(object):
     def initPanel(self):
         _logger.info('initPanel')
         self.addHandler()
-        for name, paneldef in self.__config['panels'].items():
+        for name, paneldef in sorted(self.__config['panels'].items(), key=lambda x:x[0]):
             self.__panels.append(StatsIndicator(paneldef, self.__stats, name))
         if 'logs' in self.__config:
             self.__panels.append(StatsLogger(self.__config['logs'], self.__stats))
