@@ -38,6 +38,7 @@ class IndicatorManager(object):
     def initPanel(self):
         _logger.info('initPanel')
         self.addHandler()
+        self.__panels = []
         for name, paneldef in sorted(self.__config['panels'].items(), key=lambda x:x[0]):
             self.__panels.append(StatsIndicator(paneldef, self.__stats, name))
         if 'logs' in self.__config:
@@ -50,7 +51,7 @@ class IndicatorManager(object):
         self.stopIntervalTimer()
         self.invisiblePanel()
         self.removeHandler()
-        self._panels = []
+        self.__panels = []
 
     def addHandler(self):
         if self.__isSetHandler:
