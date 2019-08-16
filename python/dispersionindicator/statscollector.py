@@ -111,7 +111,7 @@ class StatsCollector(object):
 
     def _updateVehicleEngineState(self, avatar):
         vehicle = avatar.getVehicleAttached()
-        detailedEngineState = vehicle.appearance._CompoundAppearance__detailedEngineState
+        detailedEngineState = vehicle.appearance.detailedEngineState
         self.engineRPM = detailedEngineState.rpm
         self.engineRelativeRPM = detailedEngineState.relativeRPM
 
