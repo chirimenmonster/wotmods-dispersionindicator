@@ -222,6 +222,13 @@
             "format":   "{:.2f}",
             "factor":   1.0,
             "unit":     ""
+        },
+        "distance": {
+            "status":   "distance",
+            "title":    "Distance",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "m"
         }
     }
 }

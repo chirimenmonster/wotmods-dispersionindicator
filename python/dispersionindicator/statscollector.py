@@ -6,13 +6,40 @@ import BigWorld
 from debug_utils import LOG_CURRENT_EXCEPTION
 from Avatar import PlayerAvatar
 from gun_rotation_shared import decodeGunAngles
+from AvatarInputHandler.gun_marker_ctrl import _StandardShotResult, _CrosshairShotResults
 
 from mod_constants import MOD
-from hook import overrideMethod
+from hook import overrideMethod, overrideClassMethod
 
 _logger = logging.getLogger(MOD.NAME)
 
 g_statscollector = None
+
+
+@overrideClassMethod(_StandardShotResult, 'getShotResult')
+def StandardShotResults_getShotResult(orig, cls, hitPoint, collision, _, excludeTeam = 0):
+    result = orig(cls, hitPoint, collision, _, excludeTeam)
+    avatar = Bigworld.player()
+    collector = g_statscollector
+    try:
+        collector._updateDistance(avatar, hitPoint)
+    except:
+        LOG_CURRENT_EXCEPTION()
+        _logger.warning('fail to _updateDistance')
+    return result
+
+
+@overrideClassMethod(_CrosshairShotResults, 'getShotResult')
+def CrosshairShotResults_getShotResult(orig, cls, hitPoint, collision, direction, excludeTeam = 0):
+    result = orig(cls, hitPoint, collision, direction, excludeTeam)
+    avatar = Bigworld.player()
+    collector = g_statscollector
+    try:
+        collector._updateDistance(avatar, hitPoint)
+    except:
+        LOG_CURRENT_EXCEPTION()
+        _logger.warning('fail to _updateDistance')
+    return result
 
 
 @overrideMethod(PlayerAvatar, 'getOwnVehicleShotDispersionAngle')
@@ -114,6 +141,9 @@ class StatsCollector(object):
         detailedEngineState = vehicle.appearance.detailedEngineState
         self.engineRPM = detailedEngineState.rpm
         self.engineRelativeRPM = detailedEngineState.relativeRPM
+
+    def _updateDistance(self, avatar, hitPoint):
+        self.distance = (hitPointy - avatar.getOwnVehiclePosition()).length
 
     @property
     def aimingFactor(self):

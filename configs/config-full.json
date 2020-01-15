@@ -116,7 +116,8 @@
                 "vehicleRoll",
                 "vehicleRYaw",
                 "turretYaw",
-                "gunPitch"
+                "gunPitch",
+                "distance"
             ]
         }
     }
