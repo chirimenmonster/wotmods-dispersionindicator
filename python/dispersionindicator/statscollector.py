@@ -53,6 +53,11 @@ def playerAvatar_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpee
         except:
             LOG_CURRENT_EXCEPTION()
             _logger.warning('fail to _updateVehicleDirection')
+        try:
+            collector._updateShotInfo(avatar)
+        except:
+            LOG_CURRENT_EXCEPTION()
+            _logger.warning('fail to _updateShotInfo')
         return result
 
 
@@ -142,8 +147,23 @@ class StatsCollector(object):
         self.engineRPM = detailedEngineState.rpm
         self.engineRelativeRPM = detailedEngineState.relativeRPM
 
+    def _updateShotInfo(self, avatar):
+        shotDescr = avatar.getVehicleDescriptor().shot
+        self.shotSpeed = shotDescr.speed
+        self.shotGravity = shotDescr.gravity
+    
     def _updateDistance(self, avatar, hitPoint):
-        self.distance = (hitPoint - avatar.getOwnVehiclePosition()).length
+        position = avatar.getOwnVehiclePosition()
+        distance = hitPoint - position
+        self.distance = distance.length
+        self.distanceH = position.flatDistTo(hitPoint)
+        self.distanceV = distance.y
+        self.vehiclePosX = position.x
+        self.vehiclePosY = position.y
+        self.vehiclePosZ = position.z
+        self.targetPosX = hitPoint.x
+        self.targetPosY = hitPoint.y
+        self.targetPosZ = hitPoint.z
 
     @property
     def aimingFactor(self):

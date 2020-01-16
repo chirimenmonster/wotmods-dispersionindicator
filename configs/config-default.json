@@ -223,12 +223,82 @@
             "factor":   1.0,
             "unit":     ""
         },
+        "shotSpeed": {
+            "status":   "shotSpeed",
+            "title":    "Shot Speed",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "m/s"
+        },
+        "shotGravity": {
+            "status":   "shotGravity",
+            "title":    "Shot Gravity",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "m/s2"
+        },
         "distance": {
             "status":   "distance",
             "title":    "Distance",
             "format":   "{:.2f}",
             "factor":   1.0,
             "unit":     "m"
+        },
+        "distanceH": {
+            "status":   "distanceH",
+            "title":    "Distance H",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "m"
+        },
+        "distanceV": {
+            "status":   "distanceV",
+            "title":    "Distance V",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "m"
+        },
+        "vehiclePosX": {
+            "status":   "vehiclePosX",
+            "title":    "Posision X",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        "vehiclePosY": {
+            "status":   "vehiclePosY",
+            "title":    "Posision Y",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        "vehiclePosZ": {
+            "status":   "vehiclePosZ",
+            "title":    "Posision Z",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        "targetPosX": {
+            "status":   "targetPosX",
+            "title":    "Target X",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        "targetPosY": {
+            "status":   "targetPosY",
+            "title":    "Target Y",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        "targetPosZ": {
+            "status":   "targetPosZ",
+            "title":    "Target Z",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
         }
     }
 }

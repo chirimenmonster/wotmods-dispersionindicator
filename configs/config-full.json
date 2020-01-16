@@ -117,7 +117,17 @@
                 "vehicleRYaw",
                 "turretYaw",
                 "gunPitch",
-                "distance"
+                "shotSpeed",
+                "shotGravity",
+                "distance",
+                "distanceH",
+                "distanceV",
+                "vehiclePosX",
+                "vehiclePosY",
+                "vehiclePosZ",
+                "targetPosX",
+                "targetPosY",
+                "targetPosZ"
             ]
         }
     }
