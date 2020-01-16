@@ -16,32 +16,6 @@ _logger = logging.getLogger(MOD.NAME)
 g_statscollector = None
 
 
-@overrideClassMethod(_StandardShotResult, 'getShotResult')
-def StandardShotResults_getShotResult(orig, cls, hitPoint, collision, _, excludeTeam = 0):
-    result = orig(cls, hitPoint, collision, _, excludeTeam)
-    avatar = Bigworld.player()
-    collector = g_statscollector
-    try:
-        collector._updateDistance(avatar, hitPoint)
-    except:
-        LOG_CURRENT_EXCEPTION()
-        _logger.warning('fail to _updateDistance')
-    return result
-
-
-@overrideClassMethod(_CrosshairShotResults, 'getShotResult')
-def CrosshairShotResults_getShotResult(orig, cls, hitPoint, collision, direction, excludeTeam = 0):
-    result = orig(cls, hitPoint, collision, direction, excludeTeam)
-    avatar = Bigworld.player()
-    collector = g_statscollector
-    try:
-        collector._updateDistance(avatar, hitPoint)
-    except:
-        LOG_CURRENT_EXCEPTION()
-        _logger.warning('fail to _updateDistance')
-    return result
-
-
 @overrideMethod(PlayerAvatar, 'getOwnVehicleShotDispersionAngle')
 def playerAvatar_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpeed, withShot = 0):
     dispersionAngle = result = orig(self, turretRotationSpeed, withShot)
@@ -80,6 +54,32 @@ def playerAvatar_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpee
             LOG_CURRENT_EXCEPTION()
             _logger.warning('fail to _updateVehicleDirection')
         return result
+
+
+@overrideClassMethod(_StandardShotResult, 'getShotResult')
+def StandardShotResults_getShotResult(orig, cls, hitPoint, collision, _, excludeTeam = 0):
+    result = orig(hitPoint, collision, _, excludeTeam)
+    avatar = BigWorld.player()
+    collector = g_statscollector
+    try:
+        collector._updateDistance(avatar, hitPoint)
+    except:
+        LOG_CURRENT_EXCEPTION()
+        _logger.warning('fail to _updateDistance')
+    return result
+
+
+@overrideClassMethod(_CrosshairShotResults, 'getShotResult')
+def CrosshairShotResults_getShotResult(orig, cls, hitPoint, collision, direction, excludeTeam = 0):
+    result = orig(hitPoint, collision, direction, excludeTeam)
+    avatar = BigWorld.player()
+    collector = g_statscollector
+    try:
+        collector._updateDistance(avatar, hitPoint)
+    except:
+        LOG_CURRENT_EXCEPTION()
+        _logger.warning('fail to _updateDistance')
+    return result
 
 
 class StatsCollector(object):
@@ -143,7 +143,7 @@ class StatsCollector(object):
         self.engineRelativeRPM = detailedEngineState.relativeRPM
 
     def _updateDistance(self, avatar, hitPoint):
-        self.distance = (hitPointy - avatar.getOwnVehiclePosition()).length
+        self.distance = (hitPoint - avatar.getOwnVehiclePosition()).length
 
     @property
     def aimingFactor(self):
