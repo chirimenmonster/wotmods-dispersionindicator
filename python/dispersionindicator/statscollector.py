@@ -5,8 +5,8 @@ import Math
 import BigWorld
 from debug_utils import LOG_CURRENT_EXCEPTION
 from Avatar import PlayerAvatar
+from AvatarInputHandler.control_modes import _GunControlMode
 from gun_rotation_shared import decodeGunAngles
-from AvatarInputHandler.gun_marker_ctrl import _StandardShotResult, _CrosshairShotResults
 
 from mod_constants import MOD
 from hook import overrideMethod, overrideClassMethod
@@ -53,37 +53,19 @@ def playerAvatar_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpee
         except:
             LOG_CURRENT_EXCEPTION()
             _logger.warning('fail to _updateVehicleDirection')
-        try:
-            collector._updateShotInfo(avatar)
-        except:
-            LOG_CURRENT_EXCEPTION()
-            _logger.warning('fail to _updateShotInfo')
         return result
 
 
-@overrideClassMethod(_StandardShotResult, 'getShotResult')
-def StandardShotResults_getShotResult(orig, cls, hitPoint, collision, _, excludeTeam = 0):
-    result = orig(hitPoint, collision, _, excludeTeam)
+@overrideMethod(_GunControlMode, 'updateGunMarker')
+def gunControlMode_updateGunMarker(orig, self, markerType, pos, direction, size, relaxTime, collData):
+    result = orig(self, markerType, pos, direction, size, relaxTime, collData)
     avatar = BigWorld.player()
     collector = g_statscollector
     try:
-        collector._updateDistance(avatar, hitPoint)
+        collector._updateShotInfo(avatar, pos)
     except:
         LOG_CURRENT_EXCEPTION()
-        _logger.warning('fail to _updateDistance')
-    return result
-
-
-@overrideClassMethod(_CrosshairShotResults, 'getShotResult')
-def CrosshairShotResults_getShotResult(orig, cls, hitPoint, collision, direction, excludeTeam = 0):
-    result = orig(hitPoint, collision, direction, excludeTeam)
-    avatar = BigWorld.player()
-    collector = g_statscollector
-    try:
-        collector._updateDistance(avatar, hitPoint)
-    except:
-        LOG_CURRENT_EXCEPTION()
-        _logger.warning('fail to _updateDistance')
+        _logger.warning('fail to _updateShotInfo')
     return result
 
 
@@ -147,12 +129,20 @@ class StatsCollector(object):
         self.engineRPM = detailedEngineState.rpm
         self.engineRelativeRPM = detailedEngineState.relativeRPM
 
-    def _updateShotInfo(self, avatar):
+    def _updateShotInfo(self, avatar, hitPoint):
         shotDescr = avatar.getVehicleDescriptor().shot
         self.shotSpeed = shotDescr.speed
         self.shotGravity = shotDescr.gravity
-    
-    def _updateDistance(self, avatar, hitPoint):
+        shotPos, shotVec = avatar.gunRotator.getCurShotPosition()
+        self.shotSpeedH = shotVec.flatDistTo(Math.Vector3((0.0, 0.0, 0.0)))
+        self.shotSpeedV = shotVec.y
+        self.shotPosX = shotPos.x
+        self.shotPosY = shotPos.y
+        self.shotPosZ = shotPos.z
+        shotDistance = hitPoint - shotPos
+        self.shotDistance = shotDistance.length
+        self.shotDistanceH = shotPos.flatDistTo(hitPoint)
+        self.shotDistanceV = shotDistance.y
         position = avatar.getOwnVehiclePosition()
         distance = hitPoint - position
         self.distance = distance.length
@@ -184,5 +174,10 @@ class StatsCollector(object):
         fm = 16.0
         fc = self.modifiedAimingFactor
         return (fc ** k - 1.0) / (fm ** k - 1.0) * 100.0
+
+    @property
+    def impactTime(self):
+        return self.shotDistanceH / self.shotSpeedH
+
 
 g_statscollector = StatsCollector()

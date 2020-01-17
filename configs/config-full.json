@@ -119,15 +119,24 @@
                 "gunPitch",
                 "shotSpeed",
                 "shotGravity",
-                "distance",
-                "distanceH",
-                "distanceV",
+                "shotSpeedH",
+                "shotSpeedV",
                 "vehiclePosX",
                 "vehiclePosY",
                 "vehiclePosZ",
+                "shotPosX",
+                "shotPosY",
+                "shotPosZ",
                 "targetPosX",
                 "targetPosY",
-                "targetPosZ"
+                "targetPosZ",
+                "distance",
+                "distanceH",
+                "distanceV",
+                "shotDistance",
+                "shotDistanceH",
+                "shotDistanceV",
+                "impactTime"
             ]
         }
     }

@@ -237,6 +237,20 @@
             "factor":   1.0,
             "unit":     "m/s2"
         },
+        "shotSpeedH": {
+            "status":   "shotSpeedH",
+            "title":    "Shot Speed H",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "m/s"
+        },
+        "shotSpeedV": {
+            "status":   "shotSpeedV",
+            "title":    "Shot Speed V",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "m/s"
+        },
         "distance": {
             "status":   "distance",
             "title":    "Distance",
@@ -258,47 +272,96 @@
             "factor":   1.0,
             "unit":     "m"
         },
+        "shotDistance": {
+            "status":   "shotDistance",
+            "title":    "Shot Distance",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "m"
+        },
+        "shotDistanceH": {
+            "status":   "shotDistanceH",
+            "title":    "Shot Distance H",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "m"
+        },
+        "shotDistanceV": {
+            "status":   "shotDistanceV",
+            "title":    "Shot Distance V",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "m"
+        },
         "vehiclePosX": {
             "status":   "vehiclePosX",
-            "title":    "Posision X",
+            "title":    "Vehicle Pos. X",
             "format":   "{:.2f}",
             "factor":   1.0,
             "unit":     ""
         },
         "vehiclePosY": {
             "status":   "vehiclePosY",
-            "title":    "Posision Y",
+            "title":    "Vehicle Pos. Y",
             "format":   "{:.2f}",
             "factor":   1.0,
             "unit":     ""
         },
         "vehiclePosZ": {
             "status":   "vehiclePosZ",
-            "title":    "Posision Z",
+            "title":    "Vehicle Pos. Z",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        "shotPosX": {
+            "status":   "shotPosX",
+            "title":    "Gun Pos. X",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        "shotPosY": {
+            "status":   "shotPosY",
+            "title":    "Gun Pos. Y",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        "shotPosZ": {
+            "status":   "shotPosZ",
+            "title":    "Gun Pos. Z",
             "format":   "{:.2f}",
             "factor":   1.0,
             "unit":     ""
         },
         "targetPosX": {
             "status":   "targetPosX",
-            "title":    "Target X",
+            "title":    "Target Pos. X",
             "format":   "{:.2f}",
             "factor":   1.0,
             "unit":     ""
         },
         "targetPosY": {
             "status":   "targetPosY",
-            "title":    "Target Y",
+            "title":    "Target Pos. Y",
             "format":   "{:.2f}",
             "factor":   1.0,
             "unit":     ""
         },
         "targetPosZ": {
             "status":   "targetPosZ",
-            "title":    "Target Z",
+            "title":    "Target Pos. Z",
             "format":   "{:.2f}",
             "factor":   1.0,
             "unit":     ""
+        },
+        "impactTime": {
+            "status":   "impactTime",
+            "title":    "Impact Time",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "s"
         }
     }
 }
