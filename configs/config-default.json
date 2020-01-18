@@ -222,6 +222,146 @@
             "format":   "{:.2f}",
             "factor":   1.0,
             "unit":     ""
+        },
+        "shotSpeed": {
+            "status":   "shotSpeed",
+            "title":    "Shot Speed",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "m/s"
+        },
+        "shotGravity": {
+            "status":   "shotGravity",
+            "title":    "Shot Gravity",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "m/s2"
+        },
+        "shotSpeedH": {
+            "status":   "shotSpeedH",
+            "title":    "Shot Speed H.",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "m/s"
+        },
+        "shotSpeedV": {
+            "status":   "shotSpeedV",
+            "title":    "Shot Speed V.",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "m/s"
+        },
+        "distance": {
+            "status":   "distance",
+            "title":    "Distance",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "m"
+        },
+        "distanceH": {
+            "status":   "distanceH",
+            "title":    "Distance H.",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "m"
+        },
+        "distanceV": {
+            "status":   "distanceV",
+            "title":    "Distance V.",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "m"
+        },
+        "shotDistance": {
+            "status":   "shotDistance",
+            "title":    "Shot Distance",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "m"
+        },
+        "shotDistanceH": {
+            "status":   "shotDistanceH",
+            "title":    "Shot Distance H.",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "m"
+        },
+        "shotDistanceV": {
+            "status":   "shotDistanceV",
+            "title":    "Shot Distance V.",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "m"
+        },
+        "vehiclePosX": {
+            "status":   "vehiclePosX",
+            "title":    "Vehicle Pos. X",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        "vehiclePosY": {
+            "status":   "vehiclePosY",
+            "title":    "Vehicle Pos. Y",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        "vehiclePosZ": {
+            "status":   "vehiclePosZ",
+            "title":    "Vehicle Pos. Z",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        "shotPosX": {
+            "status":   "shotPosX",
+            "title":    "Gun Pos. X",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        "shotPosY": {
+            "status":   "shotPosY",
+            "title":    "Gun Pos. Y",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        "shotPosZ": {
+            "status":   "shotPosZ",
+            "title":    "Gun Pos. Z",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        "targetPosX": {
+            "status":   "targetPosX",
+            "title":    "Target Pos. X",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        "targetPosY": {
+            "status":   "targetPosY",
+            "title":    "Target Pos. Y",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        "targetPosZ": {
+            "status":   "targetPosZ",
+            "title":    "Target Pos. Z",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        "flightTime": {
+            "status":   "flightTime",
+            "title":    "Flight Time",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     "s"
         }
     }
 }

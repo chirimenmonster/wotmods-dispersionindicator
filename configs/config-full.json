@@ -101,7 +101,7 @@
                 "horizontalAnchor":             "RIGHT",
                 "verticalAnchor":               "BOTTOM",
                 "referencePoint":               "SCREEN_RIGHT_BOTTOM",
-                "screenOffset":                 [ -420, -100 ],
+                "screenOffset":                 [ -620, -100 ],
                 "backgroundColor":              [ 0, 0, 0, 0.4 ],
                 "backgroundAlpha":              0.4
             },
@@ -117,6 +117,38 @@
                 "vehicleRYaw",
                 "turretYaw",
                 "gunPitch"
+            ]
+        },
+        "panel_2": {
+            "style": {
+                "horizontalAnchor":             "RIGHT",
+                "verticalAnchor":               "BOTTOM",
+                "referencePoint":               "SCREEN_RIGHT_BOTTOM",
+                "screenOffset":                 [ -420, -100 ],
+                "backgroundColor":              [ 0, 0, 0, 0.4 ],
+                "backgroundAlpha":              0.4
+            },
+            "items":   [
+                "vehiclePosX",
+                "vehiclePosY",
+                "vehiclePosZ",
+                "shotPosX",
+                "shotPosY",
+                "shotPosZ",
+                "targetPosX",
+                "targetPosY",
+                "targetPosZ",
+                "distance",
+                "distanceH",
+                "distanceV",
+                "shotDistance",
+                "shotDistanceH",
+                "shotDistanceV",
+                "shotGravity",
+                "shotSpeed",
+                "shotSpeedH",
+                "shotSpeedV",
+                "flightTime"
             ]
         }
     }

@@ -5,10 +5,11 @@ import Math
 import BigWorld
 from debug_utils import LOG_CURRENT_EXCEPTION
 from Avatar import PlayerAvatar
+from AvatarInputHandler.control_modes import _GunControlMode
 from gun_rotation_shared import decodeGunAngles
 
 from mod_constants import MOD
-from hook import overrideMethod
+from hook import overrideMethod, overrideClassMethod
 
 _logger = logging.getLogger(MOD.NAME)
 
@@ -53,6 +54,19 @@ def playerAvatar_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpee
             LOG_CURRENT_EXCEPTION()
             _logger.warning('fail to _updateVehicleDirection')
         return result
+
+
+@overrideMethod(_GunControlMode, 'updateGunMarker')
+def gunControlMode_updateGunMarker(orig, self, markerType, pos, direction, size, relaxTime, collData):
+    result = orig(self, markerType, pos, direction, size, relaxTime, collData)
+    avatar = BigWorld.player()
+    collector = g_statscollector
+    try:
+        collector._updateShotInfo(avatar, pos)
+    except:
+        LOG_CURRENT_EXCEPTION()
+        _logger.warning('fail to _updateShotInfo')
+    return result
 
 
 class StatsCollector(object):
@@ -115,6 +129,32 @@ class StatsCollector(object):
         self.engineRPM = detailedEngineState.rpm
         self.engineRelativeRPM = detailedEngineState.relativeRPM
 
+    def _updateShotInfo(self, avatar, hitPoint):
+        shotDescr = avatar.getVehicleDescriptor().shot
+        self.shotSpeed = shotDescr.speed
+        self.shotGravity = shotDescr.gravity
+        shotPos, shotVec = avatar.gunRotator.getCurShotPosition()
+        self.shotSpeedH = shotVec.flatDistTo(Math.Vector3((0.0, 0.0, 0.0)))
+        self.shotSpeedV = shotVec.y
+        self.shotPosX = shotPos.x
+        self.shotPosY = shotPos.y
+        self.shotPosZ = shotPos.z
+        shotDistance = hitPoint - shotPos
+        self.shotDistance = shotDistance.length
+        self.shotDistanceH = shotPos.flatDistTo(hitPoint)
+        self.shotDistanceV = shotDistance.y
+        position = avatar.getOwnVehiclePosition()
+        distance = hitPoint - position
+        self.distance = distance.length
+        self.distanceH = position.flatDistTo(hitPoint)
+        self.distanceV = distance.y
+        self.vehiclePosX = position.x
+        self.vehiclePosY = position.y
+        self.vehiclePosZ = position.z
+        self.targetPosX = hitPoint.x
+        self.targetPosY = hitPoint.y
+        self.targetPosZ = hitPoint.z
+
     @property
     def aimingFactor(self):
         return self.dAngleAiming / self.shotDispersionAngle
@@ -134,5 +174,10 @@ class StatsCollector(object):
         fm = 16.0
         fc = self.modifiedAimingFactor
         return (fc ** k - 1.0) / (fm ** k - 1.0) * 100.0
+
+    @property
+    def flightTime(self):
+        return self.shotDistanceH / self.shotSpeedH
+
 
 g_statscollector = StatsCollector()
