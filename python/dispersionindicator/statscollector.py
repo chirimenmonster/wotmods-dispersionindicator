@@ -176,7 +176,7 @@ class StatsCollector(object):
         return (fc ** k - 1.0) / (fm ** k - 1.0) * 100.0
 
     @property
-    def impactTime(self):
+    def flightTime(self):
         return self.shotDistanceH / self.shotSpeedH
 
 

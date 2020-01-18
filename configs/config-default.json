@@ -239,14 +239,14 @@
         },
         "shotSpeedH": {
             "status":   "shotSpeedH",
-            "title":    "Shot Speed H",
+            "title":    "Shot Speed H.",
             "format":   "{:.2f}",
             "factor":   1.0,
             "unit":     "m/s"
         },
         "shotSpeedV": {
             "status":   "shotSpeedV",
-            "title":    "Shot Speed V",
+            "title":    "Shot Speed V.",
             "format":   "{:.2f}",
             "factor":   1.0,
             "unit":     "m/s"
@@ -260,14 +260,14 @@
         },
         "distanceH": {
             "status":   "distanceH",
-            "title":    "Distance H",
+            "title":    "Distance H.",
             "format":   "{:.2f}",
             "factor":   1.0,
             "unit":     "m"
         },
         "distanceV": {
             "status":   "distanceV",
-            "title":    "Distance V",
+            "title":    "Distance V.",
             "format":   "{:.2f}",
             "factor":   1.0,
             "unit":     "m"
@@ -281,14 +281,14 @@
         },
         "shotDistanceH": {
             "status":   "shotDistanceH",
-            "title":    "Shot Distance H",
+            "title":    "Shot Distance H.",
             "format":   "{:.2f}",
             "factor":   1.0,
             "unit":     "m"
         },
         "shotDistanceV": {
             "status":   "shotDistanceV",
-            "title":    "Shot Distance V",
+            "title":    "Shot Distance V.",
             "format":   "{:.2f}",
             "factor":   1.0,
             "unit":     "m"
@@ -356,9 +356,9 @@
             "factor":   1.0,
             "unit":     ""
         },
-        "impactTime": {
-            "status":   "impactTime",
-            "title":    "Impact Time",
+        "flightTime": {
+            "status":   "flightTime",
+            "title":    "Flight Time",
             "format":   "{:.2f}",
             "factor":   1.0,
             "unit":     "s"
