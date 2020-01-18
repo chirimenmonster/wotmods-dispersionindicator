@@ -109,7 +109,6 @@ class StatsCollector(object):
         self.vehicleRYaw = rYaw
 
     def _updateGunAngles(self, avatar):
-        #vehicle = avatar.vehicle
         vehicle = avatar.getVehicleAttached()
         vd = vehicle.typeDescriptor
         #gunOffs = vd.turret.gunPosition
