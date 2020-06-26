@@ -17,6 +17,7 @@ CONFIG_FILES = [
     '${config_file}'
 ]
 
+LOG_DIR = '${log_dir}'
 LOG_FILE = '${log_file}'
 
 CONSTANT = {

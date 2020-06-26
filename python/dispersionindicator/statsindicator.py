@@ -61,6 +61,7 @@ class StatsIndicator(StatsIndicatorMeta):
         self.__guiSettings['stats'] = []
         self.__statsSource = {}
         for key in config['items']:
+            print 'key: ', key
             setting = self.statsdefs[key]
             factor = setting['factor']
             if isinstance(factor, str) or isinstance(factor, unicode):

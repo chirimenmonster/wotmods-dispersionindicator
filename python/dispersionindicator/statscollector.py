@@ -7,6 +7,7 @@ from debug_utils import LOG_CURRENT_EXCEPTION
 from Avatar import PlayerAvatar
 from AvatarInputHandler.control_modes import _GunControlMode
 from gun_rotation_shared import decodeGunAngles
+from vehicle_extras import ShowShooting
 
 from mod_constants import MOD
 from hook import overrideMethod, overrideClassMethod
@@ -55,6 +56,55 @@ def playerAvatar_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpee
             _logger.warning('fail to _updateVehicleDirection')
         return result
 
+@overrideMethod(PlayerAvatar, 'shoot')
+def playerAvatar_shoot(orig, self, isRepeat = False):
+    if not self._PlayerAvatar__isOnArena:
+        return
+    else:
+        dualGunControl = self.inputHandler.dualGunControl
+        if dualGunControl is not None and dualGunControl.isShotLocked:
+            return
+        if self._PlayerAvatar__tryChargeCallbackID is not None:
+            return
+        for deviceName, stateName in self._PlayerAvatar__deviceStates.iteritems():
+            msgName = self._PlayerAvatar__cantShootCriticals.get(deviceName + '_' + stateName)
+            if msgName is not None:
+                return
+        canShoot, error = self.guiSessionProvider.shared.ammo.canShoot(isRepeat)
+        if not canShoot:
+            return
+        if self._PlayerAvatar__gunReloadCommandWaitEndTime > BigWorld.time():
+            return
+        if self._PlayerAvatar__shotWaitingTimerID is not None or self._PlayerAvatar__isWaitingForShot:
+            return
+        if self._PlayerAvatar__chargeWaitingTimerID is not None:
+            return
+        if self.isGunLocked or self._PlayerAvatar__isOwnBarrelUnderWater():
+            return
+        if self._PlayerAvatar__isOwnVehicleSwitchingSiegeMode():
+            return
+    time = BigWorld.time()
+    _logger.warning('catch PlayerAvatar.shoot: time={}'.format(time))
+    g_statscollector._updateShootEvent()
+    return orig(self, isRepeat)
+    
+
+@overrideMethod(PlayerAvatar, 'showShotResults')
+def playerAvatar_showShotResults(orig, self, result):
+    time = BigWorld.time()
+    _logger.warning('catch PlayerAvatar.showShotResults: time={}'.format(time))
+    g_statscollector._recordShotEvent()
+    return orig(self, result)
+
+
+@overrideMethod(ShowShooting, '_ShowShooting__doShot')
+def showShooting_doShot(orig, self, data):
+    if data['entity'].isPlayerVehicle:
+        time = BigWorld.time()
+        _logger.warning('catch ShowShooting.__doShot: time={}'.format(time))
+        g_statscollector._updateShotEvent()
+    return orig(self, data)
+
 
 @overrideMethod(_GunControlMode, 'updateGunMarker')
 def gunControlMode_updateGunMarker(orig, self, markerType, pos, direction, size, relaxTime, collData):
@@ -70,6 +120,11 @@ def gunControlMode_updateGunMarker(orig, self, markerType, pos, direction, size,
 
 
 class StatsCollector(object):
+    def __init__(self):
+        self.onShot = None
+        self.onShoot = None
+        self.onShotResult = None
+
     def _updateDispersionAngle(self, avatar, dispersionAngle, turretRotationSpeed, withShot):
         self.dAngleAiming = dispersionAngle[0]
         self.dAngleIdeal = dispersionAngle[1]
@@ -153,6 +208,18 @@ class StatsCollector(object):
         self.targetPosX = hitPoint.x
         self.targetPosY = hitPoint.y
         self.targetPosZ = hitPoint.z
+
+    def _updateShootEvent(self):
+        if callable(self.onShoot):
+            self.onShoot()
+
+    def _updateShotEvent(self):
+        if callable(self.onShot):
+            self.onShot()
+
+    def _recordShotEvent(self):
+        if callable(self.onShotResult):
+            self.onShotResult()
 
     @property
     def aimingFactor(self):
