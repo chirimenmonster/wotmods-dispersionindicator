@@ -121,9 +121,7 @@ def gunControlMode_updateGunMarker(orig, self, markerType, pos, direction, size,
 
 class StatsCollector(object):
     def __init__(self):
-        self.onShot = None
-        self.onShoot = None
-        self.onShotResult = None
+        self.onEvent = None
 
     def _updateDispersionAngle(self, avatar, dispersionAngle, turretRotationSpeed, withShot):
         self.dAngleAiming = dispersionAngle[0]
@@ -210,16 +208,17 @@ class StatsCollector(object):
         self.targetPosZ = hitPoint.z
 
     def _updateShootEvent(self):
-        if callable(self.onShoot):
-            self.onShoot()
+        self._onEvent('actionShoot')
 
     def _updateShotEvent(self):
-        if callable(self.onShot):
-            self.onShot()
+        self._onEvent('receiveShot')
 
     def _recordShotEvent(self):
-        if callable(self.onShotResult):
-            self.onShotResult()
+        self._onEvent('receiveShotResult')
+
+    def _onEvent(self, reason):
+        if callable(self.onEvent):
+            self.onEvent(reason)
 
     @property
     def aimingFactor(self):

@@ -28,9 +28,9 @@ class IndicatorManager(object):
         self.__isSetHandler = False
         self.__visible = False
         self.__crosshairPosition = [ 0, 0 ]
-        self.__onShoot = []
-        self.__onShot = []
-        self.__onShotResult = []
+        self.__onShoot = None
+        self.__onShot = None
+        self.__onShotResult = None
         interval = config['common']['updateInterval']
         self.__timeInterval = TimeInterval(interval, self, 'onWatchStats')
         g_eventBus.addListener(events.AppLifeCycleEvent.INITIALIZED, self.onAppInitialized)
@@ -38,6 +38,7 @@ class IndicatorManager(object):
         appLoader = dependency.instance(IAppLoader)
         appLoader.onGUISpaceEntered += self.onGUISpaceEntered
         appLoader.onGUISpaceLeft += self.onGUISpaceLeft
+        g_statscollector.onEvent = self.onCustomEvent
 
     def initPanel(self):
         _logger.info('initPanel')
@@ -50,12 +51,7 @@ class IndicatorManager(object):
         if 'eventLog' in self.__config or True:
             panel = EventLogger(None, self.__stats)
             self.__panels.append(panel)
-            self.__onShot = lambda p=panel: p.onEvent('shot')
-            self.__onShoot = lambda p=panel: p.onEvent('shoot')
-            self.__onShotResult = lambda p=panel: p.onEvent('shotResult')
-            g_statscollector.onShot = lambda : self.__onShot()
-            g_statscollector.onShoot = lambda : self.__onShot()
-            g_statscollector.onShotResult = lambda : self.__onShotResult()
+            self.__onCustomEvent = panel.onEvent
         self.updateScreenPosition()
         self.updateCrosshairPosition()
 
@@ -204,11 +200,5 @@ class IndicatorManager(object):
         for panel in self.__panels:
             panel.update()
 
-    def onEventShoot(self):
-        self.__onShoot()
-
-    def onEventShot(self):
-        self.__onShot()
-
-    def onEventShotResult(self):
-        self.__onShotResult()
+    def onCustomEvent(self, reason):
+        self.__onCustomEvent(reason)
