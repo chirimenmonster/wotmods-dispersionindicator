@@ -14,9 +14,10 @@ _logger = logging.getLogger(MOD.NAME)
 class EventLogger(StatsIndicatorMeta):
     def __init__(self, config, collector):
         super(EventLogger, self).__init__(collector)
-        self.log_file = os.path.join(LOG_DIR, 'event.log')
-        self.names = ['distance', 'distanceH', 'distanceV', 'shotSpeed', 'shotSpeedH', 'shotSpeedV']
-        self.header = [ '# event', 'time' ] + self.names
+        self.log_file = os.path.join(LOG_DIR, config['logfile'])
+        self.names = config['items']
+        self.header = self.names[:]
+        self.header[0] = '# ' + self.header[0]
         self.vehicleName = avatar_getter.getVehicleTypeDescriptor().type.name
 
     def start(self):
@@ -28,9 +29,13 @@ class EventLogger(StatsIndicatorMeta):
         self.outputLog()
 
     def onEvent(self, reason):
-        _logger.info('%s.onEvent: %s', self.className, reason)
-        data = [ reason, BigWorld.time() ]
-        data += [ getattr(self.vehicleStats, key, '') for key in self.names ]
+        def getStatus(key):
+            if key == 'eventName':
+                return reason
+            elif key == 'eventTime':
+                return BigWorld.time()
+            return getattr(self.vehicleStats, key, '')
+        data = [ getStatus(key) for key in self.names ]
         self.__strage.append(data)
 
     def outputLog(self):

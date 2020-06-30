@@ -32,14 +32,35 @@
             ]
         }
     },
-    "logs": {
+    "loggers": {
         "output_0": {
+            "channel":  "status",
+            "logfile":  "status.log",
             "items": [
                 "currTime",
                 "aimingTimeConverging",
                 "modifiedAimingFactor",
                 "aimingFactor",
                 "dAngleAiming"
+            ]
+        },
+        "output_1": {
+            "channel":  "event",
+            "logfile":  "event.log",
+            "events": [
+                "actionShoot",
+                "receiveShot",
+                "receiveShotResult"
+            ],
+            "items": [
+                "eventName",
+                "eventTime",
+                "shotDistance",
+                "shotDistanceH",
+                "shotDistanceV",
+                "shotSpeed",
+                "shotSpeedH",
+                "shotSpeedV"
             ]
         }
     }

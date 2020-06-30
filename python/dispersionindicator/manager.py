@@ -44,14 +44,15 @@ class IndicatorManager(object):
         _logger.info('initPanel')
         self.addHandler()
         self.__panels = []
-        for name, paneldef in sorted(self.__config['panels'].items(), key=lambda x:x[0]):
+        for name, paneldef in sorted(self.__config.get('panels', {}).items(), key=lambda x:x[0]):
             self.__panels.append(StatsIndicator(paneldef, self.__stats, name))
-        if 'logs' in self.__config:
-            self.__panels.append(StatsLogger(self.__config['logs'], self.__stats))
-        if 'eventLog' in self.__config or True:
-            panel = EventLogger(None, self.__stats)
-            self.__panels.append(panel)
-            g_statscollector.onEventHandlers += panel.onEvent
+        for name, paneldef in self.__config.get('loggers', {}).items():
+            if 'status' in paneldef['channel']:
+                self.__panels.append(StatsLogger(paneldef, self.__stats))
+            elif 'event' in paneldef['channel']:
+                panel = EventLogger(paneldef, self.__stats)
+                self.__panels.append(panel)
+                g_statscollector.onEventHandlers += panel.onEvent
         self.updateScreenPosition()
         self.updateCrosshairPosition()
 

@@ -6,13 +6,14 @@ import csv
 import BigWorld
 
 from statsindicator import StatsIndicatorMeta
-from mod_constants import MOD, LOG_FILE
+from mod_constants import MOD, LOG_DIR
 
 _logger = logging.getLogger(MOD.NAME)
 
 class StatsLogger(StatsIndicatorMeta):
     def __init__(self, config, collector):
         super(StatsLogger, self).__init__(collector)
+        self.log_file = os.path.join(LOG_DIR, config['logfile'])
         statsdefs = config['statsDefs']
         self.names = [ statsdefs[key]['status'] for key in config['items'] ]
 
@@ -30,12 +31,11 @@ class StatsLogger(StatsIndicatorMeta):
         self.__strage.append(data)
     
     def outputLog(self):
-        log_dir = os.path.dirname(LOG_FILE)
-        if not os.path.isdir(log_dir):
-            _logger.info('%s.outputLog: make dir %s', self.className, log_dir)
-            os.makedirs(log_dir)
-        _logger.info('%s.outputLog: save file: %s, %s', self.className, LOG_FILE, len(self.__strage))
-        with open(LOG_FILE, 'wb') as fp:
+        if not os.path.isdir(LOG_DIR):
+            _logger.info('%s.outputLog: make dir %s', self.className, LOG_DIR)
+            os.makedirs(LOG_DIR)
+        _logger.info('%s.outputLog: save file: %s, %s', self.className, self.log_file, len(self.__strage))
+        with open(self.log_file, 'ab') as fp:
             writer = csv.writer(fp, dialect='excel')
             writer.writerow(self.names)
             writer.writerows(self.__strage)
