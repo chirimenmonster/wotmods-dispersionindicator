@@ -3,6 +3,7 @@ import logging
 import math
 import Math
 import BigWorld
+from Event import Event
 from debug_utils import LOG_CURRENT_EXCEPTION
 from Avatar import PlayerAvatar
 from AvatarInputHandler.control_modes import _GunControlMode
@@ -57,7 +58,49 @@ def playerAvatar_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpee
         return result
 
 @overrideMethod(PlayerAvatar, 'shoot')
-def playerAvatar_shoot(orig, self, isRepeat = False):
+def playerAvatar_shoot(orig, *args, **kwargs):
+    try:
+        hook_playerAvatar_shoot(*args, **kwargs)
+    except:
+        LOG_CURRENT_EXCEPTION()
+        _logger.warning('failed to call hook_playerAvatar_shoot')
+    return orig(*args, **kwargs)
+
+
+@overrideMethod(PlayerAvatar, 'showShotResults')
+def playerAvatar_showShotResults(orig, *args, **kwargs):
+    try:
+        hook_playerAvatar_showShotResults(*args, **kwargs)
+    except:
+        LOG_CURRENT_EXCEPTION()
+        _logger.warning('failed to call hook_playerAvatar_showShotResult')
+    return orig(*args, **kwargs)
+
+
+@overrideMethod(ShowShooting, '_ShowShooting__doShot')
+def showShooting_doShot(orig, *args, **kwargs):
+    try:
+        hook_showShooting_doShot(*args, **kwargs)
+    except:
+        LOG_CURRENT_EXCEPTION()
+        _logger.warning('failed to call hook_showShooting_doShot')
+    return orig(*args, **kwargs)
+
+
+@overrideMethod(_GunControlMode, 'updateGunMarker')
+def gunControlMode_updateGunMarker(orig, self, markerType, pos, direction, size, relaxTime, collData):
+    result = orig(self, markerType, pos, direction, size, relaxTime, collData)
+    avatar = BigWorld.player()
+    collector = g_statscollector
+    try:
+        collector._updateShotInfo(avatar, pos)
+    except:
+        LOG_CURRENT_EXCEPTION()
+        _logger.warning('fail to _updateShotInfo')
+    return result
+
+
+def hook_playerAvatar_shoot(self, isRepeat = False):
     if not self._PlayerAvatar__isOnArena:
         return
     else:
@@ -84,44 +127,27 @@ def playerAvatar_shoot(orig, self, isRepeat = False):
         if self._PlayerAvatar__isOwnVehicleSwitchingSiegeMode():
             return
     time = BigWorld.time()
-    _logger.warning('catch PlayerAvatar.shoot: time={}'.format(time))
+    _logger.info('catch PlayerAvatar.shoot: time={}'.format(time))
     g_statscollector._updateShootEvent()
-    return orig(self, isRepeat)
-    
 
-@overrideMethod(PlayerAvatar, 'showShotResults')
-def playerAvatar_showShotResults(orig, self, result):
+
+def hook_playerAvatar_showShotResults(self, result):
     time = BigWorld.time()
-    _logger.warning('catch PlayerAvatar.showShotResults: time={}'.format(time))
+    _logger.info('catch PlayerAvatar.showShotResults: time={}'.format(time))
     g_statscollector._recordShotEvent()
-    return orig(self, result)
 
 
-@overrideMethod(ShowShooting, '_ShowShooting__doShot')
-def showShooting_doShot(orig, self, data):
-    if data['entity'].isPlayerVehicle:
-        time = BigWorld.time()
-        _logger.warning('catch ShowShooting.__doShot: time={}'.format(time))
-        g_statscollector._updateShotEvent()
-    return orig(self, data)
-
-
-@overrideMethod(_GunControlMode, 'updateGunMarker')
-def gunControlMode_updateGunMarker(orig, self, markerType, pos, direction, size, relaxTime, collData):
-    result = orig(self, markerType, pos, direction, size, relaxTime, collData)
-    avatar = BigWorld.player()
-    collector = g_statscollector
-    try:
-        collector._updateShotInfo(avatar, pos)
-    except:
-        LOG_CURRENT_EXCEPTION()
-        _logger.warning('fail to _updateShotInfo')
-    return result
+def hook_showShooting_doShot(self, data):
+    if not data['entity'].isPlayerVehicle:
+        return
+    time = BigWorld.time()
+    _logger.info('catch ShowShooting.__doShot: time={}'.format(time))
+    g_statscollector._updateShotEvent()
 
 
 class StatsCollector(object):
     def __init__(self):
-        self.onEvent = None
+        self.onEventHandlers = Event()
 
     def _updateDispersionAngle(self, avatar, dispersionAngle, turretRotationSpeed, withShot):
         self.dAngleAiming = dispersionAngle[0]
@@ -208,17 +234,16 @@ class StatsCollector(object):
         self.targetPosZ = hitPoint.z
 
     def _updateShootEvent(self):
-        self._onEvent('actionShoot')
+        self.__onEvent('actionShoot')
 
     def _updateShotEvent(self):
-        self._onEvent('receiveShot')
+        self.__onEvent('receiveShot')
 
     def _recordShotEvent(self):
-        self._onEvent('receiveShotResult')
+        self.__onEvent('receiveShotResult')
 
-    def _onEvent(self, reason):
-        if callable(self.onEvent):
-            self.onEvent(reason)
+    def __onEvent(self, reason):
+        self.onEventHandlers(reason)
 
     @property
     def aimingFactor(self):

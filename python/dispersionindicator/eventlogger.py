@@ -28,6 +28,7 @@ class EventLogger(StatsIndicatorMeta):
         self.outputLog()
 
     def onEvent(self, reason):
+        _logger.info('%s.onEvent: %s', self.className, reason)
         data = [ reason, BigWorld.time() ]
         data += [ getattr(self.vehicleStats, key, '') for key in self.names ]
         self.__strage.append(data)
@@ -36,7 +37,7 @@ class EventLogger(StatsIndicatorMeta):
         if not os.path.isdir(LOG_DIR):
             _logger.info('%s.outputLog: make dir %s', self.className, LOG_DIR)
             os.makedirs(LOG_DIR)
-        _logger.info('%s.outputEventLog: save file: %s, %s', self.className, self.log_file, len(self.__strage))
+        _logger.info('%s.outputEventLog: add to file: %s (nrecords=%s)', self.className, os.path.abspath(self.log_file), len(self.__strage))
         with open(self.log_file, 'ab') as fp:
             writer = csv.writer(fp, dialect='excel')
             writer.writerow(['# vehicle={}'.format(self.vehicleName)])
