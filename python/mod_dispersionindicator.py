@@ -57,7 +57,7 @@ def _readConfig():
         config['loggers'] = data.get('loggers', {})
     #print json.dumps(config, indent=2)
 
-    settings = { 'common': {}, 'panels': {}, 'loggers': {} }
+    settings = { 'common': {}, 'panels': {}, 'loggers': {}, 'eventloggers': {} }
     settings['common']['logLevel'] = config['default']['logLevel']
     settings['common']['updateInterval'] = config['default']['updateInterval']
     for name, paneldef in config['panels'].items():
@@ -77,10 +77,13 @@ def _readConfig():
         channel = paneldef['channel']
         logfile = paneldef['logfile']
         panelconf = { 'channel': channel, 'logfile': logfile, 'statsDefs': statsDef, 'items': items }
-        if channel == 'events':
+        if channel == 'status':
+            settings['loggers'][name] = panelconf
+        elif channel == 'event':
             panelconf['events'] = paneldef.get('events', {})
-        settings['loggers'][name] = panelconf
-    #print json.dumps(settings['loggers'], indent=2)
+            settings['eventloggers'][name] = panelconf
+    print json.dumps(settings['loggers'], indent=2)
+    print json.dumps(settings['eventloggers'], indent=2)
 
     return settings
 

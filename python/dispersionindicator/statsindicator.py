@@ -20,6 +20,8 @@ SWF_PATH = '${flash_dir}'
 
 
 class StatsIndicatorMeta(object):
+    onEvent = None
+
     def __init__(self, collector):
         self.className = self.__class__.__name__
         self.__vehicleStats = collector
