@@ -10,12 +10,13 @@ from AvatarInputHandler.control_modes import _GunControlMode
 from gun_rotation_shared import decodeGunAngles
 from vehicle_extras import ShowShooting
 
-from mod_constants import MOD
+from mod_constants import MOD, EVENT
 from hook import overrideMethod, overrideClassMethod
 
 _logger = logging.getLogger(MOD.NAME)
 
 g_statscollector = None
+
 
 
 @overrideMethod(PlayerAvatar, 'getOwnVehicleShotDispersionAngle')
@@ -128,13 +129,13 @@ def hook_playerAvatar_shoot(self, isRepeat = False):
             return
     time = BigWorld.time()
     _logger.info('catch PlayerAvatar.shoot: time={}'.format(time))
-    g_statscollector._updateShootEvent()
+    g_statscollector.onEvent(EVENT.ACTION_SHOOT)
 
 
 def hook_playerAvatar_showShotResults(self, result):
     time = BigWorld.time()
     _logger.info('catch PlayerAvatar.showShotResults: time={}'.format(time))
-    g_statscollector._recordShotEvent()
+    g_statscollector.onEvent(EVENT.RECEIVE_SHOT_RESULT)
 
 
 def hook_showShooting_doShot(self, data):
@@ -142,12 +143,12 @@ def hook_showShooting_doShot(self, data):
         return
     time = BigWorld.time()
     _logger.info('catch ShowShooting.__doShot: time={}'.format(time))
-    g_statscollector._updateShotEvent()
+    g_statscollector.onEvent(EVENT.RECEIVE_SHOT)
 
 
 class StatsCollector(object):
     def __init__(self):
-        self.onEventHandlers = Event()
+        self.eventHandlers = Event()
 
     def _updateDispersionAngle(self, avatar, dispersionAngle, turretRotationSpeed, withShot):
         self.dAngleAiming = dispersionAngle[0]
@@ -233,17 +234,8 @@ class StatsCollector(object):
         self.targetPosY = hitPoint.y
         self.targetPosZ = hitPoint.z
 
-    def _updateShootEvent(self):
-        self.__onEvent('actionShoot')
-
-    def _updateShotEvent(self):
-        self.__onEvent('receiveShot')
-
-    def _recordShotEvent(self):
-        self.__onEvent('receiveShotResult')
-
-    def __onEvent(self, reason):
-        self.onEventHandlers(reason)
+    def onEvent(self, reason):
+        self.eventHandlers(reason)
 
     @property
     def aimingFactor(self):

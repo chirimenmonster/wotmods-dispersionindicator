@@ -50,3 +50,14 @@ GUI_GLOBAL_SPACE_SYMBOL = {
     GuiGlobalSpaceID.BATTLE_LOADING:    'BATTLE_LOADING',
     GuiGlobalSpaceID.BATTLE:            'BATTLE',
 }
+
+class EVENT:
+    ACTION_SHOOT = 'actionShoot'
+    RECEIVE_SHOT = 'receiveShot'
+    RECEIVE_SHOT_RESULT = 'receiveShotResult'
+
+EVENT_LIST = [
+    EVENT.ACTION_SHOOT,
+    EVENT.RECEIVE_SHOT,
+    EVENT.RECEIVE_SHOT_RESULT
+]

@@ -38,7 +38,7 @@ class IndicatorManager(object):
         appLoader = dependency.instance(IAppLoader)
         appLoader.onGUISpaceEntered += self.onGUISpaceEntered
         appLoader.onGUISpaceLeft += self.onGUISpaceLeft
-        g_statscollector.onEventHandlers.clear()
+        g_statscollector.eventHandlers.clear()
 
     def initPanel(self):
         _logger.info('initPanel')
@@ -52,7 +52,7 @@ class IndicatorManager(object):
             self.__panels.append(EventLogger(paneldef, self.__stats))
         for panel in self.__panels:
             if callable(getattr(panel, 'onEvent')):
-                g_statscollector.onEventHandlers += panel.onEvent
+                g_statscollector.eventHandlers += panel.onEvent
         self.updateScreenPosition()
         self.updateCrosshairPosition()
 
@@ -64,7 +64,7 @@ class IndicatorManager(object):
         for panel in self.__panels:
             if isinstance(panel, EventLogger):
                 _logger.info('del EventLogger.onEvent')
-                g_statscollector.onEventHandlers -= panel.onEvent
+                g_statscollector.eventHandlers -= panel.onEvent
         self.__panels = []
 
     def addHandler(self):

@@ -2,8 +2,10 @@
 import logging
 import os
 import csv
+from datetime import datetime
 
 import BigWorld
+from gui.battle_control import avatar_getter
 
 from statsindicator import StatsIndicatorMeta
 from mod_constants import MOD, LOG_DIR
@@ -16,6 +18,9 @@ class StatsLogger(StatsIndicatorMeta):
         self.log_file = os.path.join(LOG_DIR, config['logfile'])
         statsdefs = config['statsDefs']
         self.names = [ statsdefs[key]['status'] for key in config['items'] ]
+        self.header = self.names[:]
+        self.header.insert(0, '# time')
+        self.vehicleName = avatar_getter.getVehicleTypeDescriptor().type.name
 
     def start(self):
         _logger.info('%s.start', self.className)
@@ -27,7 +32,7 @@ class StatsLogger(StatsIndicatorMeta):
    
     def update(self):
         data = [ self.getStatus(key, 1.0) for key in self.names ]
-        #_logger.debug('%s.update: %s', self.className, data)
+        data.insert(0, datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:23])
         self.__strage.append(data)
     
     def outputLog(self):
@@ -37,5 +42,6 @@ class StatsLogger(StatsIndicatorMeta):
         _logger.info('%s.outputLog: save file: %s, %s', self.className, self.log_file, len(self.__strage))
         with open(self.log_file, 'ab') as fp:
             writer = csv.writer(fp, dialect='excel')
-            writer.writerow(self.names)
+            writer.writerow(['# vehicle={}'.format(self.vehicleName)])
+            writer.writerow(self.header)
             writer.writerows(self.__strage)

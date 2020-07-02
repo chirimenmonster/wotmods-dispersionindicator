@@ -8,7 +8,7 @@ import BigWorld
 from gui.battle_control import avatar_getter
 
 from statsindicator import StatsIndicatorMeta
-from mod_constants import MOD, LOG_DIR
+from mod_constants import MOD, LOG_DIR, EVENT
 
 _logger = logging.getLogger(MOD.NAME)
 
@@ -20,6 +20,7 @@ class EventLogger(StatsIndicatorMeta):
         self.header = self.names[:]
         self.header.insert(0, '# time')
         self.vehicleName = avatar_getter.getVehicleTypeDescriptor().type.name
+        self.acceptEvents = config['events']
 
     def start(self):
         _logger.info('%s.start', self.className)
@@ -37,6 +38,8 @@ class EventLogger(StatsIndicatorMeta):
         self.__file.close()
 
     def onEvent(self, reason):
+        if reason not in self.acceptEvents:
+            return
         def getStatus(key):
             if key == 'eventName':
                 return reason

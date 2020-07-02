@@ -6,7 +6,7 @@ import ResMgr
 from debug_utils import LOG_CURRENT_EXCEPTION
 from gui.Scaleform.framework import g_entitiesFactories
 
-from dispersionindicator.mod_constants import MOD, CONFIG_FILES
+from dispersionindicator.mod_constants import MOD, CONFIG_FILES, EVENT, EVENT_LIST
 from dispersionindicator.manager import IndicatorManager
 from dispersionindicator.view.panelview import PANEL_VIEW_SETTINGS
 
@@ -80,7 +80,9 @@ def _readConfig():
         if channel == 'status':
             settings['loggers'][name] = panelconf
         elif channel == 'event':
-            panelconf['events'] = paneldef.get('events', {})
+            print json.dumps(EVENT_LIST, indent=2)
+            print json.dumps(paneldef.get('events', []), indent=2)
+            panelconf['events'] = [ e for e in EVENT_LIST if e in paneldef.get('events', []) ]
             settings['eventloggers'][name] = panelconf
     print json.dumps(settings['loggers'], indent=2)
     print json.dumps(settings['eventloggers'], indent=2)
