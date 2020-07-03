@@ -3,6 +3,7 @@ import logging
 import math
 import Math
 import BigWorld
+import BattleReplay
 from Event import Event
 from debug_utils import LOG_CURRENT_EXCEPTION
 from Avatar import PlayerAvatar
@@ -26,6 +27,11 @@ def playerAvatar_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpee
         avatar = self
         collector = g_statscollector
         collector.currTime = BigWorld.time()
+        try:
+            collector._updatePing()
+        except:
+            LOG_CURRENT_EXCEPTION()
+            _logger.warning('fail to _updatePing')
         try:
             collector._updateDispersionAngle(avatar, dispersionAngle, turretRotationSpeed, withShot)
         except:
@@ -149,6 +155,28 @@ def hook_showShooting_doShot(self, data):
 class StatsCollector(object):
     def __init__(self):
         self.eventHandlers = Event()
+
+    def _updatePing(self):
+        replayCtrl = BattleReplay.g_replayCtrl
+        if replayCtrl.isPlaying:
+            ping = replayCtrl.ping
+            fps = BigWorld.getFPS()[1]
+            self.fpsReplay = int(replayCtrl.fps)
+        else:
+            ping = BigWorld.statPing()
+            fps = BigWorld.getFPS()[1]
+            self.fpsReplay = -1
+        try:
+            self.ping = int(ping)
+            self.fps = int(fps)
+        except (ValueError, OverflowError):
+            self.ping = -1
+            self.fps = -1
+        latency = BigWorld.LatencyInfo().value
+        self.latency_0 = latency[0]
+        self.latency_1 = latency[1]
+        self.latency_2 = latency[2]
+        self.latency_3 = latency[3]
 
     def _updateDispersionAngle(self, avatar, dispersionAngle, turretRotationSpeed, withShot):
         self.dAngleAiming = dispersionAngle[0]

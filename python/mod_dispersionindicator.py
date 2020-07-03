@@ -80,12 +80,10 @@ def _readConfig():
         if channel == 'status':
             settings['loggers'][name] = panelconf
         elif channel == 'event':
-            print json.dumps(EVENT_LIST, indent=2)
-            print json.dumps(paneldef.get('events', []), indent=2)
             panelconf['events'] = [ e for e in EVENT_LIST if e in paneldef.get('events', []) ]
             settings['eventloggers'][name] = panelconf
-    print json.dumps(settings['loggers'], indent=2)
-    print json.dumps(settings['eventloggers'], indent=2)
+    #print json.dumps(settings['loggers'], indent=2)
+    #print json.dumps(settings['eventloggers'], indent=2)
 
     return settings
 

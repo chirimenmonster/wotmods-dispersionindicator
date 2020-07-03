@@ -17,7 +17,8 @@ class StatsLogger(StatsIndicatorMeta):
         super(StatsLogger, self).__init__(collector)
         self.log_file = os.path.join(LOG_DIR, config['logfile'])
         statsdefs = config['statsDefs']
-        self.names = [ statsdefs[key]['status'] for key in config['items'] ]
+        #self.names = [ statsdefs[key]['status'] for key in config['items'] ]
+        self.names = config['items']
         self.header = self.names[:]
         self.header.insert(0, '# time')
         self.vehicleName = avatar_getter.getVehicleTypeDescriptor().type.name
@@ -31,7 +32,7 @@ class StatsLogger(StatsIndicatorMeta):
         self.outputLog()
    
     def update(self):
-        data = [ self.getStatus(key, 1.0) for key in self.names ]
+        data = [ self.getStatus(key) for key in self.names ]
         data.insert(0, datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:23])
         self.__strage.append(data)
     

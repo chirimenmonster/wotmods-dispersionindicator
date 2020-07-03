@@ -30,8 +30,12 @@ class StatsIndicatorMeta(object):
     def vehicleStats(self):
         return self.__vehicleStats
 
-    def getStatus(self, name, factor):
-        return getattr(self.vehicleStats, name, 0.0) * factor
+    def getStatus(self, name, factor=None):
+        if factor is not None:
+            result = getattr(self.vehicleStats, name, 0.0) * factor
+        else:
+            result = getattr(self.vehicleStats, name, '')
+        return result
 
     def start(self):
         pass
