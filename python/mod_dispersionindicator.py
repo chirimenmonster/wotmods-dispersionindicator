@@ -60,14 +60,11 @@ def _readConfig():
         _logger.info('load config file: %s', file)
         section = ResMgr.openSection(file)
         data = json.loads(section.asString, object_pairs_hook=encode_key)
-        print json.dumps(data, indent=2)
         config['default'].update(data.get('default', {}))
         config['statsDefs'].update(data.get('statsDefs', {}))
         config['panelDefs'] = OrderedDict()
         panels = data.get('panels', OrderedDict())
-        print json.dumps(panels, indent=2)
         for name, panelDef in panels.items():
-            print json.dumps(panelDef, indent=2)
             panelDef['name'] = name
             panelDef['channel'] = 'indicator'
             config['panelDefs'][name] = panelDef

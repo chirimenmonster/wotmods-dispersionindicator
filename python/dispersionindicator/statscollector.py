@@ -10,6 +10,7 @@ from Avatar import PlayerAvatar
 from AvatarInputHandler.control_modes import _GunControlMode
 from gun_rotation_shared import decodeGunAngles
 from vehicle_extras import ShowShooting
+from gui.battle_control import avatar_getter
 
 from mod_constants import MOD, EVENT, CLIENT_STATUS_LIST
 from hook import overrideMethod, overrideClassMethod
@@ -181,6 +182,11 @@ class ClientStatus(object):
 class StatsCollector(object):
     def __init__(self):
         self.eventHandlers = Event()
+
+    def updateArenaInfo(self):
+        stats = g_clientStatus
+        stats.arenaName = avatar_getter.getArena().arenaType.geometryName
+        stats.vehicleName = avatar_getter.getVehicleTypeDescriptor().type.name
 
     def _updatePing(self):
         replayCtrl = BattleReplay.g_replayCtrl
