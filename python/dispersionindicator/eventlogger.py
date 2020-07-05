@@ -13,8 +13,8 @@ from mod_constants import MOD, LOG_DIR, EVENT
 _logger = logging.getLogger(MOD.NAME)
 
 class EventLogger(StatsIndicatorMeta):
-    def __init__(self, config, collector):
-        super(EventLogger, self).__init__(collector)
+    def __init__(self, config, clientStatus):
+        super(EventLogger, self).__init__(config, clientStatus)
         self.log_file = os.path.join(LOG_DIR, config['logfile'])
         self.names = config['items']
         self.header = self.names[:]
@@ -23,7 +23,7 @@ class EventLogger(StatsIndicatorMeta):
         self.acceptEvents = config['events']
 
     def start(self):
-        _logger.info('%s.start', self.className)
+        super(EventLogger, self).start()
         self.__strage = []
         if not os.path.isdir(LOG_DIR):
             _logger.info('%s.outputLog: make dir %s', self.className, LOG_DIR)
@@ -34,7 +34,7 @@ class EventLogger(StatsIndicatorMeta):
         self.__writer.writerow(self.header)
 
     def stop(self):
-        _logger.info('%s.stop', self.className)
+        super(EventLogger, self).stop()
         self.__file.close()
 
     def onEvent(self, reason):

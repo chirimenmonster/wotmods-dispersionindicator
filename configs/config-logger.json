@@ -1,6 +1,6 @@
 {
     "panels": {
-        "panel_0": {
+        "indicator_timeConverging": {
             "style": {
                 "horizontalAnchor":             "LEFT",
                 "verticalAnchor":               "CENTER",
@@ -29,6 +29,36 @@
             },
             "items": [
                 "aimingTimeConverging"
+            ]
+        },
+        "indicator_vehicleRYaw": {
+            "style": {
+                "horizontalAnchor":             "LEFT",
+                "verticalAnchor":               "BOTTOM",
+                "referencePoint":               "SCREEN_LEFT_BOTTOM",
+                "screenOffset":                 [ 120, -154 ],
+                "statsWidth":                   42,
+                "textColor":                    [ 255, 255, 0 ],
+                "filter":                       "DROPSHADOW",
+                "alpha":                        0.5,
+                "fontsize":                     14,
+                "paddingTop":                   0,
+                "paddingBottom":                0,
+                "paddingLeft":                  0,
+                "paddingRight":                 0,
+                "positionZ":                    0.1
+            },
+            "statsDefs": {
+                "vehicleRYaw": {
+                    "status":       "vehicleRYaw",
+                    "title":        "",
+                    "format":       "{:.0f}",
+                    "factor":       "RAD_TO_DEG",
+                    "unit":         ""
+                }
+            },
+            "items": [
+                "vehicleRYaw"
             ]
         }
     },

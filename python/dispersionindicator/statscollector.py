@@ -11,7 +11,7 @@ from AvatarInputHandler.control_modes import _GunControlMode
 from gun_rotation_shared import decodeGunAngles
 from vehicle_extras import ShowShooting
 
-from mod_constants import MOD, EVENT
+from mod_constants import MOD, EVENT, CLIENT_STATUS_LIST
 from hook import overrideMethod, overrideClassMethod
 
 _logger = logging.getLogger(MOD.NAME)
@@ -26,7 +26,6 @@ def playerAvatar_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpee
     if g_statscollector:
         avatar = self
         collector = g_statscollector
-        collector.currTime = BigWorld.time()
         try:
             collector._updatePing()
         except:
@@ -134,13 +133,13 @@ def hook_playerAvatar_shoot(self, isRepeat = False):
         if self._PlayerAvatar__isOwnVehicleSwitchingSiegeMode():
             return
     time = BigWorld.time()
-    _logger.info('catch PlayerAvatar.shoot: time={}'.format(time))
+    _logger.debug('catch PlayerAvatar.shoot: time={}'.format(time))
     g_statscollector.onEvent(EVENT.ACTION_SHOOT)
 
 
 def hook_playerAvatar_showShotResults(self, result):
     time = BigWorld.time()
-    _logger.info('catch PlayerAvatar.showShotResults: time={}'.format(time))
+    _logger.debug('catch PlayerAvatar.showShotResults: time={}'.format(time))
     g_statscollector.onEvent(EVENT.RECEIVE_SHOT_RESULT)
 
 
@@ -148,122 +147,12 @@ def hook_showShooting_doShot(self, data):
     if not data['entity'].isPlayerVehicle:
         return
     time = BigWorld.time()
-    _logger.info('catch ShowShooting.__doShot: time={}'.format(time))
+    _logger.debug('catch ShowShooting.__doShot: time={}'.format(time))
     g_statscollector.onEvent(EVENT.RECEIVE_SHOT)
 
 
-class StatsCollector(object):
-    def __init__(self):
-        self.eventHandlers = Event()
-
-    def _updatePing(self):
-        replayCtrl = BattleReplay.g_replayCtrl
-        if replayCtrl.isPlaying:
-            ping = replayCtrl.ping
-            fps = BigWorld.getFPS()[1]
-            self.fpsReplay = int(replayCtrl.fps)
-        else:
-            ping = BigWorld.statPing()
-            fps = BigWorld.getFPS()[1]
-            self.fpsReplay = -1
-        try:
-            self.ping = int(ping)
-            self.fps = int(fps)
-        except (ValueError, OverflowError):
-            self.ping = -1
-            self.fps = -1
-        latency = BigWorld.LatencyInfo().value
-        self.latency_0 = latency[0]
-        self.latency_1 = latency[1]
-        self.latency_2 = latency[2]
-        self.latency_3 = latency[3]
-
-    def _updateDispersionAngle(self, avatar, dispersionAngle, turretRotationSpeed, withShot):
-        self.dAngleAiming = dispersionAngle[0]
-        self.dAngleIdeal = dispersionAngle[1]
-        self.turretRotationSpeed = turretRotationSpeed
-        vDescr = avatar._PlayerAvatar__getDetailedVehicleDescriptor()
-        self.additiveFactor = avatar._PlayerAvatar__getAdditiveShotDispersionFactor(vDescr)
-        self.shotDispersionAngle = vDescr.gun.shotDispersionAngle
-        if withShot == 0:
-            self.shotFactor = 0.0
-        elif withShot == 1:
-            self.shotFactor = vDescr.gun.shotDispersionFactors['afterShot']
-        else:
-            self.shotFactor = vDescr.gun.shotDispersionFactors['afterShotInBurst']
-
-    def _updateAimingInfo(self, avatar):
-        aimingInfo = avatar._PlayerAvatar__aimingInfo
-        self.aimingStartTime = aimingInfo[0]
-        self.aimingStartFactor = aimingInfo[1]
-        self.multFactor = aimingInfo[2]
-        self.factorsTurretRotation = aimingInfo[3]
-        self.factorsMovement = aimingInfo[4]
-        self.factorsRotation = aimingInfo[5]
-        self.aimingTime = aimingInfo[6]
-
-    def _updateVehicleDirection(self, avatar):
-        matrix = Math.Matrix(avatar.getOwnVehicleMatrix())
-        self.vehicleYaw = matrix.yaw
-        self.vehiclePitch = matrix.pitch
-        self.vehicleRoll = matrix.roll
-        camera = BigWorld.camera()
-        cameraDirection = camera.direction
-        rYaw = self.vehicleYaw - cameraDirection.yaw
-        if rYaw > math.pi:
-            rYaw -= math.pi * 2
-        elif rYaw < -math.pi:
-            rYaw += math.pi * 2
-        self.vehicleRYaw = rYaw
-
-    def _updateGunAngles(self, avatar):
-        vehicle = avatar.getVehicleAttached()
-        vd = vehicle.typeDescriptor
-        #gunOffs = vd.turret.gunPosition
-        #turretOffs = vd.hull.turretPositions[0] + vd.chassis.hullPosition
-        turretYaw, gunPitch = decodeGunAngles(vehicle.gunAnglesPacked, vd.gun.pitchLimits['absolute'])
-        self.turretYaw = turretYaw
-        self.gunPitch = gunPitch
-
-    def _updateVehicleSpeeds(self, avatar):
-        vehicleSpeed, vehicleRSpeed = avatar.getOwnVehicleSpeeds(True)
-        self.vehicleSpeed = vehicleSpeed
-        self.vehicleRSpeed = vehicleRSpeed
-
-    def _updateVehicleEngineState(self, avatar):
-        vehicle = avatar.getVehicleAttached()
-        detailedEngineState = vehicle.appearance.detailedEngineState
-        self.engineRPM = detailedEngineState.rpm
-        self.engineRelativeRPM = detailedEngineState.relativeRPM
-
-    def _updateShotInfo(self, avatar, hitPoint):
-        shotDescr = avatar.getVehicleDescriptor().shot
-        self.shotSpeed = shotDescr.speed
-        self.shotGravity = shotDescr.gravity
-        shotPos, shotVec = avatar.gunRotator.getCurShotPosition()
-        self.shotSpeedH = shotVec.flatDistTo(Math.Vector3((0.0, 0.0, 0.0)))
-        self.shotSpeedV = shotVec.y
-        self.shotPosX = shotPos.x
-        self.shotPosY = shotPos.y
-        self.shotPosZ = shotPos.z
-        shotDistance = hitPoint - shotPos
-        self.shotDistance = shotDistance.length
-        self.shotDistanceH = shotPos.flatDistTo(hitPoint)
-        self.shotDistanceV = shotDistance.y
-        position = avatar.getOwnVehiclePosition()
-        distance = hitPoint - position
-        self.distance = distance.length
-        self.distanceH = position.flatDistTo(hitPoint)
-        self.distanceV = distance.y
-        self.vehiclePosX = position.x
-        self.vehiclePosY = position.y
-        self.vehiclePosZ = position.z
-        self.targetPosX = hitPoint.x
-        self.targetPosY = hitPoint.y
-        self.targetPosZ = hitPoint.z
-
-    def onEvent(self, reason):
-        self.eventHandlers(reason)
+class ClientStatus(object):
+    __slots__ = CLIENT_STATUS_LIST
 
     @property
     def aimingFactor(self):
@@ -290,4 +179,129 @@ class StatsCollector(object):
         return self.shotDistanceH / self.shotSpeedH
 
 
+class StatsCollector(object):
+    def __init__(self):
+        self.eventHandlers = Event()
+
+    def _updatePing(self):
+        replayCtrl = BattleReplay.g_replayCtrl
+        stats = g_clientStatus
+        stats.currTime = BigWorld.time()
+        if replayCtrl.isPlaying:
+            ping = replayCtrl.ping
+            fps = BigWorld.getFPS()[1]
+            fpsReplay = int(replayCtrl.fps)
+        else:
+            ping = BigWorld.statPing()
+            fps = BigWorld.getFPS()[1]
+            fpsReplay = -1
+        try:
+            stats.ping = int(ping)
+            stats.fps = int(fps)
+        except (ValueError, OverflowError):
+            stats.ping = -1
+            stats.fps = -1
+        stats.fpsReplay = fpsReplay
+        latency = BigWorld.LatencyInfo().value
+        stats.latency_0 = latency[0]
+        stats.latency_1 = latency[1]
+        stats.latency_2 = latency[2]
+        stats.latency_3 = latency[3]
+
+    def _updateDispersionAngle(self, avatar, dispersionAngle, turretRotationSpeed, withShot):
+        stats = g_clientStatus
+        stats.dAngleAiming = dispersionAngle[0]
+        stats.dAngleIdeal = dispersionAngle[1]
+        stats.turretRotationSpeed = turretRotationSpeed
+        vDescr = avatar._PlayerAvatar__getDetailedVehicleDescriptor()
+        stats.additiveFactor = avatar._PlayerAvatar__getAdditiveShotDispersionFactor(vDescr)
+        stats.shotDispersionAngle = vDescr.gun.shotDispersionAngle
+        if withShot == 0:
+            stats.shotFactor = 0.0
+        elif withShot == 1:
+            stats.shotFactor = vDescr.gun.shotDispersionFactors['afterShot']
+        else:
+            stats.shotFactor = vDescr.gun.shotDispersionFactors['afterShotInBurst']
+
+    def _updateAimingInfo(self, avatar):
+        stats = g_clientStatus
+        aimingInfo = avatar._PlayerAvatar__aimingInfo
+        stats.aimingStartTime = aimingInfo[0]
+        stats.aimingStartFactor = aimingInfo[1]
+        stats.multFactor = aimingInfo[2]
+        stats.factorsTurretRotation = aimingInfo[3]
+        stats.factorsMovement = aimingInfo[4]
+        stats.factorsRotation = aimingInfo[5]
+        stats.aimingTime = aimingInfo[6]
+
+    def _updateVehicleDirection(self, avatar):
+        stats = g_clientStatus
+        matrix = Math.Matrix(avatar.getOwnVehicleMatrix())
+        stats.vehicleYaw = matrix.yaw
+        stats.vehiclePitch = matrix.pitch
+        stats.vehicleRoll = matrix.roll
+        camera = BigWorld.camera()
+        cameraDirection = camera.direction
+        rYaw = stats.vehicleYaw - cameraDirection.yaw
+        if rYaw > math.pi:
+            rYaw -= math.pi * 2
+        elif rYaw < -math.pi:
+            rYaw += math.pi * 2
+        stats.vehicleRYaw = rYaw
+
+    def _updateGunAngles(self, avatar):
+        stats = g_clientStatus
+        vehicle = avatar.getVehicleAttached()
+        vd = vehicle.typeDescriptor
+        #gunOffs = vd.turret.gunPosition
+        #turretOffs = vd.hull.turretPositions[0] + vd.chassis.hullPosition
+        turretYaw, gunPitch = decodeGunAngles(vehicle.gunAnglesPacked, vd.gun.pitchLimits['absolute'])
+        stats.turretYaw = turretYaw
+        stats.gunPitch = gunPitch
+
+    def _updateVehicleSpeeds(self, avatar):
+        stats = g_clientStatus
+        vehicleSpeed, vehicleRSpeed = avatar.getOwnVehicleSpeeds(True)
+        stats.vehicleSpeed = vehicleSpeed
+        stats.vehicleRSpeed = vehicleRSpeed
+
+    def _updateVehicleEngineState(self, avatar):
+        stats = g_clientStatus
+        vehicle = avatar.getVehicleAttached()
+        detailedEngineState = vehicle.appearance.detailedEngineState
+        stats.engineRPM = detailedEngineState.rpm
+        stats.engineRelativeRPM = detailedEngineState.relativeRPM
+
+    def _updateShotInfo(self, avatar, hitPoint):
+        stats = g_clientStatus
+        shotDescr = avatar.getVehicleDescriptor().shot
+        stats.shotSpeed = shotDescr.speed
+        stats.shotGravity = shotDescr.gravity
+        shotPos, shotVec = avatar.gunRotator.getCurShotPosition()
+        stats.shotSpeedH = shotVec.flatDistTo(Math.Vector3((0.0, 0.0, 0.0)))
+        stats.shotSpeedV = shotVec.y
+        stats.shotPosX = shotPos.x
+        stats.shotPosY = shotPos.y
+        stats.shotPosZ = shotPos.z
+        shotDistance = hitPoint - shotPos
+        stats.shotDistance = shotDistance.length
+        stats.shotDistanceH = shotPos.flatDistTo(hitPoint)
+        stats.shotDistanceV = shotDistance.y
+        position = avatar.getOwnVehiclePosition()
+        distance = hitPoint - position
+        stats.distance = distance.length
+        stats.distanceH = position.flatDistTo(hitPoint)
+        stats.distanceV = distance.y
+        stats.vehiclePosX = position.x
+        stats.vehiclePosY = position.y
+        stats.vehiclePosZ = position.z
+        stats.targetPosX = hitPoint.x
+        stats.targetPosY = hitPoint.y
+        stats.targetPosZ = hitPoint.z
+
+    def onEvent(self, reason):
+        self.eventHandlers(reason)
+
+
 g_statscollector = StatsCollector()
+g_clientStatus = ClientStatus()

@@ -61,3 +61,18 @@ EVENT_LIST = [
     EVENT.RECEIVE_SHOT,
     EVENT.RECEIVE_SHOT_RESULT
 ]
+
+CLIENT_STATUS_LIST = [
+    'currTime', 'eventTime', 'eventName',
+    'ping', 'fps', 'fpsReplay', 'latency_0', 'latency_1', 'latency_2', 'latency_3',
+    'dAngleAiming', 'dAngleIdeal', 'turretRotationSpeed', 'additiveFactor', 'shotDispersionAngle', 'shotFactor',
+    'aimingStartTime', 'aimingStartFactor', 'multFactor', 'factorsTurretRotation', 'factorsMovement', 'factorsRotation', 'aimingTime',
+    'vehicleYaw', 'vehiclePitch', 'vehicleRoll', 'vehicleRYaw', 'turretYaw', 'gunPitch',
+    'vehicleSpeed', 'vehicleRSpeed', 'engineRPM', 'engineRelativeRPM',
+    'shotSpeed', 'shotSpeedH', 'shotSpeedV', 'shotGravity',
+    'shotPosX', 'shotPosY', 'shotPosZ', 'shotDistance', 'shotDistanceH', 'shotDistanceV',
+    'vehiclePosX', 'vehiclePosY', 'vehiclePosZ', 'distance', 'distanceH', 'distanceV',
+    'targetPosX', 'targetPosY', 'targetPosZ',
+    'aimingFactor', 'aimingTimeConverging', 'modifiedAimingFactor', 'scoreDispersion',
+    'flightTime'
+]

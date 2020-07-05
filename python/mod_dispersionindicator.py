@@ -2,11 +2,13 @@
 import logging
 import math
 import json
+from collections import OrderedDict
+
 import ResMgr
 from debug_utils import LOG_CURRENT_EXCEPTION
 from gui.Scaleform.framework import g_entitiesFactories
 
-from dispersionindicator.mod_constants import MOD, CONFIG_FILES, EVENT, EVENT_LIST
+from dispersionindicator.mod_constants import MOD, CONFIG_FILES, EVENT, EVENT_LIST, CLIENT_STATUS_LIST
 from dispersionindicator.manager import IndicatorManager
 from dispersionindicator.view.panelview import PANEL_VIEW_SETTINGS
 
@@ -38,52 +40,63 @@ def init():
         LOG_CURRENT_EXCEPTION()
 
 
+def _validationItems(items):
+    validItems = filter(lambda x: x in CLIENT_STATUS_LIST, items)
+    invalidItems = filter(lambda x: x not in CLIENT_STATUS_LIST, items)
+    if invalidItems:
+        _logger.error('invalid items: %s' % ', '.join(invalidItems))
+    return validItems
+
 def _readConfig():
     def encode_key(data):
         ascii_encode = lambda x: x.encode('ascii') if isinstance(x, unicode) else x
-        return dict({ ascii_encode(key): value for key, value in data.items() })
+        return OrderedDict([ (ascii_encode(key), value) for key, value in data ])
 
-    config = { 'default': {}, 'statsDefs': {} }
+    config = OrderedDict([ ('default', OrderedDict()), ('statsDefs', OrderedDict()) ])
     
     for file in CONFIG_FILES:
         if not ResMgr.isFile(file):
             continue
         _logger.info('load config file: %s', file)
         section = ResMgr.openSection(file)
-        data = json.loads(section.asString, object_hook=encode_key)
+        data = json.loads(section.asString, object_pairs_hook=encode_key)
+        print json.dumps(data, indent=2)
         config['default'].update(data.get('default', {}))
         config['statsDefs'].update(data.get('statsDefs', {}))
-        config['panels'] = data.get('panels', {})
-        config['loggers'] = data.get('loggers', {})
-    #print json.dumps(config, indent=2)
+        config['panelDefs'] = OrderedDict()
+        panels = data.get('panels', OrderedDict())
+        print json.dumps(panels, indent=2)
+        for name, panelDef in panels.items():
+            print json.dumps(panelDef, indent=2)
+            panelDef['name'] = name
+            panelDef['channel'] = 'indicator'
+            config['panelDefs'][name] = panelDef
+        loggers = data.get('loggers', {})
+        for name, panelDef in loggers.items():
+            panelDef['name'] = name
+            config['panelDefs'][name] = panelDef
 
-    settings = { 'common': {}, 'panels': {}, 'loggers': {}, 'eventloggers': {} }
+    #_logger.info('read config:')
+    #_logger.info(json.dumps(data, indent=2))
+
+    settings = { 'common': {}, 'panelDefs': [] }
     settings['common']['logLevel'] = config['default']['logLevel']
     settings['common']['updateInterval'] = config['default']['updateInterval']
-    for name, paneldef in config['panels'].items():
-        style = {}
-        style.update(config['default'])
-        style.update(paneldef.get('style', {}))
-        statsDef = {}
-        statsDef.update(config['statsDefs'])
-        statsDef.update(paneldef.get('statsDefs', {}))
-        items = paneldef['items']
-        settings['panels'][name] = { 'style': style, 'statsDefs': statsDef, 'items': items }
-    for name, paneldef in config.get('loggers', {}).items():
-        statsDef = {}
-        statsDef.update(config['statsDefs'])
-        statsDef.update(paneldef.get('statsDefs', {}))
-        items = paneldef['items']
-        channel = paneldef['channel']
-        logfile = paneldef['logfile']
-        panelconf = { 'channel': channel, 'logfile': logfile, 'statsDefs': statsDef, 'items': items }
-        if channel == 'status':
-            settings['loggers'][name] = panelconf
-        elif channel == 'event':
-            panelconf['events'] = [ e for e in EVENT_LIST if e in paneldef.get('events', []) ]
-            settings['eventloggers'][name] = panelconf
-    #print json.dumps(settings['loggers'], indent=2)
-    #print json.dumps(settings['eventloggers'], indent=2)
+
+    for name, panelDef in config['panelDefs'].items():
+        settings['panelDefs'].append(panelDef)
+        panelDef['items'] = _validationItems(panelDef['items'])
+        statsDefs = {}
+        statsDefs.update(config['statsDefs'])
+        statsDefs.update(panelDef.get('statsDefs', {}))
+        panelDef['statsDefs'] = statsDefs
+        if panelDef['channel'] == 'indicator':
+            style = {}
+            style.update(config['default'])
+            style.update(panelDef.get('style', {}))
+            panelDef['style'] = style
+        elif panelDef['channel'] == 'event':
+            panelDef['events'] = [ e for e in EVENT_LIST if e in panelDef.get('events', []) ]
+    #print json.dumps(settings, indent=2)
 
     return settings
-

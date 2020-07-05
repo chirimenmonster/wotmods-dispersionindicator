@@ -33,6 +33,7 @@ class PanelView(View):
         self.__align = [ style['horizontalAnchor'], style['verticalAnchor'] ]
         self.__offset = style['screenOffset']
         self.__crosshairOffset = {}
+        self.__crosshairPosition = None
         for id, symbol in CROSSHAIR_VIEW_SYMBOL.items():
             self.__crosshairOffset[id] = style.get('crosshairOffset_' + symbol, style['crosshairOffset'])
         self.__crosshairView = CROSSHAIR_VIEW_ID.UNDEFINED
@@ -67,6 +68,7 @@ class PanelView(View):
         self.__screenSize = [ width, height ]
 
     def setCrosshairPosition(self, x, y):
+        _logger.debug('%s.setCrosshairPosition: [%s, %s]', self.className, x, y)
         self.__crosshairPosition = [ x, y ]
 
     def setCrosshairView(self, crosshairView):

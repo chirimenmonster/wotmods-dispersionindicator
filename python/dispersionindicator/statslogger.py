@@ -13,8 +13,8 @@ from mod_constants import MOD, LOG_DIR
 _logger = logging.getLogger(MOD.NAME)
 
 class StatsLogger(StatsIndicatorMeta):
-    def __init__(self, config, collector):
-        super(StatsLogger, self).__init__(collector)
+    def __init__(self, config, clientStatus):
+        super(StatsLogger, self).__init__(config, clientStatus)
         self.log_file = os.path.join(LOG_DIR, config['logfile'])
         statsdefs = config['statsDefs']
         #self.names = [ statsdefs[key]['status'] for key in config['items'] ]
@@ -24,11 +24,11 @@ class StatsLogger(StatsIndicatorMeta):
         self.vehicleName = avatar_getter.getVehicleTypeDescriptor().type.name
 
     def start(self):
-        _logger.info('%s.start', self.className)
+        super(StatsLogger, self).start()
         self.__strage = []
 
     def stop(self):
-        _logger.info('%s.stop', self.className)
+        super(StatsLogger, self).stop()
         self.outputLog()
    
     def update(self):

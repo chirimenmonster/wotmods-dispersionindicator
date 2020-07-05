@@ -22,9 +22,11 @@ SWF_PATH = '${flash_dir}'
 class StatsIndicatorMeta(object):
     onEvent = None
 
-    def __init__(self, collector):
+    def __init__(self, config, clientStatus):
         self.className = self.__class__.__name__
-        self.__vehicleStats = collector
+        self.__vehicleStats = clientStatus
+        self.name = config['name']
+        _logger.info('%s.__init__: "%s"', self.className, self.name)
         
     @property
     def vehicleStats(self):
@@ -38,10 +40,10 @@ class StatsIndicatorMeta(object):
         return result
 
     def start(self):
-        pass
+        _logger.info('%s.start: "%s"', self.className, self.name)
 
     def stop(self):
-        pass
+        _logger.info('%s.stop: "%s"', self.className, self.name)
 
     def changeView(self, crosshairViewID):
         pass
@@ -57,17 +59,14 @@ class StatsIndicatorMeta(object):
 
 
 class StatsIndicator(StatsIndicatorMeta):
-    def __init__(self, config, collector, name):
-        super(StatsIndicator, self).__init__(collector)
-        _logger.info('%s.__init__: "%s"', self.className, name)
-        self.name = name
+    def __init__(self, config, clientStatus):
+        super(StatsIndicator, self).__init__(config, clientStatus)
         self.statsdefs = config['statsDefs']
         self.__guiSettings = {}
         self.__guiSettings['style'] = config['style']
         self.__guiSettings['stats'] = []
         self.__statsSource = {}
         for key in config['items']:
-            print 'key: ', key
             setting = self.statsdefs[key]
             factor = setting['factor']
             if isinstance(factor, str) or isinstance(factor, unicode):
@@ -86,19 +85,19 @@ class StatsIndicator(StatsIndicatorMeta):
         if not app:
             _logger.info('%s.__init__: not found app', self.className)
             return
-        app.loadView(SFViewLoadParams(PANEL_VIEW_ALIAS, name), config=self.__guiSettings)
-        pyEntity = app.containerManager.getViewByKey(ViewKey(PANEL_VIEW_ALIAS, name))
+        app.loadView(SFViewLoadParams(PANEL_VIEW_ALIAS, self.name), config=self.__guiSettings)
+        pyEntity = app.containerManager.getViewByKey(ViewKey(PANEL_VIEW_ALIAS, self.name))
         pyEntity.setVisible(True)
         self.__pyEntity = weakref.proxy(pyEntity)
 
     def start(self):
-        _logger.info('%s.start: "%s"', self.className, self.name)
+        super(StatsIndicator, self).start()
         for name, config in self.__statsSource.items():
             text = config['format'].format(0)
             self.__setIndicatorValue(name, text)
 
     def stop(self):
-        _logger.info('%s.stop: "%s"', self.className, self.name)
+        super(StatsIndicator, self).stop()
         try:
             self.__pyEntity.setVisible(False)
         except weakref.ReferenceError:
@@ -124,11 +123,13 @@ class StatsIndicator(StatsIndicatorMeta):
             pass
 
     def updateCrosshairPosition(self, x, y):
+        _logger.debug('%s.updateCrosshairPosition: [%s, %s]', self.className, x, y)
         self.__crosshairPosition = [ x, y ]
         try:
             self.__pyEntity.setCrosshairPosition(x, y)
             self.__pyEntity.setPositionByCrosshair()
         except weakref.ReferenceError:
+            _logger.warning('%s.updateCrosshairPosition: ReferenceError: not found PanelView', self.className)
             pass
 
     def changeView(self, viewID):

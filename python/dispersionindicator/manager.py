@@ -13,7 +13,7 @@ from gui.app_loader.settings import APP_NAME_SPACE
 from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE, CROSSHAIR_VIEW_ID
 
 from mod_constants import MOD, CONSTANT, CROSSHAIR_VIEW_SYMBOL, ARENA_PERIOD_SYMBOL, GUI_GLOBAL_SPACE_SYMBOL
-from statscollector import g_statscollector
+from statscollector import g_statscollector, g_clientStatus
 from statsindicator import StatsIndicator
 from statslogger import StatsLogger
 from eventlogger import EventLogger
@@ -24,7 +24,6 @@ class IndicatorManager(object):
     def __init__(self, config):
         self.__config = config
         self.__panels = []
-        self.__stats = g_statscollector
         self.__isSetHandler = False
         self.__visible = False
         self.__crosshairPosition = [ 0, 0 ]
@@ -44,15 +43,16 @@ class IndicatorManager(object):
         _logger.info('initPanel')
         self.addHandler()
         self.__panels = []
-        for name, paneldef in sorted(self.__config.get('panels', {}).items(), key=lambda x:x[0]):
-            self.__panels.append(StatsIndicator(paneldef, self.__stats, name))
-        for name, paneldef in self.__config.get('loggers', {}).items():
-            self.__panels.append(StatsLogger(paneldef, self.__stats))
-        for name, paneldef in self.__config.get('eventloggers', {}).items():
-            self.__panels.append(EventLogger(paneldef, self.__stats))
-        for panel in self.__panels:
-            if callable(getattr(panel, 'onEvent')):
+        #for name, paneldef in sorted(self.__config.get('panelDefs', {}).items(), key=lambda x:x[0]):
+        for paneldef in self.__config.get('panelDefs', []):
+            if paneldef['channel'] == 'indicator':
+                panel = StatsIndicator(paneldef, g_clientStatus)
+            elif paneldef['channel'] == 'status':
+                panel = StatsLogger(paneldef,  g_clientStatus)
+            elif paneldef['channel'] == 'event':
+                panel = EventLogger(paneldef,  g_clientStatus)
                 g_statscollector.eventHandlers += panel.onEvent
+            self.__panels.append(panel)
         self.updateScreenPosition()
         self.updateCrosshairPosition()
 
@@ -142,6 +142,7 @@ class IndicatorManager(object):
         x, y = self.__crosshairPosition
         _logger.debug('updateCrosshairPosition: (%d, %d)', x, y)
         for panel in self.__panels:
+            _logger.debug('updateCrosshairPosition: call panel: "%s"', panel.name)
             panel.updateCrosshairPosition(x, y)
 
     def onAppInitialized(self, event):
