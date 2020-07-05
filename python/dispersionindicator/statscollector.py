@@ -19,7 +19,6 @@ _logger = logging.getLogger(MOD.NAME)
 g_statscollector = None
 
 
-
 @overrideMethod(PlayerAvatar, 'getOwnVehicleShotDispersionAngle')
 def playerAvatar_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpeed, withShot = 0):
     dispersionAngle = result = orig(self, turretRotationSpeed, withShot)

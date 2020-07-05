@@ -11,6 +11,7 @@ from gui.shared import g_eventBus, events
 from gui.shared.utils.TimeInterval import TimeInterval
 from gui.app_loader.settings import APP_NAME_SPACE
 from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE, CROSSHAIR_VIEW_ID
+from gui.battle_control import avatar_getter
 
 from mod_constants import MOD, CONSTANT, CROSSHAIR_VIEW_SYMBOL, ARENA_PERIOD_SYMBOL, GUI_GLOBAL_SPACE_SYMBOL
 from statscollector import g_statscollector, g_clientStatus
@@ -42,8 +43,10 @@ class IndicatorManager(object):
     def initPanel(self):
         _logger.info('initPanel')
         self.addHandler()
+        arenaName = avatar_getter.getArena().arenaType.geometryName
+        vehicleName = avatar_getter.getVehicleTypeDescriptor().type.name
+        _logger.info('initPanel: %s, %s, %s', spaceID, arenaName, vehicleName)
         self.__panels = []
-        #for name, paneldef in sorted(self.__config.get('panelDefs', {}).items(), key=lambda x:x[0]):
         for paneldef in self.__config.get('panelDefs', []):
             if paneldef['channel'] == 'indicator':
                 panel = StatsIndicator(paneldef, g_clientStatus)
