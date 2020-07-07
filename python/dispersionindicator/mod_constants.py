@@ -74,5 +74,6 @@ CLIENT_STATUS_LIST = [
     'vehiclePosX', 'vehiclePosY', 'vehiclePosZ', 'distance', 'distanceH', 'distanceV',
     'targetPosX', 'targetPosY', 'targetPosZ',
     'aimingFactor', 'aimingTimeConverging', 'modifiedAimingFactor', 'scoreDispersion',
-    'flightTime'
+    'flightTime',
+    'penetrationArmor', 'armor', 'hitAngleCos'
 ]

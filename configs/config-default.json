@@ -362,6 +362,27 @@
             "format":   "{:.2f}",
             "factor":   1.0,
             "unit":     "s"
+        },
+        "penetrationArmor": {
+            "status":   "penetrationArmor",
+            "title":    "E. Armor",
+            "format":   "{:.0f}",
+            "factor":   1.0,
+            "unit":     "mm"
+        },
+        "armor": {
+            "status":   "armor",
+            "title":    "Armor",
+            "format":   "{:.0f}",
+            "factor":   1.0,
+            "unit":     "mm"
+        },
+        "hitAngleCos": {
+            "status":   "hitAngleCos",
+            "title":    "Hit Angle Cos",
+            "format":   "{:.0f}",
+            "factor":   "RAD_TO_DEG",
+            "unit":     "deg"
         }
     }
 }

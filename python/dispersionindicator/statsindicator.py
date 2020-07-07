@@ -33,10 +33,14 @@ class StatsIndicatorMeta(object):
         return self.__vehicleStats
 
     def getStatus(self, name, factor=None):
-        if factor is not None:
-            result = getattr(self.vehicleStats, name, 0.0) * factor
+        value = getattr(self.vehicleStats, name, None)
+        if value is None:
+            result = ''
         else:
-            result = getattr(self.vehicleStats, name, '')
+            if factor is not None:
+                result = value * factor
+            else:
+                result = value
         return result
 
     def start(self):
@@ -111,7 +115,11 @@ class StatsIndicator(StatsIndicatorMeta):
 
     def update(self):
         for name, config in self.__statsSource.items():
-            text = config['format'].format(config['func']())
+            value = config['func']()
+            if value is not None and value != '':
+                text = config['format'].format(value)
+            else:
+                text = ''
             self.__setIndicatorValue(name, text)
 
     def updateScreenPosition(self, width, height):

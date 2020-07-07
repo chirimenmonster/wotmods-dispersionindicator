@@ -8,9 +8,11 @@ from Event import Event
 from debug_utils import LOG_CURRENT_EXCEPTION
 from Avatar import PlayerAvatar
 from AvatarInputHandler.control_modes import _GunControlMode
+from AvatarInputHandler.gun_marker_ctrl import _CrosshairShotResults
 from gun_rotation_shared import decodeGunAngles
 from vehicle_extras import ShowShooting
 from gui.battle_control import avatar_getter
+from gui.battle_control.controllers.crosshair_proxy import CrosshairDataProxy
 
 from mod_constants import MOD, EVENT, CLIENT_STATUS_LIST
 from hook import overrideMethod, overrideClassMethod
@@ -106,6 +108,17 @@ def gunControlMode_updateGunMarker(orig, self, markerType, pos, direction, size,
     return result
 
 
+@overrideMethod(CrosshairDataProxy, '_CrosshairDataProxy__setGunMarkerState')
+def _CrosshairDataProxy_setGunMarkerState(orig, *args, **kwargs):
+    result = orig(*args, **kwargs)
+    try:
+        hook_crosshairDataProxy_setGunMarkerState(*args, **kwargs)
+    except:
+        LOG_CURRENT_EXCEPTION()
+        _logger.warning('failed to call hook_crosshairDataProxy_setGunMarkerState')
+    return result
+
+
 def hook_playerAvatar_shoot(self, isRepeat = False):
     if not self._PlayerAvatar__isOnArena:
         return
@@ -151,6 +164,32 @@ def hook_showShooting_doShot(self, data):
     g_statscollector.onEvent(EVENT.RECEIVE_SHOT)
 
 
+def hook_crosshairDataProxy_setGunMarkerState(self, markerType, value):
+    hitPoint, direction, collision = value
+    armor, hitAngleCos, penetrationArmor = None, None, None
+    for _ in [0]:
+        if collision is None:
+            break
+        player = BigWorld.player()
+        if player is None:
+            break
+        vDesc = player.getVehicleDescriptor()
+        shell = vDesc.shot.shell
+        entity = collision.entity
+        collisionsDetails = _CrosshairShotResults._getAllCollisionDetails(hitPoint, direction, entity)
+        if collisionsDetails is None:
+            break
+        for cDetails in collisionsDetails:
+            if cDetails.matInfo is None:
+                continue
+            matInfo = cDetails.matInfo
+            hitAngleCos = cDetails.hitAngleCos if matInfo.useHitAngle else 1.0
+            armor = matInfo.armor
+            penetrationArmor = _CrosshairShotResults._computePenetrationArmor(shell.kind, hitAngleCos, matInfo, shell.caliber)
+            break
+    g_statscollector.updatePenetrationArmor(penetrationArmor, armor, hitAngleCos)
+
+
 class ClientStatus(object):
     __slots__ = CLIENT_STATUS_LIST
 
@@ -182,6 +221,9 @@ class ClientStatus(object):
 class StatsCollector(object):
     def __init__(self):
         self.eventHandlers = Event()
+
+    def onEvent(self, reason):
+        self.eventHandlers(reason)
 
     def updateArenaInfo(self):
         stats = g_clientStatus
@@ -304,8 +346,11 @@ class StatsCollector(object):
         stats.targetPosY = hitPoint.y
         stats.targetPosZ = hitPoint.z
 
-    def onEvent(self, reason):
-        self.eventHandlers(reason)
+    def updatePenetrationArmor(self, penetrationArmor, armor, hitAngleCos):
+        stats = g_clientStatus
+        stats.penetrationArmor = penetrationArmor
+        stats.armor = armor
+        stats.hitAngleCos = hitAngleCos
 
 
 g_statscollector = StatsCollector()
