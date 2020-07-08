@@ -383,6 +383,13 @@
             "format":   "{:.0f}",
             "factor":   "RAD_TO_DEG",
             "unit":     "deg"
+        },
+        "piercingPercent": {
+            "status":   "piercingPercent",
+            "title":    "Piercing Percent",
+            "format":   "{:.0f}",
+            "factor":   1.0,
+            "unit":     ""
         }
     }
 }

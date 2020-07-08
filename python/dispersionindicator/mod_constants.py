@@ -75,5 +75,5 @@ CLIENT_STATUS_LIST = [
     'targetPosX', 'targetPosY', 'targetPosZ',
     'aimingFactor', 'aimingTimeConverging', 'modifiedAimingFactor', 'scoreDispersion',
     'flightTime',
-    'penetrationArmor', 'armor', 'hitAngleCos'
+    'penetrationArmor', 'armor', 'hitAngleCos', 'piercingPercent'
 ]

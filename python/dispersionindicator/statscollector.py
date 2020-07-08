@@ -165,29 +165,77 @@ def hook_showShooting_doShot(self, data):
 
 
 def hook_crosshairDataProxy_setGunMarkerState(self, markerType, value):
+    excludeTeam = 0
     hitPoint, direction, collision = value
-    armor, hitAngleCos, penetrationArmor = None, None, None
+    firstArmor, firstHitAngleCos, firstPenetrationArmor = None, None, None
+    result = None
     for _ in [0]:
         if collision is None:
+            break
+        entity = collision.entity
+        if entity.__class__.__name__ not in ('Vehicle', 'DestructibleEntity'):
+            break
+        if entity.health <= 0 or entity.publicInfo['team'] == excludeTeam:
             break
         player = BigWorld.player()
         if player is None:
             break
         vDesc = player.getVehicleDescriptor()
         shell = vDesc.shot.shell
-        entity = collision.entity
+        caliber = shell.caliber
+        shellKind = shell.kind
+        ppDesc = vDesc.shot.piercingPower
+        maxDist = vDesc.shot.maxDistance
+        dist = (hitPoint - player.getOwnVehiclePosition()).length
+        piercingPower = _CrosshairShotResults._computePiercingPowerAtDist(ppDesc, dist, maxDist)
+        fullPiercingPower = piercingPower
+        minPP, maxPP = _CrosshairShotResults._computePiercingPowerRandomization(shell)
+        result = None
+        isJet = False
+        jetStartDist = None
+        ignoredMaterials = set()
         collisionsDetails = _CrosshairShotResults._getAllCollisionDetails(hitPoint, direction, entity)
         if collisionsDetails is None:
             break
         for cDetails in collisionsDetails:
+            if isJet:
+                jetDist = cDetails.dist - jetStartDist
+                if jetDist > 0.0:
+                    piercingPower *= 1.0 - jetDist * _CrosshairShotResults._SHELL_EXTRA_DATA[shellKind].jetLossPPByDist
             if cDetails.matInfo is None:
-                continue
-            matInfo = cDetails.matInfo
-            hitAngleCos = cDetails.hitAngleCos if matInfo.useHitAngle else 1.0
-            armor = matInfo.armor
-            penetrationArmor = _CrosshairShotResults._computePenetrationArmor(shell.kind, hitAngleCos, matInfo, shell.caliber)
-            break
-    g_statscollector.updatePenetrationArmor(penetrationArmor, armor, hitAngleCos)
+                result = None
+            else:
+                matInfo = cDetails.matInfo
+                if (cDetails.compName, matInfo.kind) in ignoredMaterials:
+                    continue
+                hitAngleCos = cDetails.hitAngleCos if matInfo.useHitAngle else 1.0
+                if firstArmor is None:
+                    firstHitAngleCos = hitAngleCos
+                    firstArmor = matInfo.armor
+                    firstPenetrationArmor = _CrosshairShotResults._computePenetrationArmor(shell.kind, hitAngleCos, matInfo, shell.caliber)
+                if not isJet and _CrosshairShotResults._shouldRicochet(shellKind, hitAngleCos, matInfo, caliber):
+                    break
+                piercingPercent = 1000.0
+                if piercingPower > 0.0:
+                    penetrationArmor = _CrosshairShotResults._computePenetrationArmor(shellKind, hitAngleCos, matInfo, caliber)
+                    piercingPercent = 100.0 + (penetrationArmor - piercingPower) / fullPiercingPower * 100.0
+                    piercingPower -= penetrationArmor
+                if matInfo.vehicleDamageFactor:
+                    result = piercingPercent
+                    break
+                elif matInfo.extra:
+                    result = piercingPercent
+                if matInfo.collideOnceOnly:
+                    ignoredMaterials.add((cDetails.compName, matInfo.kind))
+            if piercingPower <= 0.0:
+                break
+            if _CrosshairShotResults._SHELL_EXTRA_DATA[shellKind].jetLossPPByDist > 0.0:
+                isJet = True
+                mInfo = cDetails.matInfo
+                armor = mInfo.armor if mInfo is not None else 0.0
+                jetStartDist = cDetails.dist + armor * 0.001                
+
+    g_statscollector.updatePenetrationArmor(firstPenetrationArmor, firstArmor, firstHitAngleCos, result)
 
 
 class ClientStatus(object):
@@ -346,11 +394,12 @@ class StatsCollector(object):
         stats.targetPosY = hitPoint.y
         stats.targetPosZ = hitPoint.z
 
-    def updatePenetrationArmor(self, penetrationArmor, armor, hitAngleCos):
+    def updatePenetrationArmor(self, penetrationArmor, armor, hitAngleCos, piercingPercent):
         stats = g_clientStatus
         stats.penetrationArmor = penetrationArmor
         stats.armor = armor
         stats.hitAngleCos = hitAngleCos
+        stats.piercingPercent = piercingPercent
 
 
 g_statscollector = StatsCollector()
