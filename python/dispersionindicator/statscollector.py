@@ -21,10 +21,27 @@ _logger = logging.getLogger(MOD.NAME)
 
 g_statscollector = None
 
+def wrapperCallOriginal(prev=False):
+    def wrapper(func):
+        def decorator(orig, *args, **kwargs):
+            result = None
+            if prev:
+                result = orig(*args, **kwargs)
+            try:
+                _ = func(result, *args, **kwargs)
+            except:
+                LOG_CURRENT_EXCEPTION()
+            if not prev:
+                result = orig(*args, **kwargs)
+            return result
+        return decorator
+    return wrapper
+
 
 @overrideMethod(PlayerAvatar, 'getOwnVehicleShotDispersionAngle')
-def playerAvatar_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpeed, withShot = 0):
-    dispersionAngle = result = orig(self, turretRotationSpeed, withShot)
+@wrapperCallOriginal(prev=True)
+def playerAvatar_getOwnVehicleShotDispersionAngle(orig_result, self, turretRotationSpeed, withShot = 0):
+    dispersionAngle = orig_result
     if g_statscollector:
         avatar = self
         collector = g_statscollector
@@ -63,63 +80,18 @@ def playerAvatar_getOwnVehicleShotDispersionAngle(orig, self, turretRotationSpee
         except:
             LOG_CURRENT_EXCEPTION()
             _logger.warning('fail to _updateVehicleDirection')
-        return result
-
-@overrideMethod(PlayerAvatar, 'shoot')
-def playerAvatar_shoot(orig, *args, **kwargs):
-    try:
-        hook_playerAvatar_shoot(*args, **kwargs)
-    except:
-        LOG_CURRENT_EXCEPTION()
-        _logger.warning('failed to call hook_playerAvatar_shoot')
-    return orig(*args, **kwargs)
-
-
-@overrideMethod(PlayerAvatar, 'showShotResults')
-def playerAvatar_showShotResults(orig, *args, **kwargs):
-    try:
-        hook_playerAvatar_showShotResults(*args, **kwargs)
-    except:
-        LOG_CURRENT_EXCEPTION()
-        _logger.warning('failed to call hook_playerAvatar_showShotResult')
-    return orig(*args, **kwargs)
-
-
-@overrideMethod(ShowShooting, '_ShowShooting__doShot')
-def showShooting_doShot(orig, *args, **kwargs):
-    try:
-        hook_showShooting_doShot(*args, **kwargs)
-    except:
-        LOG_CURRENT_EXCEPTION()
-        _logger.warning('failed to call hook_showShooting_doShot')
-    return orig(*args, **kwargs)
 
 
 @overrideMethod(_GunControlMode, 'updateGunMarker')
-def gunControlMode_updateGunMarker(orig, self, markerType, pos, direction, size, relaxTime, collData):
-    result = orig(self, markerType, pos, direction, size, relaxTime, collData)
+@wrapperCallOriginal(prev=True)
+def gunControlMode_updateGunMarker(orig_result, self, markerType, pos, direction, size, relaxTime, collData):
     avatar = BigWorld.player()
-    collector = g_statscollector
-    try:
-        collector._updateShotInfo(avatar, pos)
-    except:
-        LOG_CURRENT_EXCEPTION()
-        _logger.warning('fail to _updateShotInfo')
-    return result
+    g_statscollector._updateShotInfo(avatar, pos)
 
 
-@overrideMethod(CrosshairDataProxy, '_CrosshairDataProxy__setGunMarkerState')
-def _CrosshairDataProxy_setGunMarkerState(orig, *args, **kwargs):
-    result = orig(*args, **kwargs)
-    try:
-        hook_crosshairDataProxy_setGunMarkerState(*args, **kwargs)
-    except:
-        LOG_CURRENT_EXCEPTION()
-        _logger.warning('failed to call hook_crosshairDataProxy_setGunMarkerState')
-    return result
-
-
-def hook_playerAvatar_shoot(self, isRepeat = False):
+@overrideMethod(PlayerAvatar, 'shoot')
+@wrapperCallOriginal(prev=False)
+def playerAvatar_shoot(_, self, isRepeat = False):
     if not self._PlayerAvatar__isOnArena:
         return
     else:
@@ -150,13 +122,17 @@ def hook_playerAvatar_shoot(self, isRepeat = False):
     g_statscollector.onEvent(EVENT.ACTION_SHOOT)
 
 
-def hook_playerAvatar_showShotResults(self, result):
+@overrideMethod(PlayerAvatar, 'showShotResults')
+@wrapperCallOriginal(prev=False)
+def playerAvatar_showShotResults(_, self, result):
     time = BigWorld.time()
     _logger.debug('catch PlayerAvatar.showShotResults: time={}'.format(time))
     g_statscollector.onEvent(EVENT.RECEIVE_SHOT_RESULT)
 
 
-def hook_showShooting_doShot(self, data):
+@overrideMethod(ShowShooting, '_ShowShooting__doShot')
+@wrapperCallOriginal(prev=False)
+def showShooting_doShot(_, self, data):
     if not data['entity'].isPlayerVehicle:
         return
     time = BigWorld.time()
@@ -164,7 +140,9 @@ def hook_showShooting_doShot(self, data):
     g_statscollector.onEvent(EVENT.RECEIVE_SHOT)
 
 
-def hook_crosshairDataProxy_setGunMarkerState(self, markerType, value):
+@overrideMethod(CrosshairDataProxy, '_CrosshairDataProxy__setGunMarkerState')
+@wrapperCallOriginal(prev=True)
+def hook_crosshairDataProxy_setGunMarkerState(orig_result, self, markerType, value):
     excludeTeam = 0
     hitPoint, direction, collision = value
     firstArmor, firstHitAngleCos, firstPenetrationArmor = None, None, None
