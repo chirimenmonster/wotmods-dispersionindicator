@@ -13,7 +13,7 @@ from gui.app_loader.settings import APP_NAME_SPACE
 from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE, CROSSHAIR_VIEW_ID
 
 from mod_constants import MOD, CONSTANT, CROSSHAIR_VIEW_SYMBOL, ARENA_PERIOD_SYMBOL, GUI_GLOBAL_SPACE_SYMBOL
-from statscollector import g_statscollector, g_clientStatus
+from statscollector import g_statsCollector, g_clientStatus
 from statsindicator import StatsIndicator
 from statslogger import StatsLogger
 from eventlogger import EventLogger
@@ -37,11 +37,11 @@ class IndicatorManager(object):
         appLoader = dependency.instance(IAppLoader)
         appLoader.onGUISpaceEntered += self.onGUISpaceEntered
         appLoader.onGUISpaceLeft += self.onGUISpaceLeft
-        g_statscollector.eventHandlers.clear()
+        g_statsCollector.eventHandlers.clear()
 
     def initPanel(self):
         _logger.info('initPanel')
-        g_statscollector.updateArenaInfo()
+        g_statsCollector.updateArenaInfo()
         self.addHandler()
         self.__panels = []
         for paneldef in self.__config.get('panelDefs', []):
@@ -51,7 +51,7 @@ class IndicatorManager(object):
                 panel = StatsLogger(paneldef,  g_clientStatus)
             elif paneldef['channel'] == 'event':
                 panel = EventLogger(paneldef,  g_clientStatus)
-                g_statscollector.eventHandlers += panel.onEvent
+                g_statsCollector.eventHandlers += panel.onEvent
             self.__panels.append(panel)
         self.updateScreenPosition()
         self.updateCrosshairPosition()
@@ -64,7 +64,7 @@ class IndicatorManager(object):
         for panel in self.__panels:
             if isinstance(panel, EventLogger):
                 _logger.info('del EventLogger.onEvent')
-                g_statscollector.eventHandlers -= panel.onEvent
+                g_statsCollector.eventHandlers -= panel.onEvent
         self.__panels = []
 
     def addHandler(self):

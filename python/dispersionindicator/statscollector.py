@@ -21,9 +21,9 @@ _logger = logging.getLogger(MOD.NAME)
 
 g_statscollector = None
 
-def wrapperCallOriginal(prev=False):
-    def wrapper(func):
-        def decorator(orig, *args, **kwargs):
+def callOriginal(prev=False):
+    def decorator(func):
+        def wrapper(orig, *args, **kwargs):
             result = None
             if prev:
                 result = orig(*args, **kwargs)
@@ -34,63 +34,34 @@ def wrapperCallOriginal(prev=False):
             if not prev:
                 result = orig(*args, **kwargs)
             return result
-        return decorator
-    return wrapper
+        return wrapper
+    return decorator
 
 
 @overrideMethod(PlayerAvatar, 'getOwnVehicleShotDispersionAngle')
-@wrapperCallOriginal(prev=True)
+@callOriginal(prev=True)
 def playerAvatar_getOwnVehicleShotDispersionAngle(orig_result, self, turretRotationSpeed, withShot = 0):
     dispersionAngle = orig_result
-    if g_statscollector:
-        avatar = self
-        collector = g_statscollector
-        try:
-            collector._updatePing()
-        except:
-            LOG_CURRENT_EXCEPTION()
-            _logger.warning('fail to _updatePing')
-        try:
-            collector._updateDispersionAngle(avatar, dispersionAngle, turretRotationSpeed, withShot)
-        except:
-            LOG_CURRENT_EXCEPTION()
-            _logger.warning('fail to _updateDispersionAngle')
-        try:
-            collector._updateAimingInfo(avatar)
-        except:
-            LOG_CURRENT_EXCEPTION()
-            _logger.warning('fail to _updateAimingInfo')
-        try:
-            collector._updateVehicleSpeeds(avatar)
-        except:
-            LOG_CURRENT_EXCEPTION()
-            _logger.warning('fail to _updateVehicleSpeeds')
-        try:
-            collector._updateVehicleEngineState(avatar)
-        except:
-            LOG_CURRENT_EXCEPTION()
-            _logger.warning('fail to _updateVehicleEngineState')
-        try:
-            collector._updateGunAngles(avatar)
-        except:
-            LOG_CURRENT_EXCEPTION()
-            _logger.warning('fail to _updateGunAngles')
-        try:
-            collector._updateVehicleDirection(avatar)
-        except:
-            LOG_CURRENT_EXCEPTION()
-            _logger.warning('fail to _updateVehicleDirection')
+    avatar = self
+    collector = g_statsCollector
+    collector.updatePing()
+    collector.updateDispersionAngle(avatar, dispersionAngle, turretRotationSpeed, withShot)
+    collector.updateAimingInfo(avatar)
+    collector.updateVehicleSpeeds(avatar)
+    collector.updateVehicleEngineState(avatar)
+    collector.updateGunAngles(avatar)
+    collector.updateVehicleDirection(avatar)
 
 
 @overrideMethod(_GunControlMode, 'updateGunMarker')
-@wrapperCallOriginal(prev=True)
+@callOriginal(prev=True)
 def gunControlMode_updateGunMarker(orig_result, self, markerType, pos, direction, size, relaxTime, collData):
     avatar = BigWorld.player()
-    g_statscollector._updateShotInfo(avatar, pos)
+    g_statsCollector.updateShotInfo(avatar, pos)
 
 
 @overrideMethod(PlayerAvatar, 'shoot')
-@wrapperCallOriginal(prev=False)
+@callOriginal(prev=False)
 def playerAvatar_shoot(_, self, isRepeat = False):
     if not self._PlayerAvatar__isOnArena:
         return
@@ -119,29 +90,29 @@ def playerAvatar_shoot(_, self, isRepeat = False):
             return
     time = BigWorld.time()
     _logger.debug('catch PlayerAvatar.shoot: time={}'.format(time))
-    g_statscollector.onEvent(EVENT.ACTION_SHOOT)
+    g_statsCollector.onEvent(EVENT.ACTION_SHOOT)
 
 
 @overrideMethod(PlayerAvatar, 'showShotResults')
-@wrapperCallOriginal(prev=False)
+@callOriginal(prev=False)
 def playerAvatar_showShotResults(_, self, result):
     time = BigWorld.time()
     _logger.debug('catch PlayerAvatar.showShotResults: time={}'.format(time))
-    g_statscollector.onEvent(EVENT.RECEIVE_SHOT_RESULT)
+    g_statsCollector.onEvent(EVENT.RECEIVE_SHOT_RESULT)
 
 
 @overrideMethod(ShowShooting, '_ShowShooting__doShot')
-@wrapperCallOriginal(prev=False)
+@callOriginal(prev=False)
 def showShooting_doShot(_, self, data):
     if not data['entity'].isPlayerVehicle:
         return
     time = BigWorld.time()
     _logger.debug('catch ShowShooting.__doShot: time={}'.format(time))
-    g_statscollector.onEvent(EVENT.RECEIVE_SHOT)
+    g_statsCollector.onEvent(EVENT.RECEIVE_SHOT)
 
 
 @overrideMethod(CrosshairDataProxy, '_CrosshairDataProxy__setGunMarkerState')
-@wrapperCallOriginal(prev=True)
+@callOriginal(prev=True)
 def hook_crosshairDataProxy_setGunMarkerState(orig_result, self, markerType, value):
     excludeTeam = 0
     hitPoint, direction, collision = value
@@ -213,7 +184,7 @@ def hook_crosshairDataProxy_setGunMarkerState(orig_result, self, markerType, val
                 armor = mInfo.armor if mInfo is not None else 0.0
                 jetStartDist = cDetails.dist + armor * 0.001                
 
-    g_statscollector.updatePenetrationArmor(firstPenetrationArmor, firstArmor, firstHitAngleCos, result)
+    g_statsCollector.updatePenetrationArmor(firstPenetrationArmor, firstArmor, firstHitAngleCos, result)
 
 
 class ClientStatus(object):
@@ -256,7 +227,7 @@ class StatsCollector(object):
         stats.arenaName = avatar_getter.getArena().arenaType.geometryName
         stats.vehicleName = avatar_getter.getVehicleTypeDescriptor().type.name
 
-    def _updatePing(self):
+    def updatePing(self):
         replayCtrl = BattleReplay.g_replayCtrl
         stats = g_clientStatus
         stats.currTime = BigWorld.time()
@@ -281,7 +252,7 @@ class StatsCollector(object):
         stats.latency_2 = latency[2]
         stats.latency_3 = latency[3]
 
-    def _updateDispersionAngle(self, avatar, dispersionAngle, turretRotationSpeed, withShot):
+    def updateDispersionAngle(self, avatar, dispersionAngle, turretRotationSpeed, withShot):
         stats = g_clientStatus
         stats.dAngleAiming = dispersionAngle[0]
         stats.dAngleIdeal = dispersionAngle[1]
@@ -296,7 +267,7 @@ class StatsCollector(object):
         else:
             stats.shotFactor = vDescr.gun.shotDispersionFactors['afterShotInBurst']
 
-    def _updateAimingInfo(self, avatar):
+    def updateAimingInfo(self, avatar):
         stats = g_clientStatus
         aimingInfo = avatar._PlayerAvatar__aimingInfo
         stats.aimingStartTime = aimingInfo[0]
@@ -307,7 +278,7 @@ class StatsCollector(object):
         stats.factorsRotation = aimingInfo[5]
         stats.aimingTime = aimingInfo[6]
 
-    def _updateVehicleDirection(self, avatar):
+    def updateVehicleDirection(self, avatar):
         stats = g_clientStatus
         matrix = Math.Matrix(avatar.getOwnVehicleMatrix())
         stats.vehicleYaw = matrix.yaw
@@ -322,7 +293,7 @@ class StatsCollector(object):
             rYaw += math.pi * 2
         stats.vehicleRYaw = rYaw
 
-    def _updateGunAngles(self, avatar):
+    def updateGunAngles(self, avatar):
         stats = g_clientStatus
         vehicle = avatar.getVehicleAttached()
         vd = vehicle.typeDescriptor
@@ -332,20 +303,20 @@ class StatsCollector(object):
         stats.turretYaw = turretYaw
         stats.gunPitch = gunPitch
 
-    def _updateVehicleSpeeds(self, avatar):
+    def updateVehicleSpeeds(self, avatar):
         stats = g_clientStatus
         vehicleSpeed, vehicleRSpeed = avatar.getOwnVehicleSpeeds(True)
         stats.vehicleSpeed = vehicleSpeed
         stats.vehicleRSpeed = vehicleRSpeed
 
-    def _updateVehicleEngineState(self, avatar):
+    def updateVehicleEngineState(self, avatar):
         stats = g_clientStatus
         vehicle = avatar.getVehicleAttached()
         detailedEngineState = vehicle.appearance.detailedEngineState
         stats.engineRPM = detailedEngineState.rpm
         stats.engineRelativeRPM = detailedEngineState.relativeRPM
 
-    def _updateShotInfo(self, avatar, hitPoint):
+    def updateShotInfo(self, avatar, hitPoint):
         stats = g_clientStatus
         shotDescr = avatar.getVehicleDescriptor().shot
         stats.shotSpeed = shotDescr.speed
@@ -380,5 +351,5 @@ class StatsCollector(object):
         stats.piercingPercent = piercingPercent
 
 
-g_statscollector = StatsCollector()
+g_statsCollector = StatsCollector()
 g_clientStatus = ClientStatus()
