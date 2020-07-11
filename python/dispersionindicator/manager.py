@@ -53,6 +53,9 @@ class IndicatorManager(object):
                 panel = EventLogger(paneldef,  g_clientStatus)
                 g_statsCollector.eventHandlers += panel.onEvent
             self.__panels.append(panel)
+        session = dependency.instance(IBattleSessionProvider)
+        ctrl = session.shared.crosshair
+        self.changeView(ctrl.getViewID())
         self.updateScreenPosition()
         self.updateCrosshairPosition()
 

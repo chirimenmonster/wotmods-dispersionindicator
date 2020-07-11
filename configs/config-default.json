@@ -363,22 +363,22 @@
             "factor":   1.0,
             "unit":     "s"
         },
-        "penetrationArmor": {
-            "status":   "penetrationArmor",
+        "targetPenetrationArmor": {
+            "status":   "targetPenetrationArmor",
             "title":    "E. Armor",
             "format":   "{:.0f}",
             "factor":   1.0,
             "unit":     "mm"
         },
-        "armor": {
-            "status":   "armor",
+        "targetArmor": {
+            "status":   "targetArmor",
             "title":    "Armor",
             "format":   "{:.0f}",
             "factor":   1.0,
             "unit":     "mm"
         },
-        "hitAngleCos": {
-            "status":   "hitAngleCos",
+        "targetHitAngleCos": {
+            "status":   "targetHitAngleCos",
             "title":    "Hit Angle Cos",
             "format":   "{:.0f}",
             "factor":   "RAD_TO_DEG",
@@ -391,9 +391,15 @@
             "factor":   1.0,
             "unit":     ""
         },
-        "entityName": {
-            "status":   "entityName",
-            "title":    "Entity Name"
+        "targetVehicleName": {
+            "status":       "targetVehicleName",
+            "title":        "",
+            "statWidth":    128
+        },
+        "targetArmorKind": {
+            "status":       "targetArmorKind",
+            "title":        "",
+            "statWidth":    128
         }
     }
 }

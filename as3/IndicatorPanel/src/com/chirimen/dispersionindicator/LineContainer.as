@@ -58,7 +58,7 @@ package com.chirimen.dispersionindicator
             textField.autoSize = TextFieldAutoSize.LEFT;
         }
 
-        private function assignValueField(textField:TextField, style:Object) : void
+        private function assignValueField(textField:TextField, style:Object, statWidth:int) : void
         {
             var format:TextFormat = getTextFormat(style);
             format.align = TextFormatAlign.RIGHT;
@@ -69,7 +69,7 @@ package com.chirimen.dispersionindicator
             height = textField.height;
             textField.text = "";
             textField.autoSize = TextFieldAutoSize.NONE;
-            textField.width = style.statsWidth;
+            textField.width = statWidth;
             textField.height = height;
         }
 
@@ -81,13 +81,13 @@ package com.chirimen.dispersionindicator
             textField.autoSize = TextFieldAutoSize.LEFT;
         }
 
-        public function init(label:String, unit:String, valueWidth:int, style:Object) : void
+        public function init(label:String, unit:String, statWidth:int, style:Object) : void
 		{
             assignLabelField(labelField, style);
             labelField.text = label;
             labelField.x = 0;
 
-            assignValueField(valueField, style);
+            assignValueField(valueField, style, statWidth);
             valueField.x = labelField.x + labelField.width;
 
             assignUnitField(unitField, style);

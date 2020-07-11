@@ -131,7 +131,7 @@ def crosshairDataProxy_setGunMarkerState(orig_result, self, markerType, value):
         if entity.health <= 0 or entity.publicInfo['team'] == excludeTeam:
             break
         resultPenetrationInfo['entityType'] = entity.__class__.__name__
-        resultPenetrationInfo['entityName'] = entity.typeDescriptor.type.name if entity.__class__.__name__ == 'Vehicle' else None
+        resultPenetrationInfo['entityVDesc'] = entity.typeDescriptor if entity.__class__.__name__ == 'Vehicle' else None
         player = BigWorld.player()
         if player is None:
             break
@@ -159,7 +159,8 @@ def crosshairDataProxy_setGunMarkerState(orig_result, self, markerType, value):
                     if v == mat_kind:
                         mat_name = k
                         break
-                _logger.info('entity={}, kind={} ({}), armor={}'.format(resultPenetrationInfo['entityName'], mat_kind, mat_name, cDetails.matInfo.armor))
+                targetVDesc = resultPenetrationInfo['entityVDesc']
+                _logger.info('entity={}, kind={} ({}), armor={}'.format(targetVDesc.type.name, mat_kind, mat_name, cDetails.matInfo.armor))
             except:
                 LOG_CURRENT_EXCEPTION()
             if isJet:
@@ -177,7 +178,8 @@ def crosshairDataProxy_setGunMarkerState(orig_result, self, markerType, value):
                     resultPenetrationInfo['firstArmor'] = {
                         'hitAngleCos': hitAngleCos,
                         'armor': matInfo.armor,
-                        'penetrationArmor': _CrosshairShotResults._computePenetrationArmor(shell.kind, hitAngleCos, matInfo, shell.caliber)
+                        'penetrationArmor': _CrosshairShotResults._computePenetrationArmor(shell.kind, hitAngleCos, matInfo, shell.caliber),
+                        'armorKind': mat_name
                     }
                 if not isJet and _CrosshairShotResults._shouldRicochet(shellKind, hitAngleCos, matInfo, caliber):
                     break
@@ -363,15 +365,18 @@ class StatsCollector(object):
         stats = g_clientStatus
         stats.piercingPercent = piercingPercent
         if 'firstArmor' in penetrationInfo:
-            stats.hitAngleCos = penetrationInfo['firstArmor']['hitAngleCos']
-            stats.penetrationArmor = penetrationInfo['firstArmor']['penetrationArmor']
-            stats.armor = penetrationInfo['firstArmor']['armor']
-            stats.entityName = penetrationInfo['entityName']
+            stats.targetHitAngleCos = penetrationInfo['firstArmor']['hitAngleCos']
+            stats.targetPenetrationArmor = penetrationInfo['firstArmor']['penetrationArmor']
+            stats.targetArmor = penetrationInfo['firstArmor']['armor']
+            stats.targetArmorKind = penetrationInfo['firstArmor']['armorKind']
+            stats.targetVehicleName = penetrationInfo['entityVDesc'].type.shortUserString
+            _logger.info(stats.targetVehicleName)
         else:
-            stats.hitAngleCos = None
-            stats.penetrationArmor = None
-            stats.armor = None
-            stats.entityName = None
+            stats.targetHitAngleCos = None
+            stats.targetPenetrationArmor = None
+            stats.targetArmor = None
+            stats.targetArmorKind = None
+            stats.targetVehicleName = None
 
 
 g_statsCollector = StatsCollector()

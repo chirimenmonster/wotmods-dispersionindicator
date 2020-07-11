@@ -28,7 +28,7 @@ package com.chirimen.dispersionindicator
             for each (var c:Object in config) {
                 line = new LineContainer();
                 addChild(line);
-                line.init(c.label, c.unit, c.valueWidth, style);
+                line.init(c.label, c.unit, c.statWidth, style);
                 line.name = c.name;
                 line.x = 0;
                 line.y = y;

@@ -75,7 +75,8 @@ class StatsIndicator(StatsIndicatorMeta):
             self.__guiSettings['stats'].append({
                 'name':         key,
                 'label':        setting.get('title', ''),
-                'unit':         setting.get('unit', '')
+                'unit':         setting.get('unit', ''),
+                'statWidth':    setting.get('statWidth', config['style']['statsWidth'])
             })
             factor = setting.get('factor', None)
             if isinstance(factor, str) or isinstance(factor, unicode):
@@ -97,8 +98,7 @@ class StatsIndicator(StatsIndicatorMeta):
     def start(self):
         super(StatsIndicator, self).start()
         for name, config in self.__statsSource.items():
-            text = config['format'].format(0)
-            self.__setIndicatorValue(name, text)
+            self.__setIndicatorValue(name, '')
 
     def stop(self):
         super(StatsIndicator, self).stop()

@@ -127,6 +127,7 @@ class PanelView(View):
             return
         _logger.debug('%s.setPositionByCrosshair', self.className)
         width, height = self.as_getPanelSizeS()
+        _logger.debug('%s.setPositionByCrosshair width=%d, height=%d', self.className, width, height)
         offsetX = offsetY = 0
         halign, valign = self.__align
         if halign == 'RIGHT':
@@ -139,7 +140,8 @@ class PanelView(View):
             offsetY = - height / 2
         x = self.__crosshairPosition[0] + self.__crosshairOffset[self.__crosshairView][0] + offsetX
         y = self.__crosshairPosition[1] + self.__crosshairOffset[self.__crosshairView][1] + offsetY
-        _logger.debug('%s.setPositionByCrosshair (%d, %d)', self.className, x, y)
+        _logger.debug('%s.setPositionByCrosshair view=%s, crosshairOffset=(%d, %d)', self.className, self.__crosshairView, self.__crosshairOffset[self.__crosshairView][0], self.__crosshairOffset[self.__crosshairView][1])
+        _logger.debug('%s.setPositionByCrosshair crosshair=(%d, %d), panel=(%d, %d)', self.className, self.__crosshairPosition[0], self.__crosshairPosition[1], x, y)
         self.as_setPositionS(x, y)
 
 
