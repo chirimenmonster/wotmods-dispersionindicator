@@ -390,6 +390,10 @@
             "format":   "{:.0f}",
             "factor":   1.0,
             "unit":     ""
+        },
+        "entityName": {
+            "status":   "entityName",
+            "title":    "Entity Name"
         }
     }
 }

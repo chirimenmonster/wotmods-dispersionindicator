@@ -72,17 +72,17 @@ class StatsIndicator(StatsIndicatorMeta):
         self.__statsSource = {}
         for key in config['items']:
             setting = self.statsdefs[key]
-            factor = setting['factor']
-            if isinstance(factor, str) or isinstance(factor, unicode):
-                factor = CONSTANT.get(factor, 1.0)
             self.__guiSettings['stats'].append({
                 'name':         key,
-                'label':        setting['title'],
-                'unit':         setting['unit']
+                'label':        setting.get('title', ''),
+                'unit':         setting.get('unit', '')
             })
+            factor = setting.get('factor', None)
+            if isinstance(factor, str) or isinstance(factor, unicode):
+                factor = CONSTANT.get(factor, 1.0)
             self.__statsSource[key] = {
                 'func':         partial(self.getStatus, key, factor),
-                'format':       setting['format']
+                'format':       setting.get('format', '{}')
             }
         appLoader = dependency.instance(IAppLoader)
         app = appLoader.getDefBattleApp()

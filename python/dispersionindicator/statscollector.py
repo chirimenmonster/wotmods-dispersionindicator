@@ -13,6 +13,8 @@ from gun_rotation_shared import decodeGunAngles
 from vehicle_extras import ShowShooting
 from gui.battle_control import avatar_getter
 from gui.battle_control.controllers.crosshair_proxy import CrosshairDataProxy
+from material_kinds import EFFECT_MATERIAL_INDEXES_BY_IDS, EFFECT_MATERIAL_NAMES_BY_INDEXES, IDS_BY_NAMES
+
 
 from mod_constants import MOD, EVENT, CLIENT_STATUS_LIST
 from hook import overrideMethod, overrideClassMethod
@@ -113,12 +115,14 @@ def showShooting_doShot(_, self, data):
 
 @overrideMethod(CrosshairDataProxy, '_CrosshairDataProxy__setGunMarkerState')
 @callOriginal(prev=True)
-def hook_crosshairDataProxy_setGunMarkerState(orig_result, self, markerType, value):
+def crosshairDataProxy_setGunMarkerState(orig_result, self, markerType, value):
     excludeTeam = 0
     hitPoint, direction, collision = value
-    firstArmor, firstHitAngleCos, firstPenetrationArmor = None, None, None
-    result = None
+    resultPenetrationInfo = {}
+    piercingPercent = None
     for _ in [0]:
+        #
+        # from AvatarInputHandler.gun_marker_ctrl._CrosshairShotResults.getShotResult
         if collision is None:
             break
         entity = collision.entity
@@ -126,6 +130,8 @@ def hook_crosshairDataProxy_setGunMarkerState(orig_result, self, markerType, val
             break
         if entity.health <= 0 or entity.publicInfo['team'] == excludeTeam:
             break
+        resultPenetrationInfo['entityType'] = entity.__class__.__name__
+        resultPenetrationInfo['entityName'] = entity.typeDescriptor.type.name if entity.__class__.__name__ == 'Vehicle' else None
         player = BigWorld.player()
         if player is None:
             break
@@ -139,7 +145,6 @@ def hook_crosshairDataProxy_setGunMarkerState(orig_result, self, markerType, val
         piercingPower = _CrosshairShotResults._computePiercingPowerAtDist(ppDesc, dist, maxDist)
         fullPiercingPower = piercingPower
         minPP, maxPP = _CrosshairShotResults._computePiercingPowerRandomization(shell)
-        result = None
         isJet = False
         jetStartDist = None
         ignoredMaterials = set()
@@ -147,21 +152,33 @@ def hook_crosshairDataProxy_setGunMarkerState(orig_result, self, markerType, val
         if collisionsDetails is None:
             break
         for cDetails in collisionsDetails:
+            try:
+                mat_kind = cDetails.matInfo.kind
+                mat_name = None
+                for k, v in IDS_BY_NAMES.items():
+                    if v == mat_kind:
+                        mat_name = k
+                        break
+                _logger.info('entity={}, kind={} ({}), armor={}'.format(resultPenetrationInfo['entityName'], mat_kind, mat_name, cDetails.matInfo.armor))
+            except:
+                LOG_CURRENT_EXCEPTION()
             if isJet:
                 jetDist = cDetails.dist - jetStartDist
                 if jetDist > 0.0:
                     piercingPower *= 1.0 - jetDist * _CrosshairShotResults._SHELL_EXTRA_DATA[shellKind].jetLossPPByDist
             if cDetails.matInfo is None:
-                result = None
+                piercingPercent = None
             else:
                 matInfo = cDetails.matInfo
                 if (cDetails.compName, matInfo.kind) in ignoredMaterials:
                     continue
                 hitAngleCos = cDetails.hitAngleCos if matInfo.useHitAngle else 1.0
-                if firstArmor is None:
-                    firstHitAngleCos = hitAngleCos
-                    firstArmor = matInfo.armor
-                    firstPenetrationArmor = _CrosshairShotResults._computePenetrationArmor(shell.kind, hitAngleCos, matInfo, shell.caliber)
+                if resultPenetrationInfo.get('firstArmor', None) is None:
+                    resultPenetrationInfo['firstArmor'] = {
+                        'hitAngleCos': hitAngleCos,
+                        'armor': matInfo.armor,
+                        'penetrationArmor': _CrosshairShotResults._computePenetrationArmor(shell.kind, hitAngleCos, matInfo, shell.caliber)
+                    }
                 if not isJet and _CrosshairShotResults._shouldRicochet(shellKind, hitAngleCos, matInfo, caliber):
                     break
                 piercingPercent = 1000.0
@@ -170,10 +187,9 @@ def hook_crosshairDataProxy_setGunMarkerState(orig_result, self, markerType, val
                     piercingPercent = 100.0 + (penetrationArmor - piercingPower) / fullPiercingPower * 100.0
                     piercingPower -= penetrationArmor
                 if matInfo.vehicleDamageFactor:
-                    result = piercingPercent
                     break
                 elif matInfo.extra:
-                    result = piercingPercent
+                    piercingPercent = None
                 if matInfo.collideOnceOnly:
                     ignoredMaterials.add((cDetails.compName, matInfo.kind))
             if piercingPower <= 0.0:
@@ -184,7 +200,7 @@ def hook_crosshairDataProxy_setGunMarkerState(orig_result, self, markerType, val
                 armor = mInfo.armor if mInfo is not None else 0.0
                 jetStartDist = cDetails.dist + armor * 0.001                
 
-    g_statsCollector.updatePenetrationArmor(firstPenetrationArmor, firstArmor, firstHitAngleCos, result)
+    g_statsCollector.updatePenetrationArmor(piercingPercent, resultPenetrationInfo)
 
 
 class ClientStatus(object):
@@ -343,12 +359,19 @@ class StatsCollector(object):
         stats.targetPosY = hitPoint.y
         stats.targetPosZ = hitPoint.z
 
-    def updatePenetrationArmor(self, penetrationArmor, armor, hitAngleCos, piercingPercent):
+    def updatePenetrationArmor(self, piercingPercent, penetrationInfo):
         stats = g_clientStatus
-        stats.penetrationArmor = penetrationArmor
-        stats.armor = armor
-        stats.hitAngleCos = hitAngleCos
         stats.piercingPercent = piercingPercent
+        if 'firstArmor' in penetrationInfo:
+            stats.hitAngleCos = penetrationInfo['firstArmor']['hitAngleCos']
+            stats.penetrationArmor = penetrationInfo['firstArmor']['penetrationArmor']
+            stats.armor = penetrationInfo['firstArmor']['armor']
+            stats.entityName = penetrationInfo['entityName']
+        else:
+            stats.hitAngleCos = None
+            stats.penetrationArmor = None
+            stats.armor = None
+            stats.entityName = None
 
 
 g_statsCollector = StatsCollector()
