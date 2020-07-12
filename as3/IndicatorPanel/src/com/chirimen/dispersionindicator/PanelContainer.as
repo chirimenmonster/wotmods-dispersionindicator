@@ -5,6 +5,7 @@ package com.chirimen.dispersionindicator
     import Math;
 
     import com.chirimen.dispersionindicator.LineContainer;
+    import com.chirimen.dispersionindicator.LineAlign;
 	
     /**
      * ...
@@ -22,26 +23,53 @@ package com.chirimen.dispersionindicator
             var i:int;
             var y:int = 0;
             var anchorX:int = 0;
+            var lineWidth:int = 0;
+            var lineWidthAlt:int = 0;
             var line:LineContainer;
+            var offsetX:Array;
 			
             y = style.paddingTop;
             for each (var c:Object in config) {
                 line = new LineContainer();
                 addChild(line);
-                line.init(c.label, c.unit, c.valueWidth, style);
+                line.init(c.label, c.unit, c, style);
                 line.name = c.name;
                 line.x = 0;
                 line.y = y;
-                if (anchorX < line.anchorX) {
-                    anchorX = line.anchorX;
-                }
                 fieldHeight = y + line.height;
                 y += style.lineHeight;
             }
             fieldHeight += style.paddingBottom;
+            offsetX = new Array(numChildren);
             for (i = 0; i < numChildren; i++) {
                 line = getChildAt(i) as LineContainer;
-                line.x = anchorX - line.anchorX + style.paddingLeft;
+                if (line.lineAlign == LineAlign.VALUE)
+                    anchorX = Math.max(anchorX, line.anchorX);
+            }
+            for (i = 0; i < numChildren; i++) {
+                line = getChildAt(i) as LineContainer;
+                if (line.lineAlign == LineAlign.VALUE) {
+                    offsetX[i] = anchorX - line.anchorX;
+                    lineWidth = Math.max(lineWidth, line.width + offsetX[i]);
+                } else {
+                    lineWidthAlt = Math.max(lineWidthAlt, line.width);
+                }
+            }
+            lineWidthAlt = Math.max(lineWidthAlt, lineWidth);
+            for (i = 0; i < numChildren; i++) {
+                line = getChildAt(i) as LineContainer;
+                if (line.lineAlign == LineAlign.VALUE) {
+                    offsetX[i] = offsetX[i] + lineWidthAlt - lineWidth;
+                } else {
+                    offsetX[i] = lineWidthAlt - line.width;
+                }
+            }
+            for (i = 0; i < numChildren; i++) {
+                line = getChildAt(i) as LineContainer;
+                line.x = offsetX[i] + style.paddingLeft;
+            }
+            for (i = 0; i < numChildren; i++) {
+                line = getChildAt(i) as LineContainer;
                 fieldWidth = Math.max(fieldWidth, line.x + line.width + style.paddingRight);
             }
             setBackground(style);

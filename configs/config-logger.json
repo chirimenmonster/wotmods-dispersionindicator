@@ -1,6 +1,6 @@
 {
     "panels": {
-        "panel_0": {
+        "indicator_timeConverging": {
             "style": {
                 "horizontalAnchor":             "LEFT",
                 "verticalAnchor":               "CENTER",
@@ -8,7 +8,7 @@
                 "crosshairOffset_ARCADE":       [ 164,  1 ],
                 "crosshairOffset_SNIPER":       [ 268,  0 ],
                 "crosshairOffset_STRATEGIC":    [ 162, 32 ],
-                "statsWidth":                   36,
+                "statWidth":                    36,
                 "textColor":                    [ 255, 255, 0 ],
                 "filter":                       "DROPSHADOW",
                 "alpha":                        0.8,
@@ -30,16 +30,66 @@
             "items": [
                 "aimingTimeConverging"
             ]
+        },
+        "indicator_vehicleRYaw": {
+            "style": {
+                "horizontalAnchor":             "LEFT",
+                "verticalAnchor":               "BOTTOM",
+                "referencePoint":               "SCREEN_LEFT_BOTTOM",
+                "screenOffset":                 [ 120, -154 ],
+                "statWidth":                    42,
+                "textColor":                    [ 255, 255, 0 ],
+                "filter":                       "DROPSHADOW",
+                "alpha":                        0.5,
+                "fontsize":                     14,
+                "paddingTop":                   0,
+                "paddingBottom":                0,
+                "paddingLeft":                  0,
+                "paddingRight":                 0,
+                "positionZ":                    0.1
+            },
+            "statsDefs": {
+                "vehicleRYaw": {
+                    "status":       "vehicleRYaw",
+                    "title":        "",
+                    "format":       "{:.0f}",
+                    "factor":       "RAD_TO_DEG",
+                    "unit":         ""
+                }
+            },
+            "items": [
+                "vehicleRYaw"
+            ]
         }
     },
-    "logs": {
+    "loggers": {
         "output_0": {
+            "channel":  "status",
             "items": [
                 "currTime",
                 "aimingTimeConverging",
                 "modifiedAimingFactor",
                 "aimingFactor",
                 "dAngleAiming"
+            ]
+        },
+        "output_1": {
+            "channel":  "event",
+            "logfile":  "event.csv",
+            "events": [
+                "actionShoot",
+                "receiveShot",
+                "receiveShotResult"
+            ],
+            "items": [
+                "eventName",
+                "eventTime",
+                "shotDistance",
+                "shotDistanceH",
+                "shotDistanceV",
+                "shotSpeed",
+                "shotSpeedH",
+                "shotSpeedV"
             ]
         }
     }

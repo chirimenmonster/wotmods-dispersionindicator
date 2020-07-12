@@ -17,6 +17,7 @@ CONFIG_FILES = [
     '${config_file}'
 ]
 
+LOG_DIR = '${log_dir}'
 LOG_FILE = '${log_file}'
 
 CONSTANT = {
@@ -49,3 +50,30 @@ GUI_GLOBAL_SPACE_SYMBOL = {
     GuiGlobalSpaceID.BATTLE_LOADING:    'BATTLE_LOADING',
     GuiGlobalSpaceID.BATTLE:            'BATTLE',
 }
+
+class EVENT:
+    ACTION_SHOOT = 'actionShoot'
+    RECEIVE_SHOT = 'receiveShot'
+    RECEIVE_SHOT_RESULT = 'receiveShotResult'
+
+EVENT_LIST = [
+    EVENT.ACTION_SHOOT,
+    EVENT.RECEIVE_SHOT,
+    EVENT.RECEIVE_SHOT_RESULT
+]
+
+CLIENT_STATUS_LIST = [
+    'currTime', 'eventTime', 'eventName', 'arenaName', 'vehicleName',
+    'ping', 'fps', 'fpsReplay', 'latency',
+    'dAngleAiming', 'dAngleIdeal', 'turretRotationSpeed', 'additiveFactor', 'shotDispersionAngle', 'shotFactor',
+    'aimingStartTime', 'aimingStartFactor', 'multFactor', 'factorsTurretRotation', 'factorsMovement', 'factorsRotation', 'aimingTime',
+    'vehicleYaw', 'vehiclePitch', 'vehicleRoll', 'vehicleRYaw', 'turretYaw', 'gunPitch',
+    'vehicleSpeed', 'vehicleRSpeed', 'engineRPM', 'engineRelativeRPM',
+    'shotSpeed', 'shotSpeedH', 'shotSpeedV', 'shotGravity',
+    'shotPosX', 'shotPosY', 'shotPosZ', 'shotDistance', 'shotDistanceH', 'shotDistanceV',
+    'vehiclePosX', 'vehiclePosY', 'vehiclePosZ', 'distance', 'distanceH', 'distanceV',
+    'targetPosX', 'targetPosY', 'targetPosZ',
+    'aimingFactor', 'aimingTimeConverging', 'modifiedAimingFactor', 'scoreDispersion',
+    'flightTime',
+    'piercingPercent', 'targetPenetrationArmor', 'targetArmor', 'targetHitAngleCos', 'targetArmorKind', 'targetVehicleName'
+]

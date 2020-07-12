@@ -6,17 +6,19 @@
         "alpha":                        0.8,
         "font":                         "$FieldFont",
         "fontsize":                     14,
+        "statWidth":                    56,
+        "statAlign":                    "RIGHT",
         "lineHeight":                   18,
+        "lineAlign":                    "VALUE",
         "paddinTop":                    2,
         "paddingBottom":                2,
         "paddingLeft":                  4,
         "paddingRight":                 4,
-        "statsWidth":                   56,
         "horizontalAnchor":             "RIGHT",
         "verticalAnchor":               "TOP",
         "referencePoint":               "SCREEN_CENTER",
         "screenOffset":                 [ -160, 50 ],
-        "crosshairOffset":              [ 164,   1 ],
+        "crosshairOffset":              [  164,  1 ],
         "positionZ":                    0.5
     },
     "statsDefs": {
@@ -362,6 +364,74 @@
             "format":   "{:.2f}",
             "factor":   1.0,
             "unit":     "s"
+        },
+        "ping": {
+            "status":   "ping",
+            "title":    "Ping",
+            "format":   "{:.0f}",
+            "factor":   1.0,
+            "unit":     "ms"
+        },
+        "fps": {
+            "status":   "fps",
+            "title":    "FPS",
+            "format":   "{:.0f}",
+            "unit":     "1/s"
+        },
+        "fpsReplay": {
+            "status":   "fpsReplay",
+            "title":    "R. FPS",
+            "format":   "{:.0f}",
+            "unit":     "1/s"
+        },
+        "latency": {
+            "status":   "latency",
+            "title":    "Latency",
+            "format":   "{:.0f}",
+            "factor":   1000.0,
+            "unit":     "ms"
+        },
+        "targetPenetrationArmor": {
+            "status":   "targetPenetrationArmor",
+            "title":    "E. Armor",
+            "format":   "{:.0f}",
+            "factor":   1.0,
+            "unit":     "mm"
+        },
+        "targetArmor": {
+            "status":   "targetArmor",
+            "title":    "Armor",
+            "format":   "{:.0f}",
+            "factor":   1.0,
+            "unit":     "mm"
+        },
+        "targetHitAngleCos": {
+            "status":   "targetHitAngleCos",
+            "title":    "Angle",
+            "format":   "{:.0f}",
+            "factor":   "RAD_TO_DEG",
+            "unit":     "deg"
+        },
+        "piercingPercent": {
+            "status":   "piercingPercent",
+            "title":    "P. Score",
+            "format":   "{:.0f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
+        "targetVehicleName": {
+            "status":       "targetVehicleName",
+            "title":        "",
+            "statWidth":    128,
+            "statAlign":    "CENTER",
+            "lineAlign":    "RIGHT"
+        },
+        "targetArmorKind": {
+            "status":       "targetArmorKind",
+            "title":        "",
+            "statWidth":    128,
+            "statAlign":    "CENTER",
+            "lineAlign":    "RIGHT"
         }
     }
 }
