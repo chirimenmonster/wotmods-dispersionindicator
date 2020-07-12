@@ -21,6 +21,7 @@ package com.chirimen.dispersionindicator
         public var anchorY:int = 0;
         public var fieldWidth:int = 0;
         public var fieldHeight:int = 0;
+        public var isAlignAnchorX:Boolean = true;
 
         public function LineContainer() : void
         {
@@ -58,10 +59,14 @@ package com.chirimen.dispersionindicator
             textField.autoSize = TextFieldAutoSize.LEFT;
         }
 
-        private function assignValueField(textField:TextField, style:Object, statWidth:int) : void
+        private function assignValueField(textField:TextField, style:Object, statWidth:int, statAlign:String) : void
         {
             var format:TextFormat = getTextFormat(style);
-            format.align = TextFormatAlign.RIGHT;
+            if (statAlign == "CENTER") {
+                format.align = TextFormatAlign.CENTER;
+            } else {
+                format.align = TextFormatAlign.RIGHT;
+            }
             textField.defaultTextFormat = format;
             var height:int;
             textField.autoSize = TextFieldAutoSize.LEFT;
@@ -81,13 +86,15 @@ package com.chirimen.dispersionindicator
             textField.autoSize = TextFieldAutoSize.LEFT;
         }
 
-        public function init(label:String, unit:String, statWidth:int, style:Object) : void
+        public function init(label:String, unit:String, config:Object, style:Object) : void
 		{
+            isAlignAnchorX = config.isAlignAnchorX;
+
             assignLabelField(labelField, style);
             labelField.text = label;
             labelField.x = 0;
 
-            assignValueField(valueField, style, statWidth);
+            assignValueField(valueField, style, config.statWidth, config.statAlign);
             valueField.x = labelField.x + labelField.width;
 
             assignUnitField(unitField, style);

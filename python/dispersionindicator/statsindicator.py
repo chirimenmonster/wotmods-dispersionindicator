@@ -76,7 +76,9 @@ class StatsIndicator(StatsIndicatorMeta):
                 'name':         key,
                 'label':        setting.get('title', ''),
                 'unit':         setting.get('unit', ''),
-                'statWidth':    setting.get('statWidth', config['style']['statsWidth'])
+                'statWidth':    setting.get('statWidth', config['style']['statsWidth']),
+                'statAlign':        setting.get('statAlign', 'RIGHT'),
+                'isAlignAnchorX':   setting.get('isAlignAnchorX', True)
             })
             factor = setting.get('factor', None)
             if isinstance(factor, str) or isinstance(factor, unicode):
