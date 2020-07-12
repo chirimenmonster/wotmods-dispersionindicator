@@ -17,12 +17,16 @@ FILE_EXTENSION = '.csv'
 class StatsLogger(StatsIndicatorMeta):
     def __init__(self, config, clientStatus):
         super(StatsLogger, self).__init__(config, clientStatus)
-        self.log_file = os.path.join(LOG_DIR, config['logfile'])
         self.names = config['items']
         self.header = self.names[:]
         self.header.insert(0, '# time')
-        filename = datetime.now().strftime('%Y%m%d_%H%M_') + self.getStatus('vehicleName').replace(':', '-') + '_' + self.getStatus('arenaName') + FILE_EXTENSION
-        self.log_file = os.path.join(LOG_DIR, filename)
+        if 'logfile' in config:
+            filename = config['logfile']
+            self.openMode = 'ab'
+        else:
+            filename = datetime.now().strftime('%Y%m%d_%H%M_') + self.getStatus('vehicleName').replace(':', '-') + '_' + self.getStatus('arenaName') + FILE_EXTENSION
+            self.openMode = 'wb'
+        self.logFile = os.path.join(LOG_DIR, filename)
 
     def start(self):
         super(StatsLogger, self).start()
@@ -41,8 +45,8 @@ class StatsLogger(StatsIndicatorMeta):
         if not os.path.isdir(LOG_DIR):
             _logger.info('%s.outputLog: make dir %s', self.className, LOG_DIR)
             os.makedirs(LOG_DIR)
-        _logger.info('%s.outputLog: save file: %s, %s', self.className, self.log_file, len(self.__strage))
-        with open(self.log_file, 'wb') as fp:
+        _logger.info('%s.outputLog: save file: %s, %s', self.className, self.logFile, len(self.__strage))
+        with open(self.logFile, self.openMode) as fp:
             writer = csv.writer(fp, dialect='excel')
             writer.writerow(['# vehicle={} arena={}'.format(self.getStatus('vehicleName'), self.getStatus('arenaName'))])
             writer.writerow(self.header)

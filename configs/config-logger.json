@@ -8,7 +8,7 @@
                 "crosshairOffset_ARCADE":       [ 164,  1 ],
                 "crosshairOffset_SNIPER":       [ 268,  0 ],
                 "crosshairOffset_STRATEGIC":    [ 162, 32 ],
-                "statsWidth":                   36,
+                "statWidth":                    36,
                 "textColor":                    [ 255, 255, 0 ],
                 "filter":                       "DROPSHADOW",
                 "alpha":                        0.8,
@@ -37,7 +37,7 @@
                 "verticalAnchor":               "BOTTOM",
                 "referencePoint":               "SCREEN_LEFT_BOTTOM",
                 "screenOffset":                 [ 120, -154 ],
-                "statsWidth":                   42,
+                "statWidth":                    42,
                 "textColor":                    [ 255, 255, 0 ],
                 "filter":                       "DROPSHADOW",
                 "alpha":                        0.5,
@@ -65,7 +65,6 @@
     "loggers": {
         "output_0": {
             "channel":  "status",
-            "logfile":  "status.log",
             "items": [
                 "currTime",
                 "aimingTimeConverging",
@@ -76,7 +75,7 @@
         },
         "output_1": {
             "channel":  "event",
-            "logfile":  "event.log",
+            "logfile":  "event.csv",
             "events": [
                 "actionShoot",
                 "receiveShot",

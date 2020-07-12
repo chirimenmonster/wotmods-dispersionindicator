@@ -5,6 +5,7 @@ package com.chirimen.dispersionindicator
     import Math;
 
     import com.chirimen.dispersionindicator.LineContainer;
+    import com.chirimen.dispersionindicator.LineAlign;
 	
     /**
      * ...
@@ -42,21 +43,22 @@ package com.chirimen.dispersionindicator
             offsetX = new Array(numChildren);
             for (i = 0; i < numChildren; i++) {
                 line = getChildAt(i) as LineContainer;
-                if (line.isAlignAnchorX)
+                if (line.lineAlign == LineAlign.VALUE)
                     anchorX = Math.max(anchorX, line.anchorX);
             }
             for (i = 0; i < numChildren; i++) {
                 line = getChildAt(i) as LineContainer;
-                if (line.isAlignAnchorX) {
+                if (line.lineAlign == LineAlign.VALUE) {
                     offsetX[i] = anchorX - line.anchorX;
                     lineWidth = Math.max(lineWidth, line.width + offsetX[i]);
                 } else {
                     lineWidthAlt = Math.max(lineWidthAlt, line.width);
                 }
             }
+            lineWidthAlt = Math.max(lineWidthAlt, lineWidth);
             for (i = 0; i < numChildren; i++) {
                 line = getChildAt(i) as LineContainer;
-                if (line.isAlignAnchorX) {
+                if (line.lineAlign == LineAlign.VALUE) {
                     offsetX[i] = offsetX[i] + lineWidthAlt - lineWidth;
                 } else {
                     offsetX[i] = lineWidthAlt - line.width;

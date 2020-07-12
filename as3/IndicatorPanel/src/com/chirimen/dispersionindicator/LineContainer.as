@@ -6,6 +6,8 @@ package com.chirimen.dispersionindicator
     import flash.text.TextFormat;
     import flash.text.TextFormatAlign;
     import Math;
+
+    import com.chirimen.dispersionindicator.LineAlign;
 	
     /**
      * ...
@@ -21,7 +23,7 @@ package com.chirimen.dispersionindicator
         public var anchorY:int = 0;
         public var fieldWidth:int = 0;
         public var fieldHeight:int = 0;
-        public var isAlignAnchorX:Boolean = true;
+        public var lineAlign:int = LineAlign.VALUE;
 
         public function LineContainer() : void
         {
@@ -88,7 +90,13 @@ package com.chirimen.dispersionindicator
 
         public function init(label:String, unit:String, config:Object, style:Object) : void
 		{
-            isAlignAnchorX = config.isAlignAnchorX;
+            if (config.lineAlign == "VALUE") {
+                lineAlign = LineAlign.VALUE;
+            } else if (config.lineAlign == "RIGHT") {
+                lineAlign = LineAlign.RIGHT;
+            } else {
+                lineAlign = LineAlign.VALUE;
+            }
 
             assignLabelField(labelField, style);
             labelField.text = label;

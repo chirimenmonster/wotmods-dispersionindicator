@@ -152,17 +152,6 @@ def crosshairDataProxy_setGunMarkerState(orig_result, self, markerType, value):
         if collisionsDetails is None:
             break
         for cDetails in collisionsDetails:
-            try:
-                mat_kind = cDetails.matInfo.kind
-                mat_name = None
-                for k, v in IDS_BY_NAMES.items():
-                    if v == mat_kind:
-                        mat_name = k
-                        break
-                targetVDesc = resultPenetrationInfo['entityVDesc']
-                _logger.info('entity={}, kind={} ({}), armor={}'.format(targetVDesc.type.name, mat_kind, mat_name, cDetails.matInfo.armor))
-            except:
-                LOG_CURRENT_EXCEPTION()
             if isJet:
                 jetDist = cDetails.dist - jetStartDist
                 if jetDist > 0.0:
@@ -175,6 +164,11 @@ def crosshairDataProxy_setGunMarkerState(orig_result, self, markerType, value):
                     continue
                 hitAngleCos = cDetails.hitAngleCos if matInfo.useHitAngle else 1.0
                 if resultPenetrationInfo.get('firstArmor', None) is None:
+                    mat_name = None
+                    for k, v in IDS_BY_NAMES.items():
+                        if v == matInfo.kind:
+                            mat_name = k
+                            break
                     resultPenetrationInfo['firstArmor'] = {
                         'hitAngleCos': hitAngleCos,
                         'armor': matInfo.armor,
@@ -265,10 +259,7 @@ class StatsCollector(object):
             stats.fps = -1
         stats.fpsReplay = fpsReplay
         latency = BigWorld.LatencyInfo().value
-        stats.latency_0 = latency[0]
-        stats.latency_1 = latency[1]
-        stats.latency_2 = latency[2]
-        stats.latency_3 = latency[3]
+        stats.latency = latency[3]
 
     def updateDispersionAngle(self, avatar, dispersionAngle, turretRotationSpeed, withShot):
         stats = g_clientStatus
@@ -370,7 +361,6 @@ class StatsCollector(object):
             stats.targetArmor = penetrationInfo['firstArmor']['armor']
             stats.targetArmorKind = penetrationInfo['firstArmor']['armorKind']
             stats.targetVehicleName = penetrationInfo['entityVDesc'].type.shortUserString
-            _logger.info(stats.targetVehicleName)
         else:
             stats.targetHitAngleCos = None
             stats.targetPenetrationArmor = None

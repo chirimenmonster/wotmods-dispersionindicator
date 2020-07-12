@@ -3,7 +3,7 @@
         "colour":           [ 255, 255, 0 ],
         "alpha":            0.8,
         "lineHeight":       16,
-        "statWidth":        56
+        "statsWidth":       56
     },
     "panels": {
         "indicator_timeConverging": {
@@ -151,7 +151,7 @@
                 "flightTime"
             ]
         },
-        "panel_3": {
+        "panel_ping": {
             "style": {
                 "horizontalAnchor":             "LEFT",
                 "verticalAnchor":               "BOTTOM",
@@ -165,6 +165,26 @@
                 "fps",
                 "fpsReplay",
                 "latency"
+            ]
+        },
+        "panel_piercingInfo": {
+            "style": {
+                "horizontalAnchor":             "LEFT",
+                "verticalAnchor":               "BOTTOM",
+                "referencePoint":               "CROSSHAIR",
+                "crosshairOffset_ARCADE":       [ 104, -21 ],
+                "crosshairOffset_SNIPER":       [ 104, -40 ],
+                "crosshairOffset_STRATEGIC":    [ 102,  12 ],
+                "backgroundColor":              [ 0, 0, 0, 0.4 ],
+                "backgroundAlpha":              0.4
+            },
+            "items": [
+                "targetVehicleName",
+                "targetArmorKind",
+                "targetHitAngleCos",
+                "targetArmor",
+                "targetPenetrationArmor",
+                "piercingPercent"
             ]
         }
     }

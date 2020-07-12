@@ -64,7 +64,7 @@ EVENT_LIST = [
 
 CLIENT_STATUS_LIST = [
     'currTime', 'eventTime', 'eventName', 'arenaName', 'vehicleName',
-    'ping', 'fps', 'fpsReplay', 'latency_0', 'latency_1', 'latency_2', 'latency_3',
+    'ping', 'fps', 'fpsReplay', 'latency',
     'dAngleAiming', 'dAngleIdeal', 'turretRotationSpeed', 'additiveFactor', 'shotDispersionAngle', 'shotFactor',
     'aimingStartTime', 'aimingStartFactor', 'multFactor', 'factorsTurretRotation', 'factorsMovement', 'factorsRotation', 'aimingTime',
     'vehicleYaw', 'vehiclePitch', 'vehicleRoll', 'vehicleRYaw', 'turretYaw', 'gunPitch',
