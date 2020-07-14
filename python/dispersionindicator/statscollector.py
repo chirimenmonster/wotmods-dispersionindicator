@@ -123,6 +123,7 @@ def crosshairDataProxy_setGunMarkerState(orig_result, self, markerType, value):
     for _ in [0]:
         #
         # from AvatarInputHandler.gun_marker_ctrl._CrosshairShotResults.getShotResult
+        piercingMultiplier = 1
         if collision is None:
             break
         entity = collision.entity
@@ -142,7 +143,7 @@ def crosshairDataProxy_setGunMarkerState(orig_result, self, markerType, value):
         ppDesc = vDesc.shot.piercingPower
         maxDist = vDesc.shot.maxDistance
         dist = (hitPoint - player.getOwnVehiclePosition()).length
-        piercingPower = _CrosshairShotResults._computePiercingPowerAtDist(ppDesc, dist, maxDist)
+        piercingPower = _CrosshairShotResults._computePiercingPowerAtDist(ppDesc, dist, maxDist, piercingMultiplier)
         fullPiercingPower = piercingPower
         minPP, maxPP = _CrosshairShotResults._computePiercingPowerRandomization(shell)
         isJet = False
