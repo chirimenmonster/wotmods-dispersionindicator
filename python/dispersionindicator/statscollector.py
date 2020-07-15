@@ -13,6 +13,7 @@ from gun_rotation_shared import decodeGunAngles
 from vehicle_extras import ShowShooting
 from gui.battle_control import avatar_getter
 from gui.battle_control.controllers.crosshair_proxy import CrosshairDataProxy
+from gui.Scaleform.daapi.view.battle.shared.crosshair.plugins import ShotResultIndicatorPlugin
 from material_kinds import EFFECT_MATERIAL_INDEXES_BY_IDS, EFFECT_MATERIAL_NAMES_BY_INDEXES, IDS_BY_NAMES
 
 
@@ -123,7 +124,6 @@ def crosshairDataProxy_setGunMarkerState(orig_result, self, markerType, value):
     for _ in [0]:
         #
         # from AvatarInputHandler.gun_marker_ctrl._CrosshairShotResults.getShotResult
-        piercingMultiplier = 1
         if collision is None:
             break
         entity = collision.entity
@@ -143,7 +143,7 @@ def crosshairDataProxy_setGunMarkerState(orig_result, self, markerType, value):
         ppDesc = vDesc.shot.piercingPower
         maxDist = vDesc.shot.maxDistance
         dist = (hitPoint - player.getOwnVehiclePosition()).length
-        piercingPower = _CrosshairShotResults._computePiercingPowerAtDist(ppDesc, dist, maxDist, piercingMultiplier)
+        piercingPower = _CrosshairShotResults._computePiercingPowerAtDist(ppDesc, dist, maxDist, g_clientStatus.piercingMultiplier)
         fullPiercingPower = piercingPower
         minPP, maxPP = _CrosshairShotResults._computePiercingPowerRandomization(shell)
         isJet = False
@@ -198,6 +198,18 @@ def crosshairDataProxy_setGunMarkerState(orig_result, self, markerType, value):
                 jetStartDist = cDetails.dist + armor * 0.001                
 
     g_statsCollector.updatePenetrationArmor(piercingPercent, resultPenetrationInfo)
+
+
+@overrideMethod(ShotResultIndicatorPlugin, 'start')
+@callOriginal(prev=True)
+def ShotResultIndicatorPlugin_start(orig_result, self):
+    g_statsCollector.updatePiercingMultiplier(self._ShotResultIndicatorPlugin__piercingMultiplier)
+
+
+@overrideMethod(ShotResultIndicatorPlugin, '_ShotResultIndicatorPlugin__onVehicleFeedbackReceived')
+@callOriginal(prev=True)
+def ShotResultIndicatorPlugin_onVehicleFeedbackReceived(orig_result, self, eventID, _, value):
+    g_statsCollector.updatePiercingMultiplier(self._ShotResultIndicatorPlugin__piercingMultiplier)
 
 
 class ClientStatus(object):
@@ -369,6 +381,9 @@ class StatsCollector(object):
             stats.targetArmorKind = None
             stats.targetVehicleName = None
 
+    def updatePiercingMultiplier(self, piercingMultiplier):
+        stats = g_clientStatus
+        stats.piercingMultiplier = piercingMultiplier
 
 g_statsCollector = StatsCollector()
 g_clientStatus = ClientStatus()

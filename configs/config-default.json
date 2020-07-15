@@ -419,6 +419,13 @@
             "factor":   1.0,
             "unit":     ""
         },
+        "piercingMultiplier": {
+            "status":   "piercingMultiplier",
+            "title":    "P. Mult",
+            "format":   "{:.2f}",
+            "factor":   1.0,
+            "unit":     ""
+        },
         "targetVehicleName": {
             "status":       "targetVehicleName",
             "title":        "",
