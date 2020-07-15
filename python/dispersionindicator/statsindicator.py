@@ -87,6 +87,7 @@ class StatsIndicator(StatsIndicatorMeta):
                 'func':         partial(self.getStatus, key, factor),
                 'format':       setting.get('format', '{}')
             }
+        self.acceptEvents = config.get('events', [])
         appLoader = dependency.instance(IAppLoader)
         app = appLoader.getDefBattleApp()
         if not app:
@@ -148,3 +149,8 @@ class StatsIndicator(StatsIndicatorMeta):
             self.__pyEntity.setCrosshairView(viewID)
         except weakref.ReferenceError:
             pass
+
+    def onEvent(self, reason):
+        if reason not in self.acceptEvents:
+            return
+        self.update()

@@ -380,6 +380,8 @@ class StatsCollector(object):
             stats.targetArmor = None
             stats.targetArmorKind = None
             stats.targetVehicleName = None
+        self.onEvent(EVENT.UPDATE_PENETRATION_ARMOR)
+
 
     def updatePiercingMultiplier(self, piercingMultiplier):
         stats = g_clientStatus

@@ -92,7 +92,7 @@ def _readConfig():
             style.update(config['default'])
             style.update(panelDef.get('style', {}))
             panelDef['style'] = style
-        elif panelDef['channel'] == 'event':
+        elif panelDef['channel'] == 'event' or panelDef['channel'] == 'indicator':
             panelDef['events'] = [ e for e in EVENT_LIST if e in panelDef.get('events', []) ]
     #print json.dumps(settings, indent=2)
 

@@ -1,7 +1,10 @@
 
 import logging
+from functools import partial
+
 import BigWorld
 import GUI
+from Event import Event
 from constants import ARENA_PERIOD
 from gui import g_guiResetters
 from helpers import dependency
@@ -30,6 +33,7 @@ class IndicatorManager(object):
         self.__onShoot = None
         self.__onShot = None
         self.__onShotResult = None
+        self.eventHandlers = Event()
         interval = config['common']['updateInterval']
         self.__timeInterval = TimeInterval(interval, self, 'onWatchStats')
         g_eventBus.addListener(events.AppLifeCycleEvent.INITIALIZED, self.onAppInitialized)
@@ -43,10 +47,12 @@ class IndicatorManager(object):
         _logger.info('initPanel')
         g_statsCollector.updateArenaInfo()
         self.addHandler()
+        g_statsCollector.eventHandlers += self.onEvent
         self.__panels = []
         for paneldef in self.__config.get('panelDefs', []):
             if paneldef['channel'] == 'indicator':
                 panel = StatsIndicator(paneldef, g_clientStatus)
+                self.eventHandlers += panel.onEvent
             elif paneldef['channel'] == 'status':
                 panel = StatsLogger(paneldef,  g_clientStatus)
             elif paneldef['channel'] == 'event':
@@ -208,3 +214,6 @@ class IndicatorManager(object):
     def onWatchStats(self):
         for panel in self.__panels:
             panel.update()
+
+    def onEvent(self, reason):
+        BigWorld.callback(0, partial(self.eventHandlers, reason))
