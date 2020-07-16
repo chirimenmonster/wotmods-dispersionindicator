@@ -63,6 +63,9 @@
                     "unit":         ""
                 }
             },
+            "events": [
+                "updateDispersionAngle"
+            ],
             "items": [
                 "vehicleRYaw"
             ]
@@ -148,10 +151,11 @@
                 "shotSpeed",
                 "shotSpeedH",
                 "shotSpeedV",
+                "piercingMultiplier",
                 "flightTime"
             ]
         },
-        "panel_3": {
+        "panel_ping": {
             "style": {
                 "horizontalAnchor":             "LEFT",
                 "verticalAnchor":               "BOTTOM",

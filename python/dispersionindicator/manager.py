@@ -33,7 +33,8 @@ class IndicatorManager(object):
         self.__onShoot = None
         self.__onShot = None
         self.__onShotResult = None
-        self.eventHandlers = Event()
+        self.__intervalHandlers = Event()
+        self.__eventHandlers = Event()
         interval = config['common']['updateInterval']
         self.__timeInterval = TimeInterval(interval, self, 'onWatchStats')
         g_eventBus.addListener(events.AppLifeCycleEvent.INITIALIZED, self.onAppInitialized)
@@ -52,12 +53,16 @@ class IndicatorManager(object):
         for paneldef in self.__config.get('panelDefs', []):
             if paneldef['channel'] == 'indicator':
                 panel = StatsIndicator(paneldef, g_clientStatus)
-                self.eventHandlers += panel.onEvent
+                if 'event' in paneldef:
+                    self.__eventHandlers += panel.onEvent
+                else:
+                    self.__intervalHandlers += panel.update
             elif paneldef['channel'] == 'status':
                 panel = StatsLogger(paneldef,  g_clientStatus)
+                self.__intervalHandlers += panel.update
             elif paneldef['channel'] == 'event':
                 panel = EventLogger(paneldef,  g_clientStatus)
-                g_statsCollector.eventHandlers += panel.onEvent
+                self.__eventHandlers += panel.onEvent
             self.__panels.append(panel)
         session = dependency.instance(IBattleSessionProvider)
         ctrl = session.shared.crosshair
@@ -212,8 +217,7 @@ class IndicatorManager(object):
             panel.updateCrosshairPosition(x, y)
 
     def onWatchStats(self):
-        for panel in self.__panels:
-            panel.update()
+        BigWorld.callback(0, partial(self.__intervalHandlers))
 
     def onEvent(self, reason):
-        BigWorld.callback(0, partial(self.eventHandlers, reason))
+        BigWorld.callback(0, partial(self.__eventHandlers, reason))

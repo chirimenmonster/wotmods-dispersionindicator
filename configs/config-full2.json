@@ -3,7 +3,7 @@
         "colour":           [ 255, 255, 0 ],
         "alpha":            0.8,
         "lineHeight":       16,
-        "statsWidth":       56
+        "statWidth":        56
     },
     "panels": {
         "indicator_timeConverging": {
@@ -63,6 +63,9 @@
                     "unit":         ""
                 }
             },
+            "events": [
+                "updateDispersionAngle"
+            ],
             "items": [
                 "vehicleRYaw"
             ]
@@ -148,6 +151,7 @@
                 "shotSpeed",
                 "shotSpeedH",
                 "shotSpeedV",
+                "piercingMultiplier",
                 "flightTime"
             ]
         },
@@ -178,6 +182,9 @@
                 "backgroundColor":              [ 0, 0, 0, 0.4 ],
                 "backgroundAlpha":              0.4
             },
+            "events": [
+                "updatePenetrationArmor"
+            ],
             "items": [
                 "targetVehicleName",
                 "targetArmorKind",

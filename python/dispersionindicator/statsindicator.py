@@ -151,6 +151,6 @@ class StatsIndicator(StatsIndicatorMeta):
             pass
 
     def onEvent(self, reason):
-        if reason not in self.acceptEvents:
+        if reason['eventName'] not in self.acceptEvents:
             return
         self.update()

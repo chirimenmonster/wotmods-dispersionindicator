@@ -8,7 +8,7 @@
                 "crosshairOffset_ARCADE":       [ 164,  1 ],
                 "crosshairOffset_SNIPER":       [ 268,  0 ],
                 "crosshairOffset_STRATEGIC":    [ 162, 32 ],
-                "statWidth":                   36,
+                "statWidth":                    36,
                 "textColor":                    [ 255, 255, 0 ],
                 "filter":                       "DROPSHADOW",
                 "alpha":                        0.8,

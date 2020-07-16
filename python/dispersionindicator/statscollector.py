@@ -1,6 +1,8 @@
 
 import logging
 import math
+from datetime import datetime
+
 import Math
 import BigWorld
 import BattleReplay
@@ -54,6 +56,7 @@ def playerAvatar_getOwnVehicleShotDispersionAngle(orig_result, self, turretRotat
     collector.updateVehicleEngineState(avatar)
     collector.updateGunAngles(avatar)
     collector.updateVehicleDirection(avatar)
+    g_statsCollector.fireEvent(EVENT.UPDATE_DISPERSION_ANGLE)
 
 
 @overrideMethod(_GunControlMode, 'updateGunMarker')
@@ -93,7 +96,7 @@ def playerAvatar_shoot(_, self, isRepeat = False):
             return
     time = BigWorld.time()
     _logger.debug('catch PlayerAvatar.shoot: time={}'.format(time))
-    g_statsCollector.onEvent(EVENT.ACTION_SHOOT)
+    g_statsCollector.fireEvent(EVENT.ACTION_SHOOT)
 
 
 @overrideMethod(PlayerAvatar, 'showShotResults')
@@ -101,7 +104,7 @@ def playerAvatar_shoot(_, self, isRepeat = False):
 def playerAvatar_showShotResults(_, self, result):
     time = BigWorld.time()
     _logger.debug('catch PlayerAvatar.showShotResults: time={}'.format(time))
-    g_statsCollector.onEvent(EVENT.RECEIVE_SHOT_RESULT)
+    g_statsCollector.fireEvent(EVENT.RECEIVE_SHOT_RESULT)
 
 
 @overrideMethod(ShowShooting, '_ShowShooting__doShot')
@@ -111,7 +114,7 @@ def showShooting_doShot(_, self, data):
         return
     time = BigWorld.time()
     _logger.debug('catch ShowShooting.__doShot: time={}'.format(time))
-    g_statsCollector.onEvent(EVENT.RECEIVE_SHOT)
+    g_statsCollector.fireEvent(EVENT.RECEIVE_SHOT)
 
 
 @overrideMethod(CrosshairDataProxy, '_CrosshairDataProxy__setGunMarkerState')
@@ -216,6 +219,10 @@ class ClientStatus(object):
     __slots__ = CLIENT_STATUS_LIST
 
     @property
+    def localDateTime(self):
+        return datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:23]
+
+    @property
     def aimingFactor(self):
         return self.dAngleAiming / self.shotDispersionAngle
 
@@ -244,8 +251,12 @@ class StatsCollector(object):
     def __init__(self):
         self.eventHandlers = Event()
 
-    def onEvent(self, reason):
-        self.eventHandlers(reason)
+    def fireEvent(self, reason):
+        info = {
+            'eventTime': BigWorld.time(),
+            'eventName': reason
+        }
+        self.eventHandlers(info)
 
     def updateArenaInfo(self):
         stats = g_clientStatus
@@ -380,8 +391,7 @@ class StatsCollector(object):
             stats.targetArmor = None
             stats.targetArmorKind = None
             stats.targetVehicleName = None
-        self.onEvent(EVENT.UPDATE_PENETRATION_ARMOR)
-
+        self.fireEvent(EVENT.UPDATE_PENETRATION_ARMOR)
 
     def updatePiercingMultiplier(self, piercingMultiplier):
         stats = g_clientStatus
