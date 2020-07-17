@@ -30,6 +30,7 @@ package com.chirimen.dispersionindicator
             _config = settings.stats;
             _style = settings.style;
             panel = new PanelContainer(_config, _style);
+            panel.visible = false;
             addChild(panel);
         }
 
@@ -53,6 +54,14 @@ package com.chirimen.dispersionindicator
             return { width: panel.fieldWidth, height: panel.fieldHeight };   
         }
 
+        public function as_setVisible(visible:int = 0) : void
+        {
+            if (visible == 0) {
+                panel.visible = false;
+            } else {
+                panel.visible = true;
+            }
+        }
     }
 
 }

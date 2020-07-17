@@ -49,6 +49,12 @@ class PanelView(View):
         self.__wasPopulated = True
         self.setPosition()
     
+    def as_setVisibleS(self, visible):
+        if not self.__wasPopulated:
+            return
+        _logger.debug('%s.as_setVisibleS: %s', self.className, visible)
+        self.flashObject.as_setVisible(visible)
+
     def as_setPositionS(self, x, y):
         _logger.debug('%s.as_setPositionS: (%d, %d)', self.className, x, y)
         self.flashObject.as_setPosition(x, y)
@@ -76,8 +82,9 @@ class PanelView(View):
 
     def setVisible(self, isVisible):
         _logger.debug('%s.setVisible: %s', self.className, isVisible)
-        if self.flashObject:
-            self.flashObject.visible = isVisible
+        #if self.flashObject:
+        #     self.flashObject.visible = isVisible
+        self.as_setVisibleS(isVisible)
 
     def setPosition(self):
         _logger.debug('%s.setPosition: %s', self.className, self.__reference)

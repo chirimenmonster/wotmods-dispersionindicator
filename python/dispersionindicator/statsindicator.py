@@ -95,13 +95,17 @@ class StatsIndicator(StatsIndicatorMeta):
             return
         app.loadView(SFViewLoadParams(PANEL_VIEW_ALIAS, self.name), config=self.__guiSettings)
         pyEntity = app.containerManager.getViewByKey(ViewKey(PANEL_VIEW_ALIAS, self.name))
-        pyEntity.setVisible(True)
         self.__pyEntity = weakref.proxy(pyEntity)
 
     def start(self):
         super(StatsIndicator, self).start()
         for name, config in self.__statsSource.items():
             self.__setIndicatorValue(name, '')
+        try:
+            self.__pyEntity.setVisible(True)
+        except weakref.ReferenceError:
+            pass
+
 
     def stop(self):
         super(StatsIndicator, self).stop()
@@ -124,6 +128,7 @@ class StatsIndicator(StatsIndicatorMeta):
             else:
                 text = ''
             self.__setIndicatorValue(name, text)
+        #pyEntity.setVisible(False)
 
     def updateScreenPosition(self, width, height):
         self.__screenSize = [ width, height ]
