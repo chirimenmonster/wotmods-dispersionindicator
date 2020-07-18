@@ -164,6 +164,9 @@
                 "backgroundColor":              [ 0, 0, 0, 0.4 ],
                 "backgroundAlpha":              0.4
             },
+            "events": [
+                "updatePing"
+            ],
             "items":   [
                 "ping",
                 "fps",
@@ -180,7 +183,8 @@
                 "crosshairOffset_SNIPER":       [ 104, -40 ],
                 "crosshairOffset_STRATEGIC":    [ 102,  12 ],
                 "backgroundColor":              [ 0, 0, 0, 0.4 ],
-                "backgroundAlpha":              0.4
+                "backgroundAlpha":              0.4,
+                "visibleControl":               "targetVehicleName"
             },
             "events": [
                 "updatePenetrationArmor"

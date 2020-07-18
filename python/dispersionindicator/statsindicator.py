@@ -70,6 +70,7 @@ class StatsIndicator(StatsIndicatorMeta):
         self.__guiSettings['style'] = config['style']
         self.__guiSettings['stats'] = []
         self.__statsSource = {}
+        self.__visibleControl = config['style'].get('visibleControl', None)
         for key in config['items']:
             setting = self.statsdefs[key]
             self.__guiSettings['stats'].append({
@@ -101,11 +102,8 @@ class StatsIndicator(StatsIndicatorMeta):
         super(StatsIndicator, self).start()
         for name, config in self.__statsSource.items():
             self.__setIndicatorValue(name, '')
-        try:
+        if not self.__visibleControl:
             self.__pyEntity.setVisible(True)
-        except weakref.ReferenceError:
-            pass
-
 
     def stop(self):
         super(StatsIndicator, self).stop()
@@ -128,7 +126,12 @@ class StatsIndicator(StatsIndicatorMeta):
             else:
                 text = ''
             self.__setIndicatorValue(name, text)
-        #pyEntity.setVisible(False)
+        if self.__visibleControl:
+            if getattr(self.vehicleStats, self.__visibleControl, None):
+                self.__pyEntity.setVisible(True)
+            else:
+                self.__pyEntity.setVisible(False)
+
 
     def updateScreenPosition(self, width, height):
         self.__screenSize = [ width, height ]
@@ -156,6 +159,7 @@ class StatsIndicator(StatsIndicatorMeta):
             pass
 
     def onEvent(self, reason):
+        #_logger.debug('%s.onEvent: receive event: %s, %s', self.className, reason['eventTime'], reason['eventName'])
         if reason['eventName'] not in self.acceptEvents:
             return
         self.update()

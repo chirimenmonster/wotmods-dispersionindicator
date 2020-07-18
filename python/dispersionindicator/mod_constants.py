@@ -57,17 +57,19 @@ class EVENT:
     RECEIVE_SHOT_RESULT = 'receiveShotResult'
     UPDATE_PENETRATION_ARMOR = 'updatePenetrationArmor'
     UPDATE_DISPERSION_ANGLE = 'updateDispersionAngle'
+    UPDATE_PING = 'updatePing'
 
 EVENT_LIST = [
     EVENT.ACTION_SHOOT,
     EVENT.RECEIVE_SHOT,
     EVENT.RECEIVE_SHOT_RESULT,
     EVENT.UPDATE_PENETRATION_ARMOR,
-    EVENT.UPDATE_DISPERSION_ANGLE
+    EVENT.UPDATE_DISPERSION_ANGLE,
+    EVENT.UPDATE_PING
 ]
 
 CLIENT_STATUS_LIST = [
-    'localDateTime', 'currTime', 'eventTime', 'eventName', 'arenaName', 'vehicleName',
+    'localDateTime', 'currTime', 'eventTime', 'eventName', 'arenaName', 'vehicleName', 'playerTeam',
     'ping', 'fps', 'fpsReplay', 'latency',
     'dAngleAiming', 'dAngleIdeal', 'turretRotationSpeed', 'additiveFactor', 'shotDispersionAngle', 'shotFactor',
     'aimingStartTime', 'aimingStartFactor', 'multFactor', 'factorsTurretRotation', 'factorsMovement', 'factorsRotation', 'aimingTime',

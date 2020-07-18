@@ -164,6 +164,9 @@
                 "backgroundColor":              [ 0, 0, 0, 0.4 ],
                 "backgroundAlpha":              0.4
             },
+            "events": [
+                "updatePing"
+            ],
             "items":   [
                 "ping",
                 "fps",

@@ -53,7 +53,7 @@ class IndicatorManager(object):
         for paneldef in self.__config.get('panelDefs', []):
             if paneldef['channel'] == 'indicator':
                 panel = StatsIndicator(paneldef, g_clientStatus)
-                if 'event' in paneldef:
+                if 'events' in paneldef:
                     self.__eventHandlers += panel.onEvent
                 else:
                     self.__intervalHandlers += panel.update
