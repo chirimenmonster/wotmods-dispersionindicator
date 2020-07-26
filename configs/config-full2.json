@@ -3,7 +3,7 @@
         "colour":           [ 255, 255, 0 ],
         "alpha":            0.8,
         "lineHeight":       16,
-        "statsWidth":       56
+        "statWidth":        56
     },
     "panels": {
         "indicator_timeConverging": {
@@ -63,6 +63,9 @@
                     "unit":         ""
                 }
             },
+            "events": [
+                "updateDispersionAngle"
+            ],
             "items": [
                 "vehicleRYaw"
             ]
@@ -160,6 +163,9 @@
                 "backgroundColor":              [ 0, 0, 0, 0.4 ],
                 "backgroundAlpha":              0.4
             },
+            "events": [
+                "updatePing"
+            ],
             "items":   [
                 "ping",
                 "fps",
@@ -176,8 +182,12 @@
                 "crosshairOffset_SNIPER":       [ 104, -40 ],
                 "crosshairOffset_STRATEGIC":    [ 102,  12 ],
                 "backgroundColor":              [ 0, 0, 0, 0.4 ],
-                "backgroundAlpha":              0.4
+                "backgroundAlpha":              0.4,
+                "visibleControl":               "targetVehicleName"
             },
+            "events": [
+                "updatePenetrationArmor"
+            ],
             "items": [
                 "targetVehicleName",
                 "targetArmorKind",

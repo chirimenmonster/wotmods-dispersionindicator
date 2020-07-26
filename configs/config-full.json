@@ -63,6 +63,9 @@
                     "unit":         ""
                 }
             },
+            "events": [
+                "updateDispersionAngle"
+            ],
             "items": [
                 "vehicleRYaw"
             ]
@@ -151,7 +154,7 @@
                 "flightTime"
             ]
         },
-        "panel_3": {
+        "panel_ping": {
             "style": {
                 "horizontalAnchor":             "LEFT",
                 "verticalAnchor":               "BOTTOM",
@@ -160,6 +163,9 @@
                 "backgroundColor":              [ 0, 0, 0, 0.4 ],
                 "backgroundAlpha":              0.4
             },
+            "events": [
+                "updatePing"
+            ],
             "items":   [
                 "ping",
                 "fps",

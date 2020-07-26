@@ -1,7 +1,10 @@
 
 import logging
+from functools import partial
+
 import BigWorld
 import GUI
+from Event import Event
 from constants import ARENA_PERIOD
 from gui import g_guiResetters
 from helpers import dependency
@@ -30,6 +33,8 @@ class IndicatorManager(object):
         self.__onShoot = None
         self.__onShot = None
         self.__onShotResult = None
+        self.__intervalHandlers = Event()
+        self.__eventHandlers = Event()
         interval = config['common']['updateInterval']
         self.__timeInterval = TimeInterval(interval, self, 'onWatchStats')
         g_eventBus.addListener(events.AppLifeCycleEvent.INITIALIZED, self.onAppInitialized)
@@ -43,15 +48,21 @@ class IndicatorManager(object):
         _logger.info('initPanel')
         g_statsCollector.updateArenaInfo()
         self.addHandler()
+        g_statsCollector.eventHandlers += self.onEvent
         self.__panels = []
         for paneldef in self.__config.get('panelDefs', []):
             if paneldef['channel'] == 'indicator':
                 panel = StatsIndicator(paneldef, g_clientStatus)
+                if 'events' in paneldef:
+                    self.__eventHandlers += panel.onEvent
+                else:
+                    self.__intervalHandlers += panel.update
             elif paneldef['channel'] == 'status':
                 panel = StatsLogger(paneldef,  g_clientStatus)
+                self.__intervalHandlers += panel.update
             elif paneldef['channel'] == 'event':
                 panel = EventLogger(paneldef,  g_clientStatus)
-                g_statsCollector.eventHandlers += panel.onEvent
+                self.__eventHandlers += panel.onEvent
             self.__panels.append(panel)
         session = dependency.instance(IBattleSessionProvider)
         ctrl = session.shared.crosshair
@@ -206,5 +217,7 @@ class IndicatorManager(object):
             panel.updateCrosshairPosition(x, y)
 
     def onWatchStats(self):
-        for panel in self.__panels:
-            panel.update()
+        BigWorld.callback(0, partial(self.__intervalHandlers))
+
+    def onEvent(self, reason):
+        BigWorld.callback(0, partial(self.__eventHandlers, reason))

@@ -57,6 +57,9 @@
                     "unit":         ""
                 }
             },
+            "events": [
+                "updateDispersionAngle"
+            ],
             "items": [
                 "vehicleRYaw"
             ]

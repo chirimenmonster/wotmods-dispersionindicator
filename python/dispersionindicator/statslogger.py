@@ -19,7 +19,7 @@ class StatsLogger(StatsIndicatorMeta):
         super(StatsLogger, self).__init__(config, clientStatus)
         self.names = config['items']
         self.header = self.names[:]
-        self.header.insert(0, '# time')
+        self.header.insert(0, '#')
         if 'logfile' in config:
             filename = config['logfile']
             self.openMode = 'ab'
@@ -38,7 +38,7 @@ class StatsLogger(StatsIndicatorMeta):
    
     def update(self):
         data = [ self.getStatus(key) for key in self.names ]
-        data.insert(0, datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:23])
+        data.insert(0, '')
         self.__strage.append(data)
     
     def outputLog(self):

@@ -70,6 +70,7 @@ class StatsIndicator(StatsIndicatorMeta):
         self.__guiSettings['style'] = config['style']
         self.__guiSettings['stats'] = []
         self.__statsSource = {}
+        self.__visibleControl = config['style'].get('visibleControl', None)
         for key in config['items']:
             setting = self.statsdefs[key]
             self.__guiSettings['stats'].append({
@@ -87,6 +88,7 @@ class StatsIndicator(StatsIndicatorMeta):
                 'func':         partial(self.getStatus, key, factor),
                 'format':       setting.get('format', '{}')
             }
+        self.acceptEvents = config.get('events', [])
         appLoader = dependency.instance(IAppLoader)
         app = appLoader.getDefBattleApp()
         if not app:
@@ -94,13 +96,14 @@ class StatsIndicator(StatsIndicatorMeta):
             return
         app.loadView(SFViewLoadParams(PANEL_VIEW_ALIAS, self.name), config=self.__guiSettings)
         pyEntity = app.containerManager.getViewByKey(ViewKey(PANEL_VIEW_ALIAS, self.name))
-        pyEntity.setVisible(True)
         self.__pyEntity = weakref.proxy(pyEntity)
 
     def start(self):
         super(StatsIndicator, self).start()
         for name, config in self.__statsSource.items():
             self.__setIndicatorValue(name, '')
+        if not self.__visibleControl:
+            self.__pyEntity.setVisible(True)
 
     def stop(self):
         super(StatsIndicator, self).stop()
@@ -123,6 +126,12 @@ class StatsIndicator(StatsIndicatorMeta):
             else:
                 text = ''
             self.__setIndicatorValue(name, text)
+        if self.__visibleControl:
+            if getattr(self.vehicleStats, self.__visibleControl, None):
+                self.__pyEntity.setVisible(True)
+            else:
+                self.__pyEntity.setVisible(False)
+
 
     def updateScreenPosition(self, width, height):
         self.__screenSize = [ width, height ]
@@ -148,3 +157,9 @@ class StatsIndicator(StatsIndicatorMeta):
             self.__pyEntity.setCrosshairView(viewID)
         except weakref.ReferenceError:
             pass
+
+    def onEvent(self, reason):
+        #_logger.debug('%s.onEvent: receive event: %s, %s', self.className, reason['eventTime'], reason['eventName'])
+        if reason['eventName'] not in self.acceptEvents:
+            return
+        self.update()

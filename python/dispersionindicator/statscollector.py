@@ -1,6 +1,8 @@
 
 import logging
 import math
+from datetime import datetime
+
 import Math
 import BigWorld
 import BattleReplay
@@ -13,7 +15,11 @@ from gun_rotation_shared import decodeGunAngles
 from vehicle_extras import ShowShooting
 from gui.battle_control import avatar_getter
 from gui.battle_control.controllers.crosshair_proxy import CrosshairDataProxy
+from gui.battle_control.controllers.debug_ctrl import DebugController
+from gui.Scaleform.daapi.view.battle.shared.crosshair.plugins import ShotResultIndicatorPlugin
 from material_kinds import EFFECT_MATERIAL_INDEXES_BY_IDS, EFFECT_MATERIAL_NAMES_BY_INDEXES, IDS_BY_NAMES
+from helpers import dependency
+from skeletons.gui.battle_session import IBattleSessionProvider
 
 
 from mod_constants import MOD, EVENT, CLIENT_STATUS_LIST
@@ -21,7 +27,7 @@ from hook import overrideMethod, overrideClassMethod
 
 _logger = logging.getLogger(MOD.NAME)
 
-g_statscollector = None
+g_statsCollector = None
 
 def callOriginal(prev=False):
     def decorator(func):
@@ -40,19 +46,26 @@ def callOriginal(prev=False):
     return decorator
 
 
+@overrideMethod(DebugController, '_update')
+@callOriginal(prev=False)
+def debugController_update(orig_result, self):
+    g_statsCollector.updatePing()
+    g_statsCollector.fireEvent(EVENT.UPDATE_PING)
+
+
 @overrideMethod(PlayerAvatar, 'getOwnVehicleShotDispersionAngle')
 @callOriginal(prev=True)
 def playerAvatar_getOwnVehicleShotDispersionAngle(orig_result, self, turretRotationSpeed, withShot = 0):
     dispersionAngle = orig_result
     avatar = self
     collector = g_statsCollector
-    collector.updatePing()
     collector.updateDispersionAngle(avatar, dispersionAngle, turretRotationSpeed, withShot)
     collector.updateAimingInfo(avatar)
     collector.updateVehicleSpeeds(avatar)
     collector.updateVehicleEngineState(avatar)
     collector.updateGunAngles(avatar)
     collector.updateVehicleDirection(avatar)
+    g_statsCollector.fireEvent(EVENT.UPDATE_DISPERSION_ANGLE)
 
 
 @overrideMethod(_GunControlMode, 'updateGunMarker')
@@ -92,7 +105,7 @@ def playerAvatar_shoot(_, self, isRepeat = False):
             return
     time = BigWorld.time()
     _logger.debug('catch PlayerAvatar.shoot: time={}'.format(time))
-    g_statsCollector.onEvent(EVENT.ACTION_SHOOT)
+    g_statsCollector.fireEvent(EVENT.ACTION_SHOOT)
 
 
 @overrideMethod(PlayerAvatar, 'showShotResults')
@@ -100,7 +113,7 @@ def playerAvatar_shoot(_, self, isRepeat = False):
 def playerAvatar_showShotResults(_, self, result):
     time = BigWorld.time()
     _logger.debug('catch PlayerAvatar.showShotResults: time={}'.format(time))
-    g_statsCollector.onEvent(EVENT.RECEIVE_SHOT_RESULT)
+    g_statsCollector.fireEvent(EVENT.RECEIVE_SHOT_RESULT)
 
 
 @overrideMethod(ShowShooting, '_ShowShooting__doShot')
@@ -110,13 +123,13 @@ def showShooting_doShot(_, self, data):
         return
     time = BigWorld.time()
     _logger.debug('catch ShowShooting.__doShot: time={}'.format(time))
-    g_statsCollector.onEvent(EVENT.RECEIVE_SHOT)
+    g_statsCollector.fireEvent(EVENT.RECEIVE_SHOT)
 
 
 @overrideMethod(CrosshairDataProxy, '_CrosshairDataProxy__setGunMarkerState')
 @callOriginal(prev=True)
 def crosshairDataProxy_setGunMarkerState(orig_result, self, markerType, value):
-    excludeTeam = 0
+    excludeTeam = g_clientStatus.playerTeam
     hitPoint, direction, collision = value
     resultPenetrationInfo = {}
     piercingPercent = None
@@ -197,10 +210,15 @@ def crosshairDataProxy_setGunMarkerState(orig_result, self, markerType, value):
                 jetStartDist = cDetails.dist + armor * 0.001                
 
     g_statsCollector.updatePenetrationArmor(piercingPercent, resultPenetrationInfo)
+    g_statsCollector.fireEvent(EVENT.UPDATE_PENETRATION_ARMOR)
 
 
 class ClientStatus(object):
     __slots__ = CLIENT_STATUS_LIST
+
+    @property
+    def localDateTime(self):
+        return datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:23]
 
     @property
     def aimingFactor(self):
@@ -231,13 +249,19 @@ class StatsCollector(object):
     def __init__(self):
         self.eventHandlers = Event()
 
-    def onEvent(self, reason):
-        self.eventHandlers(reason)
+    def fireEvent(self, reason):
+        info = {
+            'eventTime': BigWorld.time(),
+            'eventName': reason
+        }
+        self.eventHandlers(info)
 
     def updateArenaInfo(self):
         stats = g_clientStatus
         stats.arenaName = avatar_getter.getArena().arenaType.geometryName
         stats.vehicleName = avatar_getter.getVehicleTypeDescriptor().type.name
+        session = dependency.instance(IBattleSessionProvider)
+        stats.playerTeam  = session.getArenaDP().getNumberOfTeam()
 
     def updatePing(self):
         replayCtrl = BattleReplay.g_replayCtrl
@@ -322,8 +346,11 @@ class StatsCollector(object):
         stats = g_clientStatus
         vehicle = avatar.getVehicleAttached()
         detailedEngineState = vehicle.appearance.detailedEngineState
-        stats.engineRPM = detailedEngineState.rpm
-        stats.engineRelativeRPM = detailedEngineState.relativeRPM
+        if detailedEngineState is None:
+            _logger.warning('updateVehicleEngineState: not found detailedEngineState')
+        else:
+            stats.engineRPM = detailedEngineState.rpm
+            stats.engineRelativeRPM = detailedEngineState.relativeRPM
 
     def updateShotInfo(self, avatar, hitPoint):
         stats = g_clientStatus

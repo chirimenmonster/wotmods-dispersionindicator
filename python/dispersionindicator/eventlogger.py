@@ -2,7 +2,6 @@
 import logging
 import os
 import csv
-from datetime import datetime
 
 import BigWorld
 from gui.battle_control import avatar_getter
@@ -18,7 +17,7 @@ class EventLogger(StatsIndicatorMeta):
         self.log_file = os.path.join(LOG_DIR, config['logfile'])
         self.names = config['items']
         self.header = self.names[:]
-        self.header.insert(0, '# time')
+        self.header.insert(0, '#')
         self.vehicleName = avatar_getter.getVehicleTypeDescriptor().type.name
         self.acceptEvents = config['events']
 
@@ -38,15 +37,13 @@ class EventLogger(StatsIndicatorMeta):
         self.__file.close()
 
     def onEvent(self, reason):
-        if reason not in self.acceptEvents:
+        if reason['eventName'] not in self.acceptEvents:
             return
         def getStatus(key):
-            if key == 'eventName':
-                return reason
-            elif key == 'eventTime':
-                return BigWorld.time()
+            if key in ['eventName', 'eventTime']:
+                return reason[key]           
             return getattr(self.vehicleStats, key, '')
         data = [ getStatus(key) for key in self.names ]
-        data.insert(0, datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:23])
+        data.insert(0, '')
         self.__strage.append(data)
         self.__writer.writerow(data)
