@@ -173,6 +173,30 @@
                 "fpsReplay",
                 "latency"
             ]
+        },
+        "panel_piercingInfo": {
+            "style": {
+                "horizontalAnchor":             "LEFT",
+                "verticalAnchor":               "BOTTOM",
+                "referencePoint":               "CROSSHAIR",
+                "crosshairOffset_ARCADE":       [ 104, -21 ],
+                "crosshairOffset_SNIPER":       [ 104, -40 ],
+                "crosshairOffset_STRATEGIC":    [ 102,  12 ],
+                "backgroundColor":              [ 0, 0, 0, 0.4 ],
+                "backgroundAlpha":              0.4,
+                "visibleControl":               "targetVehicleName"
+            },
+            "events": [
+                "updatePenetrationArmor"
+            ],
+            "items": [
+                "targetVehicleName",
+                "targetArmorKind",
+                "targetHitAngleCos",
+                "targetArmor",
+                "targetPenetrationArmor",
+                "piercingPercent"
+            ]
         }
     }
 }
