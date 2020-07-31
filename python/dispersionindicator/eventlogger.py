@@ -20,6 +20,7 @@ class EventLogger(StatsIndicatorMeta):
         self.header.insert(0, '#')
         self.vehicleName = avatar_getter.getVehicleTypeDescriptor().type.name
         self.acceptEvents = config['events']
+        self.__file = None
 
     def start(self):
         super(EventLogger, self).start()
@@ -35,8 +36,11 @@ class EventLogger(StatsIndicatorMeta):
     def stop(self):
         super(EventLogger, self).stop()
         self.__file.close()
+        self.__file = None
 
     def onEvent(self, reason):
+        if self.__file is None:
+            return
         if reason['eventName'] not in self.acceptEvents:
             return
         def getStatus(key):

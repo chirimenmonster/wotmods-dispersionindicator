@@ -239,7 +239,7 @@ class ClientStatus(object):
     @property
     def aimingTimeConverging(self):
         factor = self.aimingStartFactor / self.multFactor
-        return self.aimingStartTime - self.currTime + self.aimingTime * math.log(factor)
+        return max(self.aimingStartTime + self.aimingTime * math.log(factor) - BigWorld.time(), 0)
 
     @property
     def modifiedAimingFactor(self):
