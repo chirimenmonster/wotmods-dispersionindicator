@@ -155,7 +155,7 @@ def crosshairDataProxy_setGunMarkerState(orig_result, self, markerType, value):
         ppDesc = vDesc.shot.piercingPower
         maxDist = vDesc.shot.maxDistance
         dist = (hitPoint - player.getOwnVehiclePosition()).length
-        piercingPower = _CrosshairShotResults._computePiercingPowerAtDist(ppDesc, dist, maxDist)
+        piercingPower = _CrosshairShotResults._computePiercingPowerAtDist(ppDesc, dist, maxDist, g_clientStatus.piercingMultiplier)
         fullPiercingPower = piercingPower
         minPP, maxPP = _CrosshairShotResults._computePiercingPowerRandomization(shell)
         isJet = False
@@ -211,6 +211,18 @@ def crosshairDataProxy_setGunMarkerState(orig_result, self, markerType, value):
 
     g_statsCollector.updatePenetrationArmor(piercingPercent, resultPenetrationInfo)
     g_statsCollector.fireEvent(EVENT.UPDATE_PENETRATION_ARMOR)
+
+
+@overrideMethod(ShotResultIndicatorPlugin, 'start')
+@callOriginal(prev=True)
+def ShotResultIndicatorPlugin_start(orig_result, self):
+    g_statsCollector.updatePiercingMultiplier(self._ShotResultIndicatorPlugin__piercingMultiplier)
+
+
+@overrideMethod(ShotResultIndicatorPlugin, '_ShotResultIndicatorPlugin__onVehicleFeedbackReceived')
+@callOriginal(prev=True)
+def ShotResultIndicatorPlugin_onVehicleFeedbackReceived(orig_result, self, eventID, _, value):
+    g_statsCollector.updatePiercingMultiplier(self._ShotResultIndicatorPlugin__piercingMultiplier)
 
 
 class ClientStatus(object):
@@ -394,6 +406,10 @@ class StatsCollector(object):
             stats.targetArmor = None
             stats.targetArmorKind = None
             stats.targetVehicleName = None
+
+    def updatePiercingMultiplier(self, piercingMultiplier):
+        stats = g_clientStatus
+        stats.piercingMultiplier = piercingMultiplier
 
 
 g_statsCollector = StatsCollector()
