@@ -4,7 +4,10 @@
         {
             "method":   "plain",
             "root":     "",
-            "files":    [ "${build_dir}/${package}" ]
+            "files":    [
+                "${build_dir}/${package}",
+                "README.md"
+            ]
         },
         {
             "method":   "plain",
