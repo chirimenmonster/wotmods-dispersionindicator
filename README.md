@@ -1,6 +1,6 @@
 # WoTmod DispersionIndicator
 
-## contents
+## Contents
 
 - [Lateset Release](../../releases/latest)
 - [Screenshot](#Screenshot)
