@@ -27,21 +27,54 @@ class StatsIndicatorMeta(object):
         self.__vehicleStats = clientStatus
         self.name = config['name']
         _logger.info('%s.__init__: "%s"', self.className, self.name)
+        self.__statsTable = {}
+        for key in config['items']:
+            statDef = config['statsDefs'].get(key, None)
+            if statDef is None:
+                continue
+            self.__statsTable[key] = desc = {}
+            for tag in ['status', 'title', 'label', 'unit', 'format']:
+                if tag in statDef:
+                    desc[tag] = statDef[tag]
+            factor = statDef.get('factor', None)
+            if isinstance(factor, str) or isinstance(factor, unicode):
+                factor = CONSTANT.get(factor, None)
+            if factor is not None:
+                desc['factor'] = factor
         
     @property
     def vehicleStats(self):
         return self.__vehicleStats
 
-    def getStatus(self, name, factor=None):
-        value = getattr(self.vehicleStats, name, None)
+    def getStatus(self, name):
+        desc = self.__statsTable.get(name, None)
+        statusName = desc['status'] if desc is not None else name
+        try:
+            value = getattr(self.__vehicleStats, statusName, None)
+        except AttributeError:
+            _logger.error('%s.getStatus: unknown status name "%s"', self.className, statusName)
+            return None
         if value is None:
-            result = ''
+            return None
+        if desc is not None and 'factor' in desc:
+            value *= desc['factor']
+        return value
+
+    def getStatusAsText(self, name):
+        desc = self.__statsTable.get(name, {})
+        template = desc.get('format', None)
+        value = self.getStatus(name)
+        if value is None:
+            return ''
+        if template is not None:
+            try:
+                text = template.format(value)
+            except:
+                _logger.error('%s.getStatusAsText: "%s"', self.className, json.dumps(desc))
+                text = str(value)
         else:
-            if factor is not None:
-                result = value * factor
-            else:
-                result = value
-        return result
+            text = str(value)
+        return text
 
     def start(self):
         _logger.info('%s.start: "%s"', self.className, self.name)
@@ -81,13 +114,6 @@ class StatsIndicator(StatsIndicatorMeta):
                 'statAlign':    setting.get('statAlign', config['style']['statAlign']),
                 'lineAlign':    setting.get('lineAlign', config['style']['lineAlign'])
             })
-            factor = setting.get('factor', None)
-            if isinstance(factor, str) or isinstance(factor, unicode):
-                factor = CONSTANT.get(factor, 1.0)
-            self.__statsSource[key] = {
-                'func':         partial(self.getStatus, key, factor),
-                'format':       setting.get('format', '{}')
-            }
         self.acceptEvents = config.get('events', [])
         appLoader = dependency.instance(IAppLoader)
         app = appLoader.getDefBattleApp()
@@ -100,8 +126,8 @@ class StatsIndicator(StatsIndicatorMeta):
 
     def start(self):
         super(StatsIndicator, self).start()
-        for name, config in self.__statsSource.items():
-            self.__setIndicatorValue(name, '')
+        for conf in self.__guiSettings['stats']:
+            self.__setIndicatorValue(conf['name'], '')
         if not self.__visibleControl:
             self.__pyEntity.setVisible(True)
 
@@ -119,12 +145,9 @@ class StatsIndicator(StatsIndicatorMeta):
             pass
 
     def update(self):
-        for name, config in self.__statsSource.items():
-            value = config['func']()
-            if value is not None and value != '':
-                text = config['format'].format(value)
-            else:
-                text = ''
+        for conf in self.__guiSettings['stats']:
+            name = conf['name']
+            text = self.getStatusAsText(name)
             self.__setIndicatorValue(name, text)
         if self.__visibleControl:
             if getattr(self.vehicleStats, self.__visibleControl, None):
