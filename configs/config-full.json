@@ -93,9 +93,9 @@
                 "aimingTime",
                 "additiveFactor",
                 "multFactor",
-                "factorsMovement",
-                "factorsRotation",
-                "factorsTurretRotation",
+                "factorsMovementM",
+                "factorsRotationM",
+                "factorsTurretRotationM",
                 "shotFactor"
             ]
         },

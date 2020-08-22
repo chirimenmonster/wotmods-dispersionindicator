@@ -22,7 +22,9 @@ LOG_FILE = '${log_file}'
 
 CONSTANT = {
     'MS_TO_KMH':    3600.0 / 1000.0,
-    'RAD_TO_DEG':   180.0 / math.pi
+    'RAD_TO_DEG':   180.0 / math.pi,
+    'PMS_TO_PKMH':  1000.0 / 3600.0,
+    'PRAD_TO_PDEG': math.pi / 180.0
 }
 
 CROSSHAIR_VIEW_SYMBOL = {

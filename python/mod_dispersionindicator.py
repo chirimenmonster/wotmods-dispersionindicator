@@ -40,9 +40,16 @@ def init():
         LOG_CURRENT_EXCEPTION()
 
 
-def _validationItems(items):
-    validItems = filter(lambda x: x in CLIENT_STATUS_LIST, items)
-    invalidItems = filter(lambda x: x not in CLIENT_STATUS_LIST, items)
+def _validationItems(items, statDefs):
+    validItems = []
+    invalidItems = []
+    for name in items:
+        desc = statDefs.get(name, None) 
+        statusName = desc['status'] if desc is not None else name
+        if statusName in CLIENT_STATUS_LIST:
+            validItems.append(name)
+        else:
+            invalidItems.append(name)
     if invalidItems:
         _logger.error('invalid items: %s' % ', '.join(invalidItems))
     return validItems
@@ -82,11 +89,11 @@ def _readConfig():
 
     for name, panelDef in config['panelDefs'].items():
         settings['panelDefs'].append(panelDef)
-        panelDef['items'] = _validationItems(panelDef['items'])
         statsDefs = {}
         statsDefs.update(config['statsDefs'])
         statsDefs.update(panelDef.get('statsDefs', {}))
         panelDef['statsDefs'] = statsDefs
+        panelDef['items'] = _validationItems(panelDef['items'], statsDefs)
         if panelDef['channel'] == 'indicator':
             style = {}
             style.update(config['default'])
