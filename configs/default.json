@@ -423,6 +423,38 @@
             "title":    "Angle Cos",
             "format":   "{:.2f}"
         },
+        "targetHitAngle": {
+            "status":   "targetHitAngle",
+            "title":    "Angle",
+            "format":   "{:.2f}",
+            "unit":     "rad"
+        },
+        "targetHitAngleM": {
+            "status":   "targetHitAngle",
+            "title":    "Angle",
+            "format":   "{:.2f}",
+            "factor":   "RAD_TO_DEG",
+            "unit":     "deg"
+        },
+        "targetHitAngleNormalized": {
+            "status":   "targetHitAngleNormalized",
+            "title":    "N. Angle",
+            "format":   "{:.2f}",
+            "unit":     "rad"
+        },
+        "targetHitAngleNormalizedM": {
+            "status":   "targetHitAngleNormalized",
+            "title":    "N. Angle",
+            "format":   "{:.2f}",
+            "factor":   "RAD_TO_DEG",
+            "unit":     "deg"
+        },
+        "targetPiercingPower": {
+            "status":   "targetPiercingPower",
+            "title":    "P. Power",
+            "format":   "{:.0f}",
+            "unit":     "mm"
+        },
         "piercingPercent": {
             "status":   "piercingPercent",
             "title":    "P. Score",

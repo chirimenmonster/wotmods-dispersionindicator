@@ -188,8 +188,11 @@
                 "targetVehicleName",
                 "targetArmorKind",
                 "targetHitAngleCos",
+                "targetHitAngleM",
+                "targetHitAngleNormalizedM",
                 "targetArmor",
                 "targetPenetrationArmor",
+                "targetPiercingPower",
                 "piercingPercent"
             ]
         }

@@ -186,7 +186,10 @@ def crosshairDataProxy_setGunMarkerState(orig_result, self, markerType, value):
                         'hitAngleCos': hitAngleCos,
                         'armor': matInfo.armor,
                         'penetrationArmor': _CrosshairShotResults._computePenetrationArmor(shell.kind, hitAngleCos, matInfo, shell.caliber),
-                        'armorKind': mat_name
+                        'armorKind': mat_name,
+                        'hitAngle': math.acos(hitAngleCos),
+                        'hitAngleNormalized': computeHitAngle(shellKind, hitAngleCos, matInfo, caliber),
+                        'piercingPower': piercingPower
                     }
                 if not isJet and _CrosshairShotResults._shouldRicochet(shellKind, hitAngleCos, matInfo, caliber):
                     break
@@ -215,14 +218,35 @@ def crosshairDataProxy_setGunMarkerState(orig_result, self, markerType, value):
 
 @overrideMethod(ShotResultIndicatorPlugin, 'start')
 @callOriginal(prev=True)
-def ShotResultIndicatorPlugin_start(orig_result, self):
+def shotResultIndicatorPlugin_start(orig_result, self):
     g_statsCollector.updatePiercingMultiplier(self._ShotResultIndicatorPlugin__piercingMultiplier)
 
 
 @overrideMethod(ShotResultIndicatorPlugin, '_ShotResultIndicatorPlugin__onVehicleFeedbackReceived')
 @callOriginal(prev=True)
-def ShotResultIndicatorPlugin_onVehicleFeedbackReceived(orig_result, self, eventID, _, value):
+def shotResultIndicatorPlugin_onVehicleFeedbackReceived(orig_result, self, eventID, _, value):
     g_statsCollector.updatePiercingMultiplier(self._ShotResultIndicatorPlugin__piercingMultiplier)
+
+
+# code from scripts/client/AvatarInputHandler/gun_marker_ctrl.py _CrosshairShotResults._computePenetrationArmor
+def computeHitAngle(shellKind, hitAngleCos, matInfo, caliber):
+    armor = matInfo.armor
+    if not matInfo.useHitAngle:
+        return math.acos(hitAngleCos)
+    normalizationAngle = _CrosshairShotResults._SHELL_EXTRA_DATA[shellKind].normAngle
+    if normalizationAngle > 0.0 and hitAngleCos < 1.0:
+        if matInfo.checkCaliberForHitAngleNorm:
+            if caliber > armor * 2 > 0:
+                normalizationAngle *= 1.4 * caliber / (armor * 2)
+        hitAngle = math.acos(hitAngleCos) - normalizationAngle
+        if hitAngle < 0.0:
+            hitAngle = 0.0
+        else:
+            if hitAngle > _CrosshairShotResults._MAX_HIT_ANGLE_BOUND:
+                hitAngle = _CrosshairShotResults._MAX_HIT_ANGLE_BOUND
+    else:
+        hitAngle = math.acos(hitAngleCos)
+    return hitAngle
 
 
 class ClientStatus(object):
@@ -396,15 +420,21 @@ class StatsCollector(object):
         stats.piercingPercent = piercingPercent
         if 'firstArmor' in penetrationInfo:
             stats.targetHitAngleCos = penetrationInfo['firstArmor']['hitAngleCos']
+            stats.targetHitAngle = penetrationInfo['firstArmor']['hitAngle']
+            stats.targetHitAngleNormalized = penetrationInfo['firstArmor']['hitAngleNormalized']
             stats.targetPenetrationArmor = penetrationInfo['firstArmor']['penetrationArmor']
             stats.targetArmor = penetrationInfo['firstArmor']['armor']
             stats.targetArmorKind = penetrationInfo['firstArmor']['armorKind']
+            stats.targetPiercingPower = penetrationInfo['firstArmor']['piercingPower']
             stats.targetVehicleName = penetrationInfo['entityVDesc'].type.shortUserString
         else:
             stats.targetHitAngleCos = None
+            stats.targetHitAngle = None
+            stats.targetHitAngleNormalized = None
             stats.targetPenetrationArmor = None
             stats.targetArmor = None
             stats.targetArmorKind = None
+            stats.targetPiercingPower = None
             stats.targetVehicleName = None
 
     def updatePiercingMultiplier(self, piercingMultiplier):
