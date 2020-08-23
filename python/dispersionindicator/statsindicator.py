@@ -46,6 +46,12 @@ class StatsIndicatorMeta(object):
     def vehicleStats(self):
         return self.__vehicleStats
 
+    def getUnit(self, name, default=None):
+        desc = self.__statsTable.get(name, None)
+        if desc is None:
+            return default
+        return desc.get('unit', default)
+
     def getStatus(self, name):
         desc = self.__statsTable.get(name, None)
         statusName = desc['status'] if desc is not None else name

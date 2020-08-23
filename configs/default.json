@@ -32,6 +32,12 @@
             "status":   "vehicleSpeed",
             "title":     "Vehicle Speed",
             "format":   "{:.2f}",
+            "unit":     "m/s"
+        },
+        "vehicleSpeedM": {
+            "status":   "vehicleSpeed",
+            "title":     "Vehicle Speed",
+            "format":   "{:.2f}",
             "factor":   "MS_TO_KMH",
             "unit":     "km/h"
         },
@@ -41,12 +47,12 @@
             "format":   "{:.2f}",
             "unit":     "rad/s"
         },
-        "speedInfo0": {
-            "status":   "speedInfo0",
-            "title":     "speedInfo[0]",
+        "vehicleRSpeedM": {
+            "status":   "vehicleRSpeed",
+            "title":     "Vehicle Rot. Speed",
             "format":   "{:.2f}",
-            "factor":   "MS_TO_KMH",
-            "unit":     "km/h"
+            "factor":   "RAD_TO_DEG",
+            "unit":     "deg/s"
         },
         "engineRPM": {
             "status":   "engineRPM",
@@ -64,10 +70,22 @@
             "status":   "vehicleYaw",
             "title":    "Vehicle Yaw",
             "format":   "{:.2f}",
+            "unit":     "rad"
+        },
+        "vehicleYawM": {
+            "status":   "vehicleYaw",
+            "title":    "Vehicle Yaw",
+            "format":   "{:.2f}",
             "factor":   "RAD_TO_DEG",
             "unit":     "deg"
         },
         "vehiclePitch": {
+            "status":   "vehiclePitch",
+            "title":    "Vehicle Pitch",
+            "format":   "{:.2f}",
+            "unit":     "rad"
+        },
+        "vehiclePitchM": {
             "status":   "vehiclePitch",
             "title":    "Vehicle Pitch",
             "format":   "{:.2f}",
@@ -78,10 +96,22 @@
             "status":   "vehicleRoll",
             "title":    "Vehicle Roll",
             "format":   "{:.2f}",
+            "unit":     "rad"
+        },
+        "vehicleRollM": {
+            "status":   "vehicleRoll",
+            "title":    "Vehicle Roll",
+            "format":   "{:.2f}",
             "factor":   "RAD_TO_DEG",
             "unit":     "deg"
         },
         "vehicleRYaw": {
+            "status":   "vehicleRYaw",
+            "title":    "Vehicle RYaw",
+            "format":   "{:.2f}",
+            "unit":     "rad"
+        },
+        "vehicleRYawM": {
             "status":   "vehicleRYaw",
             "title":    "Vehicle RYaw",
             "format":   "{:.2f}",
@@ -92,10 +122,22 @@
             "status":   "turretYaw",
             "title":    "Turret Yaw",
             "format":   "{:.2f}",
+            "unit":     "rad"
+        },
+        "turretYawM": {
+            "status":   "turretYaw",
+            "title":    "Turret Yaw",
+            "format":   "{:.2f}",
             "factor":   "RAD_TO_DEG",
             "unit":     "deg"
         },
         "gunPitch": {
+            "status":   "gunPitch",
+            "title":    "Gun Pitch",
+            "format":   "{:.2f}",
+            "unit":     "rad"
+        },
+        "gunPitchM": {
             "status":   "gunPitch",
             "title":    "Gun Pitch",
             "format":   "{:.2f}",
@@ -107,6 +149,13 @@
             "title":    "Turret Rot. Speed",
             "format":   "{:.2f}",
             "unit":     "rad/s"
+         },
+         "turretRotationSpeedM": {
+            "status":   "turretRotationSpeed",
+            "title":    "Turret Rot. Speed",
+            "format":   "{:.2f}",
+            "factor":   "RAD_TO_DEG",
+            "unit":     "deg/s"
          },
         "additiveFactor": {
             "status":   "additiveFactor",
@@ -371,10 +420,8 @@
         },
         "targetHitAngleCos": {
             "status":   "targetHitAngleCos",
-            "title":    "Angle",
-            "format":   "{:.0f}",
-            "factor":   "RAD_TO_DEG",
-            "unit":     "deg"
+            "title":    "Angle Cos",
+            "format":   "{:.2f}"
         },
         "piercingPercent": {
             "status":   "piercingPercent",
