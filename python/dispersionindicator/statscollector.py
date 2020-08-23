@@ -381,12 +381,14 @@ class StatsCollector(object):
     def updateVehicleEngineState(self, avatar):
         stats = g_clientStatus
         vehicle = avatar.getVehicleAttached()
-        detailedEngineState = vehicle.appearance.detailedEngineState
-        if detailedEngineState is None:
-            _logger.warning('updateVehicleEngineState: not found detailedEngineState')
-        else:
-            stats.engineRPM = detailedEngineState.rpm
-            stats.engineRelativeRPM = detailedEngineState.relativeRPM
+        if vehicle is not None:
+            detailedEngineState = vehicle.appearance.detailedEngineState
+            if detailedEngineState is not None:
+                stats.engineRPM = detailedEngineState.rpm
+                stats.engineRelativeRPM = detailedEngineState.relativeRPM
+                return
+        stats.engineRPM = None
+        stats.engineRelativeRPM = None
 
     def updateShotInfo(self, avatar, hitPoint):
         stats = g_clientStatus

@@ -24,6 +24,7 @@ class StatsIndicatorMeta(object):
 
     def __init__(self, config, clientStatus):
         self.className = self.__class__.__name__
+        self.panelState = 'INIT'
         self.__vehicleStats = clientStatus
         self.name = config['name']
         _logger.info('%s.__init__: "%s"', self.className, self.name)
@@ -83,9 +84,11 @@ class StatsIndicatorMeta(object):
         return text
 
     def start(self):
+        self.panelState = 'START'
         _logger.info('%s.start: "%s"', self.className, self.name)
 
     def stop(self):
+        self.panelState = 'STOP'
         _logger.info('%s.stop: "%s"', self.className, self.name)
 
     def changeView(self, crosshairViewID):
@@ -111,7 +114,7 @@ class StatsIndicator(StatsIndicatorMeta):
         self.__statsSource = {}
         self.__visibleControl = config['style'].get('visibleControl', None)
         self.__visibleByVisibleControl = True
-        self.__visibleByToggle = True
+        self.__visibleByToggle = config['style'].get('visible', True)
         for key in config['items']:
             setting = self.statsdefs[key]
             self.__guiSettings['stats'].append({
@@ -136,8 +139,7 @@ class StatsIndicator(StatsIndicatorMeta):
         super(StatsIndicator, self).start()
         for conf in self.__guiSettings['stats']:
             self.__setIndicatorValue(conf['name'], '')
-        if not self.__visibleControl:
-            self.__pyEntity.setVisible(True)
+        self.updateVisible()
 
     def stop(self):
         super(StatsIndicator, self).stop()
@@ -153,16 +155,13 @@ class StatsIndicator(StatsIndicatorMeta):
             pass
 
     def update(self):
+        if self.panelState != 'START':
+            return
         for conf in self.__guiSettings['stats']:
             name = conf['name']
             text = self.getStatusAsText(name)
             self.__setIndicatorValue(name, text)
-        if self.__visibleControl:
-            if getattr(self.vehicleStats, self.__visibleControl, None):
-                self.__visibleByVisibleControl = True
-            else:
-                self.__visibleByVisibleControl = False
-            self.updateVisible()
+        self.updateVisible()
 
     def updateScreenPosition(self, width, height):
         self.__screenSize = [ width, height ]
@@ -183,8 +182,14 @@ class StatsIndicator(StatsIndicatorMeta):
             pass
 
     def updateVisible(self):
+        if self.__visibleControl:
+            if getattr(self.vehicleStats, self.__visibleControl, None) is not None:
+                self.__visibleByVisibleControl = True
+            else:
+                self.__visibleByVisibleControl = False
         try:
-            self.__pyEntity.setVisible(self.__visibleByToggle and self.__visibleByVisibleControl)
+            visible = self.__visibleByToggle and self.__visibleByVisibleControl
+            self.__pyEntity.setVisible(visible)
         except weakref.ReferenceError:
             pass
 
