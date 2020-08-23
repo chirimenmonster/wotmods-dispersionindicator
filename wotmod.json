@@ -26,8 +26,7 @@
             "method":   "copy",
             "root":     "res",
             "reldir":   "${resource_dir}",
-            "replace":  [ "config-default", "default" ],
-            "files":    [ "configs/config-default.json" ]
+            "files":    [ "configs/default.json" ]
         },
         {
             "method":   "copy",

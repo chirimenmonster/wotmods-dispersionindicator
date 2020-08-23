@@ -21,10 +21,7 @@
             "statsDefs": {
                 "aimingTimeConverging": {
                     "status":       "aimingTimeConverging",
-                    "title":        "",
-                    "format":       "{:.2f}",
-                    "factor":       1.0,
-                    "unit":         ""
+                    "format":       "{:.2f}"
                 }
             },
             "items": [

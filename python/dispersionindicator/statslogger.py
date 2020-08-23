@@ -18,8 +18,8 @@ class StatsLogger(StatsIndicatorMeta):
     def __init__(self, config, clientStatus):
         super(StatsLogger, self).__init__(config, clientStatus)
         self.names = config['items']
-        self.header = self.names[:]
-        self.header.insert(0, '#')
+        self.header = ['#'] + self.names
+        self.unit = ['#'] + list(map(lambda x: self.getUnit(x, ''), self.names))
         if 'logfile' in config:
             filename = config['logfile']
             self.openMode = 'ab'
@@ -50,4 +50,5 @@ class StatsLogger(StatsIndicatorMeta):
             writer = csv.writer(fp, dialect='excel')
             writer.writerow(['# vehicle={} arena={}'.format(self.getStatus('vehicleName'), self.getStatus('arenaName'))])
             writer.writerow(self.header)
+            writer.writerow(self.unit)
             writer.writerows(self.__strage)

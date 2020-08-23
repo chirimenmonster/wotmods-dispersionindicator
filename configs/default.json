@@ -26,10 +26,15 @@
             "status":   "currTime",
             "title":     "Current Time",
             "format":   "{:.2f}",
-            "factor":   1.0,
             "unit":     "s"
         },
         "vehicleSpeed": {
+            "status":   "vehicleSpeed",
+            "title":     "Vehicle Speed",
+            "format":   "{:.2f}",
+            "unit":     "m/s"
+        },
+        "vehicleSpeedM": {
             "status":   "vehicleSpeed",
             "title":     "Vehicle Speed",
             "format":   "{:.2f}",
@@ -40,31 +45,34 @@
             "status":   "vehicleRSpeed",
             "title":     "Vehicle Rot. Speed",
             "format":   "{:.2f}",
-            "factor":   1.0,
             "unit":     "rad/s"
         },
-        "speedInfo0": {
-            "status":   "speedInfo0",
-            "title":     "speedInfo[0]",
+        "vehicleRSpeedM": {
+            "status":   "vehicleRSpeed",
+            "title":     "Vehicle Rot. Speed",
             "format":   "{:.2f}",
-            "factor":   "MS_TO_KMH",
-            "unit":     "km/h"
+            "factor":   "RAD_TO_DEG",
+            "unit":     "deg/s"
         },
         "engineRPM": {
             "status":   "engineRPM",
             "title":     "Engine RPM",
             "format":   "{:.0f}",
-            "factor":   1.0,
             "unit":     "rpm"
         },
         "engineRelativeRPM": {
             "status":   "engineRelativeRPM",
             "title":    "Engine Rel. RPM",
             "format":   "{:.2f}",
-            "factor":   1.0,
             "unit":     "rpm"
         },
         "vehicleYaw": {
+            "status":   "vehicleYaw",
+            "title":    "Vehicle Yaw",
+            "format":   "{:.2f}",
+            "unit":     "rad"
+        },
+        "vehicleYawM": {
             "status":   "vehicleYaw",
             "title":    "Vehicle Yaw",
             "format":   "{:.2f}",
@@ -75,10 +83,22 @@
             "status":   "vehiclePitch",
             "title":    "Vehicle Pitch",
             "format":   "{:.2f}",
+            "unit":     "rad"
+        },
+        "vehiclePitchM": {
+            "status":   "vehiclePitch",
+            "title":    "Vehicle Pitch",
+            "format":   "{:.2f}",
             "factor":   "RAD_TO_DEG",
             "unit":     "deg"
         },
         "vehicleRoll": {
+            "status":   "vehicleRoll",
+            "title":    "Vehicle Roll",
+            "format":   "{:.2f}",
+            "unit":     "rad"
+        },
+        "vehicleRollM": {
             "status":   "vehicleRoll",
             "title":    "Vehicle Roll",
             "format":   "{:.2f}",
@@ -89,10 +109,22 @@
             "status":   "vehicleRYaw",
             "title":    "Vehicle RYaw",
             "format":   "{:.2f}",
+            "unit":     "rad"
+        },
+        "vehicleRYawM": {
+            "status":   "vehicleRYaw",
+            "title":    "Vehicle RYaw",
+            "format":   "{:.2f}",
             "factor":   "RAD_TO_DEG",
             "unit":     "deg"
         },
         "turretYaw": {
+            "status":   "turretYaw",
+            "title":    "Turret Yaw",
+            "format":   "{:.2f}",
+            "unit":     "rad"
+        },
+        "turretYawM": {
             "status":   "turretYaw",
             "title":    "Turret Yaw",
             "format":   "{:.2f}",
@@ -103,6 +135,12 @@
             "status":   "gunPitch",
             "title":    "Gun Pitch",
             "format":   "{:.2f}",
+            "unit":     "rad"
+        },
+        "gunPitchM": {
+            "status":   "gunPitch",
+            "title":    "Gun Pitch",
+            "format":   "{:.2f}",
             "factor":   "RAD_TO_DEG",
             "unit":     "deg"
         },
@@ -110,15 +148,19 @@
             "status":   "turretRotationSpeed",
             "title":    "Turret Rot. Speed",
             "format":   "{:.2f}",
-            "factor":   1.0,
             "unit":     "rad/s"
+         },
+         "turretRotationSpeedM": {
+            "status":   "turretRotationSpeed",
+            "title":    "Turret Rot. Speed",
+            "format":   "{:.2f}",
+            "factor":   "RAD_TO_DEG",
+            "unit":     "deg/s"
          },
         "additiveFactor": {
             "status":   "additiveFactor",
             "title":    "Additive Factor",
-            "format":   "{:.2f}",
-            "factor":   1.0,
-            "unit":     ""
+            "format":   "{:.2f}"
         },
         "dAngleAiming": {
             "status":   "dAngleAiming",
@@ -145,231 +187,204 @@
             "status":   "aimingStartTime",
             "title":    "Aiming Start Time",
             "format":   "{:.2f}",
-            "factor":   1.0,
             "unit":     "s"
         },
         "aimingStartFactor": {
             "status":   "aimingStartFactor",
             "title":    "Aiming Start Factor",
-            "format":   "{:.2f}",
-            "factor":   1.0,
-            "unit":     ""
+            "format":   "{:.2f}"
         },
         "aimingTime": {
             "status":   "aimingTime",
             "title":    "Aiming Time",
             "format":   "{:.2f}",
-            "factor":   1.0,
             "unit":     "s"
         },
         "multFactor": {
             "status":   "multFactor",
             "title":    "Mult. Factor",
-            "format":   "{:.2f}",
-            "factor":   1.0,
-            "unit":     ""
+            "format":   "{:.2f}"
         },
         "factorsMovement": {
             "status":   "factorsMovement",
             "title":    "Movement Factor",
             "format":   "{:.2f}",
-            "factor":   1.0,
-            "unit":     ""
+            "unit":     "1/ms"
+        },
+        "factorsMovementM": {
+            "status":   "factorsMovement",
+            "title":    "Movement Factor",
+            "format":   "{:.2f}",
+            "factor":   "PMS_TO_PKMH",
+            "unit":     "1/kmh"
         },
         "factorsRotation": {
             "status":   "factorsRotation",
             "title":    "Rotation Factor",
             "format":   "{:.2f}",
-            "factor":  1.0,
-            "unit":     ""
+            "unit":     "1/rad"
+        },
+        "factorsRotationM": {
+            "status":   "factorsRotation",
+            "title":    "Rotation Factor",
+            "format":   "{:.2f}",
+            "factor":   "PRAD_TO_PDEG",
+            "unit":     "1/deg"
         },
         "factorsTurretRotation": {
             "status":   "factorsTurretRotation",
             "title":    "Turret Rot. Factor",
             "format":   "{:.2f}",
-            "factor":   1.0,
-            "unit":     ""
+            "unit":     "1/rad"
+        },
+        "factorsTurretRotationM": {
+            "status":   "factorsTurretRotation",
+            "title":    "Turret Rot. Factor",
+            "format":   "{:.2f}",
+            "factor":   "PRAD_TO_PDEG",
+            "unit":     "1/deg"
         },
         "shotFactor": {
             "status":   "shotFactor",
             "title":    "Shot Factor",
-            "format":   "{:.2f}",
-            "factor":   1.0,
-            "unit":     ""
+            "format":   "{:.2f}"
         },
         "aimingFactor": {
             "status":   "aimingFactor",
             "title":    "Aiming Factor",
-            "format":   "{:.2f}",
-            "factor":   1.0,
-            "unit":     ""
+            "format":   "{:.2f}"
         },
         "modifiedAimingFactor": {
             "status":   "modifiedAimingFactor",
             "title":    "M. Aiming Factor",
-            "format":   "{:.2f}",
-            "factor":   1.0,
-            "unit":     ""
+            "format":   "{:.2f}"
         },
         "aimingTimeConverging": {
             "status":   "aimingTimeConverging",
             "title":    "Time Converging",
             "format":   "{:.2f}",
-            "factor":   1.0,
             "unit":     "s"
         },
         "scoreDispersion": {
             "status":   "scoreDispersion",
             "title":    "Score Dispersion",
-            "format":   "{:.2f}",
-            "factor":   1.0,
-            "unit":     ""
+            "format":   "{:.2f}"
         },
         "shotSpeed": {
             "status":   "shotSpeed",
             "title":    "Shot Speed",
             "format":   "{:.2f}",
-            "factor":   1.0,
             "unit":     "m/s"
         },
         "shotGravity": {
             "status":   "shotGravity",
             "title":    "Shot Gravity",
             "format":   "{:.2f}",
-            "factor":   1.0,
             "unit":     "m/s2"
         },
         "shotSpeedH": {
             "status":   "shotSpeedH",
             "title":    "Shot Speed H.",
             "format":   "{:.2f}",
-            "factor":   1.0,
             "unit":     "m/s"
         },
         "shotSpeedV": {
             "status":   "shotSpeedV",
             "title":    "Shot Speed V.",
             "format":   "{:.2f}",
-            "factor":   1.0,
             "unit":     "m/s"
         },
         "distance": {
             "status":   "distance",
             "title":    "Distance",
             "format":   "{:.2f}",
-            "factor":   1.0,
             "unit":     "m"
         },
         "distanceH": {
             "status":   "distanceH",
             "title":    "Distance H.",
             "format":   "{:.2f}",
-            "factor":   1.0,
             "unit":     "m"
         },
         "distanceV": {
             "status":   "distanceV",
             "title":    "Distance V.",
             "format":   "{:.2f}",
-            "factor":   1.0,
             "unit":     "m"
         },
         "shotDistance": {
             "status":   "shotDistance",
             "title":    "Shot Distance",
             "format":   "{:.2f}",
-            "factor":   1.0,
             "unit":     "m"
         },
         "shotDistanceH": {
             "status":   "shotDistanceH",
             "title":    "Shot Distance H.",
             "format":   "{:.2f}",
-            "factor":   1.0,
             "unit":     "m"
         },
         "shotDistanceV": {
             "status":   "shotDistanceV",
             "title":    "Shot Distance V.",
             "format":   "{:.2f}",
-            "factor":   1.0,
             "unit":     "m"
         },
         "vehiclePosX": {
             "status":   "vehiclePosX",
             "title":    "Vehicle Pos. X",
-            "format":   "{:.2f}",
-            "factor":   1.0,
-            "unit":     ""
+            "format":   "{:.2f}"
         },
         "vehiclePosY": {
             "status":   "vehiclePosY",
             "title":    "Vehicle Pos. Y",
-            "format":   "{:.2f}",
-            "factor":   1.0,
-            "unit":     ""
+            "format":   "{:.2f}"
         },
         "vehiclePosZ": {
             "status":   "vehiclePosZ",
             "title":    "Vehicle Pos. Z",
-            "format":   "{:.2f}",
-            "factor":   1.0,
-            "unit":     ""
+            "format":   "{:.2f}"
         },
         "shotPosX": {
             "status":   "shotPosX",
             "title":    "Gun Pos. X",
-            "format":   "{:.2f}",
-            "factor":   1.0,
-            "unit":     ""
+            "format":   "{:.2f}"
         },
         "shotPosY": {
             "status":   "shotPosY",
             "title":    "Gun Pos. Y",
-            "format":   "{:.2f}",
-            "factor":   1.0,
-            "unit":     ""
+            "format":   "{:.2f}"
         },
         "shotPosZ": {
             "status":   "shotPosZ",
             "title":    "Gun Pos. Z",
-            "format":   "{:.2f}",
-            "factor":   1.0,
-            "unit":     ""
+            "format":   "{:.2f}"
         },
         "targetPosX": {
             "status":   "targetPosX",
             "title":    "Target Pos. X",
-            "format":   "{:.2f}",
-            "factor":   1.0,
-            "unit":     ""
+            "format":   "{:.2f}"
         },
         "targetPosY": {
             "status":   "targetPosY",
             "title":    "Target Pos. Y",
-            "format":   "{:.2f}",
-            "factor":   1.0,
-            "unit":     ""
+            "format":   "{:.2f}"
         },
         "targetPosZ": {
             "status":   "targetPosZ",
             "title":    "Target Pos. Z",
-            "format":   "{:.2f}",
-            "factor":   1.0,
-            "unit":     ""
+            "format":   "{:.2f}"
         },
         "flightTime": {
             "status":   "flightTime",
             "title":    "Flight Time",
             "format":   "{:.2f}",
-            "factor":   1.0,
             "unit":     "s"
         },
         "ping": {
             "status":   "ping",
             "title":    "Ping",
             "format":   "{:.0f}",
-            "factor":   1.0,
             "unit":     "ms"
         },
         "fps": {
@@ -395,36 +410,60 @@
             "status":   "targetPenetrationArmor",
             "title":    "E. Armor",
             "format":   "{:.0f}",
-            "factor":   1.0,
             "unit":     "mm"
         },
         "targetArmor": {
             "status":   "targetArmor",
             "title":    "Armor",
             "format":   "{:.0f}",
-            "factor":   1.0,
             "unit":     "mm"
         },
         "targetHitAngleCos": {
             "status":   "targetHitAngleCos",
+            "title":    "Angle Cos",
+            "format":   "{:.2f}"
+        },
+        "targetHitAngle": {
+            "status":   "targetHitAngle",
             "title":    "Angle",
-            "format":   "{:.0f}",
+            "format":   "{:.2f}",
+            "unit":     "rad"
+        },
+        "targetHitAngleM": {
+            "status":   "targetHitAngle",
+            "title":    "Angle",
+            "format":   "{:.2f}",
             "factor":   "RAD_TO_DEG",
             "unit":     "deg"
+        },
+        "targetHitAngleNormalized": {
+            "status":   "targetHitAngleNormalized",
+            "title":    "N. Angle",
+            "format":   "{:.2f}",
+            "unit":     "rad"
+        },
+        "targetHitAngleNormalizedM": {
+            "status":   "targetHitAngleNormalized",
+            "title":    "N. Angle",
+            "format":   "{:.2f}",
+            "factor":   "RAD_TO_DEG",
+            "unit":     "deg"
+        },
+        "targetPiercingPower": {
+            "status":   "targetPiercingPower",
+            "title":    "P. Power",
+            "format":   "{:.0f}",
+            "unit":     "mm"
         },
         "piercingPercent": {
             "status":   "piercingPercent",
             "title":    "P. Score",
-            "format":   "{:.0f}",
-            "factor":   1.0,
-            "unit":     ""
+            "format":   "{:.0f}"
         },
         "piercingMultiplier": {
             "status":   "piercingMultiplier",
             "title":    "P. Mult",
-            "format":   "{:.2f}",
-            "factor":   1.0,
-            "unit":     ""
+            "format":   "{:.2f}"
         },
         "targetVehicleName": {
             "status":       "targetVehicleName",

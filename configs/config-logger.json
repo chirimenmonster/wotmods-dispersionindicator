@@ -21,10 +21,7 @@
             "statsDefs": {
                 "aimingTimeConverging": {
                     "status":       "aimingTimeConverging",
-                    "title":        "",
-                    "format":       "{:.2f}",
-                    "factor":       1.0,
-                    "unit":         ""
+                    "format":       "{:.2f}"
                 }
             },
             "items": [
@@ -49,19 +46,17 @@
                 "positionZ":                    0.1
             },
             "statsDefs": {
-                "vehicleRYaw": {
+                "vehicleRYawM": {
                     "status":       "vehicleRYaw",
-                    "title":        "",
                     "format":       "{:.0f}",
-                    "factor":       "RAD_TO_DEG",
-                    "unit":         ""
+                    "factor":       "RAD_TO_DEG"
                 }
             },
             "events": [
                 "updateDispersionAngle"
             ],
             "items": [
-                "vehicleRYaw"
+                "vehicleRYawM"
             ]
         }
     },

@@ -16,8 +16,8 @@ class EventLogger(StatsIndicatorMeta):
         super(EventLogger, self).__init__(config, clientStatus)
         self.log_file = os.path.join(LOG_DIR, config['logfile'])
         self.names = config['items']
-        self.header = self.names[:]
-        self.header.insert(0, '#')
+        self.header = ['#'] + self.names
+        self.unit = ['#'] + list(map(lambda x: self.getUnit(x, ''), self.names))
         self.vehicleName = avatar_getter.getVehicleTypeDescriptor().type.name
         self.acceptEvents = config['events']
         self.__file = None
@@ -32,6 +32,7 @@ class EventLogger(StatsIndicatorMeta):
         self.__writer = csv.writer(self.__file, dialect='excel')
         self.__writer.writerow(['# vehicle={}'.format(self.vehicleName)])
         self.__writer.writerow(self.header)
+        self.__writer.writerow(self.unit)
 
     def stop(self):
         super(EventLogger, self).stop()
