@@ -4,6 +4,9 @@ from functools import partial
 
 import BigWorld
 import GUI
+import game
+import Keys
+from debug_utils import LOG_CURRENT_EXCEPTION
 from Event import Event
 from constants import ARENA_PERIOD
 from gui import g_guiResetters
@@ -20,8 +23,23 @@ from statscollector import g_statsCollector, g_clientStatus
 from statsindicator import StatsIndicator
 from statslogger import StatsLogger
 from eventlogger import EventLogger
+from hook import overrideMethod
 
 _logger = logging.getLogger(MOD.NAME)
+
+def _keyEventCallback(key):
+    pass
+
+@overrideMethod(game, 'handleKeyEvent')
+def _handleKeyEvent(orig, event):
+    ret = orig(event)
+    try:
+        if event.isKeyDown() and not event.isRepeatedEvent():
+            _keyEventCallback(event.key)
+    except:
+        LOG_CURRENT_EXCEPTION()
+    return ret
+
 
 class IndicatorManager(object):
     def __init__(self, config):
@@ -35,6 +53,7 @@ class IndicatorManager(object):
         self.__onShotResult = None
         self.__intervalHandlers = Event()
         self.__eventHandlers = Event()
+        self.__keyHandlers = {}
         interval = config['common']['updateInterval']
         self.__timeInterval = TimeInterval(interval, self, 'onWatchStats')
         g_eventBus.addListener(events.AppLifeCycleEvent.INITIALIZED, self.onAppInitialized)
@@ -43,6 +62,8 @@ class IndicatorManager(object):
         appLoader.onGUISpaceEntered += self.onGUISpaceEntered
         appLoader.onGUISpaceLeft += self.onGUISpaceLeft
         g_statsCollector.eventHandlers.clear()
+        global _keyEventCallback
+        _keyEventCallback = self.onKeyEvent
 
     def initPanel(self):
         _logger.info('initPanel')
@@ -50,6 +71,7 @@ class IndicatorManager(object):
         self.addHandler()
         g_statsCollector.eventHandlers += self.onEvent
         self.__panels = []
+        self.__keyHandlers = {}
         for paneldef in self.__config.get('panelDefs', []):
             if paneldef['channel'] == 'indicator':
                 panel = StatsIndicator(paneldef, g_clientStatus)
@@ -57,6 +79,12 @@ class IndicatorManager(object):
                     self.__eventHandlers += panel.onEvent
                 else:
                     self.__intervalHandlers += panel.update
+                if 'toggleKey' in paneldef['style']:
+                    keyName = paneldef['style']['toggleKey']
+                    keyId = getattr(Keys, keyName)
+                    if keyId not in self.__keyHandlers:
+                        self.__keyHandlers[keyId] = Event()
+                    self.__keyHandlers[keyId] += panel.toggle
             elif paneldef['channel'] == 'status':
                 panel = StatsLogger(paneldef,  g_clientStatus)
                 self.__intervalHandlers += panel.update
@@ -80,6 +108,7 @@ class IndicatorManager(object):
                 _logger.info('del EventLogger.onEvent')
                 g_statsCollector.eventHandlers -= panel.onEvent
         self.__panels = []
+        self.__keyHandlers = {}
 
     def addHandler(self):
         if self.__isSetHandler:
@@ -221,3 +250,8 @@ class IndicatorManager(object):
 
     def onEvent(self, reason):
         BigWorld.callback(0, partial(self.__eventHandlers, reason))
+
+    def onKeyEvent(self, keyId):
+        handlers = self.__keyHandlers.get(keyId, None)
+        if handlers is not None:
+            handlers()

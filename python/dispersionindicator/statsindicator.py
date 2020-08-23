@@ -110,6 +110,8 @@ class StatsIndicator(StatsIndicatorMeta):
         self.__guiSettings['stats'] = []
         self.__statsSource = {}
         self.__visibleControl = config['style'].get('visibleControl', None)
+        self.__visibleByVisibleControl = True
+        self.__visibleByToggle = True
         for key in config['items']:
             setting = self.statsdefs[key]
             self.__guiSettings['stats'].append({
@@ -157,10 +159,10 @@ class StatsIndicator(StatsIndicatorMeta):
             self.__setIndicatorValue(name, text)
         if self.__visibleControl:
             if getattr(self.vehicleStats, self.__visibleControl, None):
-                self.__pyEntity.setVisible(True)
+                self.__visibleByVisibleControl = True
             else:
-                self.__pyEntity.setVisible(False)
-
+                self.__visibleByVisibleControl = False
+            self.updateVisible()
 
     def updateScreenPosition(self, width, height):
         self.__screenSize = [ width, height ]
@@ -180,6 +182,12 @@ class StatsIndicator(StatsIndicatorMeta):
             _logger.warning('%s.updateCrosshairPosition: ReferenceError: not found PanelView', self.className)
             pass
 
+    def updateVisible(self):
+        try:
+            self.__pyEntity.setVisible(self.__visibleByToggle and self.__visibleByVisibleControl)
+        except weakref.ReferenceError:
+            pass
+
     def changeView(self, viewID):
         self.__crosshairView = viewID
         try:
@@ -192,3 +200,7 @@ class StatsIndicator(StatsIndicatorMeta):
         if reason['eventName'] not in self.acceptEvents:
             return
         self.update()
+
+    def toggle(self):
+        self.__visibleByToggle = not self.__visibleByToggle
+        self.updateVisible()

@@ -67,6 +67,7 @@
         },
         "panel_0": {
             "style": {
+                "toggleKey":                    "KEY_P",
                 "horizontalAnchor":             "LEFT",
                 "verticalAnchor":               "BOTTOM",
                 "referencePoint":               "SCREEN_LEFT_BOTTOM",
@@ -96,6 +97,7 @@
         },
         "panel_1": {
             "style": {
+                "toggleKey":                    "KEY_P",
                 "horizontalAnchor":             "RIGHT",
                 "verticalAnchor":               "BOTTOM",
                 "referencePoint":               "SCREEN_RIGHT_BOTTOM",
@@ -119,6 +121,7 @@
         },
         "panel_2": {
             "style": {
+                "toggleKey":                    "KEY_P",
                 "horizontalAnchor":             "RIGHT",
                 "verticalAnchor":               "BOTTOM",
                 "referencePoint":               "SCREEN_RIGHT_BOTTOM",
@@ -152,6 +155,7 @@
         },
         "panel_ping": {
             "style": {
+                "toggleKey":                    "KEY_P",
                 "horizontalAnchor":             "LEFT",
                 "verticalAnchor":               "BOTTOM",
                 "referencePoint":               "SCREEN_LEFT_BOTTOM",
@@ -171,6 +175,7 @@
         },
         "panel_piercingInfo": {
             "style": {
+                "toggleKey":                    "KEY_P",
                 "horizontalAnchor":             "LEFT",
                 "verticalAnchor":               "BOTTOM",
                 "referencePoint":               "CROSSHAIR",
