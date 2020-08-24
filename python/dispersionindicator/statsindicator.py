@@ -134,11 +134,10 @@ class StatsIndicator(StatsIndicatorMeta):
         app.loadView(SFViewLoadParams(PANEL_VIEW_ALIAS, self.name), config=self.__guiSettings)
         pyEntity = app.containerManager.getViewByKey(ViewKey(PANEL_VIEW_ALIAS, self.name))
         self.__pyEntity = weakref.proxy(pyEntity)
+        self.__pyEntity.onCreated += self.onCreated
 
-    def start(self):
-        super(StatsIndicator, self).start()
-        for conf in self.__guiSettings['stats']:
-            self.__setIndicatorValue(conf['name'], '')
+    def onCreated(self, pyEntity):
+        #_logger.info('%s.onCreated: "%s"', self.className, self.name)
         self.updateVisible()
 
     def stop(self):
