@@ -21,7 +21,7 @@
 ![shot_055](https://user-images.githubusercontent.com/11075065/72655895-f5efab00-39da-11ea-9d06-1a2fdc74a61b.jpg)
 
 
-## Parameters (primitive)
+## Parameters
 
 ### update on event `updatePing`
 
@@ -138,7 +138,7 @@ other parameters
 
 
 
-## Virtual Parameters (defined in default.json for human readable)
+### Virtual Parameters (defined in default.json for human readable)
 
 | name                      | unit      | source                    | unit      |
 | ------------------------- | --------- | ------------------------- | --------- |
