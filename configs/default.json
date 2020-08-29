@@ -223,27 +223,27 @@
             "status":   "factorsRotation",
             "title":    "Rotation Factor",
             "format":   "{:.2f}",
-            "unit":     "1/rad"
+            "unit":     "1/rads"
         },
         "factorsRotationM": {
             "status":   "factorsRotation",
             "title":    "Rotation Factor",
             "format":   "{:.2f}",
             "factor":   "PRAD_TO_PDEG",
-            "unit":     "1/deg"
+            "unit":     "1/degs"
         },
         "factorsTurretRotation": {
             "status":   "factorsTurretRotation",
             "title":    "Turret Rot. Factor",
             "format":   "{:.2f}",
-            "unit":     "1/rad"
+            "unit":     "1/rads"
         },
         "factorsTurretRotationM": {
             "status":   "factorsTurretRotation",
             "title":    "Turret Rot. Factor",
             "format":   "{:.2f}",
             "factor":   "PRAD_TO_PDEG",
-            "unit":     "1/deg"
+            "unit":     "1/degs"
         },
         "shotFactor": {
             "status":   "shotFactor",

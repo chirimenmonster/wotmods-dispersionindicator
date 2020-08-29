@@ -21,7 +21,7 @@
 ![shot_055](https://user-images.githubusercontent.com/11075065/72655895-f5efab00-39da-11ea-9d06-1a2fdc74a61b.jpg)
 
 
-## Parameters
+## Parameters (primitive)
 
 ### update on event `updatePing`
 
@@ -109,15 +109,18 @@ information about shell speed
 
 information about target armor
 
-| name                     | description                         |
-| ------------------------ | ----------------------------------- |
-| `targetVehicleName`      | vehicle name on target              |
-| `targetHitAngleCos`      | angle of incidence on target        |
-| `targetArmor`            | armor thickness on target           |
-| `targetArmorKind`        | kind of armor on target             |
-| `targetPenetrationArmor` | effective armor thickness on target |
-| `piercingMultiplier`     | factor of piercing                  |
-| `piercingPercent`        | score of piercing                   |
+| name                          | description                               |
+| ----------------------------- | ----------------------------------------- |
+| `targetVehicleName`           | vehicle name on target                    |
+| `targetHitAngleCos`           | cosine angle of incidence on target       |
+| `targetHitAngle`              | angle of incidence on target              |
+| `targetHitAngleNormalized`    | normalized angle of incidence on target   |
+| `targetArmor`                 | armor thickness on target                 |
+| `targetArmorKind`             | kind of armor on target                   |
+| `targetPenetrationArmor`      | effective armor thickness on target       |
+| `targetPiercingPower`         | piercing power after distance attenuation |
+| `piercingMultiplier`          | factor of piercing                        |
+| `piercingPercent`             | score of piercing                         |
 
 
 ### others
@@ -132,3 +135,22 @@ other parameters
 | `arenaName`              | arena name                          |
 | `vehicleName`            | player vehicle name                 |
 | `playerTeam`             | player team id                      |
+
+
+
+## Virtual Parameters (defined in default.json for human readable)
+
+| name                      | unit      | source                    | unit      |
+| ------------------------- | --------- | ------------------------- | --------- |
+| `vehicleSpeedM`           | km/h      | `vehicleSpeed`            | m/s       |
+| `vehicleRSpeedM`          | deg/s     | `vehicleRSpeed`           | rad/s     |
+| `vehicleYawM`             | deg       | `vehicleYaw`              | rad       |
+| `vehiclePitchM`           | deg       | `vehiclePitch`            | rad       |
+| `vehicleRollM`            | deg       | `vehicleRoll`             | rad       |
+| `vehicleRYawM`            | deg       | `vehicleRYaw`             | rad       |
+| `turretYawM`              | deg       | `turretYaw`               | rad       |
+| `gunPitchM`               | deg       | `gunPitch`                | rad       |
+| `turretRotationSpeedM`    | deg/s     | `turretRotationSpeed`     | rad/s     |
+| `factorMovementM`         | 1/(km/h)  | `factorMovement`          | 1/(m/s)   |
+| `factorRotationM`         | 1/(deg/s) | `factorRotation`          | 1/(rad/s) |
+| `factorTurretRotationM`   | 1/(deg/s) | `factorTurretRotation`    | 1/(rad/s) |
