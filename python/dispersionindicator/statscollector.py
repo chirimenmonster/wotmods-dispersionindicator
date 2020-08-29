@@ -417,6 +417,8 @@ class StatsCollector(object):
         shotDescr = avatar.getVehicleDescriptor().shot
         stats.shotSpeed = shotDescr.speed
         stats.shotGravity = shotDescr.gravity
+        stats.shotSpeedC = shotDescr.speed / 0.8
+        stats.shotGravityC = shotDescr.gravity / 0.64
         shotPos, shotVec = avatar.gunRotator.getCurShotPosition()
         stats.shotSpeedH = shotVec.flatDistTo(Math.Vector3((0.0, 0.0, 0.0)))
         stats.shotSpeedV = shotVec.y
