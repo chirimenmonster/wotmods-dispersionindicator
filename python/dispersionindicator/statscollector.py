@@ -365,10 +365,10 @@ class StatsCollector(object):
     def updateGunAngles(self, avatar):
         stats = g_clientStatus
         vehicle = avatar.getVehicleAttached()
-        vd = vehicle.typeDescriptor
-        #gunOffs = vd.turret.gunPosition
-        #turretOffs = vd.hull.turretPositions[0] + vd.chassis.hullPosition
-        turretYaw, gunPitch = decodeGunAngles(vehicle.gunAnglesPacked, vd.gun.pitchLimits['absolute'])
+        turretYaw = gunPitch = None
+        if vehicle is not None:
+            vd = vehicle.typeDescriptor
+            turretYaw, gunPitch = decodeGunAngles(vehicle.gunAnglesPacked, vd.gun.pitchLimits['absolute'])
         stats.turretYaw = turretYaw
         stats.gunPitch = gunPitch
 
@@ -381,14 +381,14 @@ class StatsCollector(object):
     def updateVehicleEngineState(self, avatar):
         stats = g_clientStatus
         vehicle = avatar.getVehicleAttached()
+        engineRPM = engineRelativeRPM = None 
         if vehicle is not None:
             detailedEngineState = vehicle.appearance.detailedEngineState
             if detailedEngineState is not None:
-                stats.engineRPM = detailedEngineState.rpm
-                stats.engineRelativeRPM = detailedEngineState.relativeRPM
-                return
-        stats.engineRPM = None
-        stats.engineRelativeRPM = None
+                engineRPM = detailedEngineState.rpm
+                engineRelativeRPM = detailedEngineState.relativeRPM
+        stats.engineRPM = engineRPM
+        stats.engineRelativeRPM = engineRelativeRPM
 
     def updateShotInfo(self, avatar, hitPoint):
         stats = g_clientStatus
