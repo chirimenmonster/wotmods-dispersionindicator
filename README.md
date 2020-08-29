@@ -18,8 +18,7 @@
 ![image](https://user-images.githubusercontent.com/11075065/56848288-09755600-6922-11e9-9422-d164fe511836.png)
 
 ### customize (config-full.json)
-![shot_055](https://user-images.githubusercontent.com/11075065/72655895-f5efab00-39da-11ea-9d06-1a2fdc74a61b.jpg)
-
+![shot_056](https://user-images.githubusercontent.com/11075065/91626913-0db9f380-e9ee-11ea-91a2-540e35365a75.jpg)
 
 ## Parameters
 
