@@ -88,10 +88,10 @@ class IndicatorManager(object):
                         self.__keyHandlers[keyId] = Event()
                     self.__keyHandlers[keyId] += panel.toggle
             elif paneldef['channel'] == 'status':
-                panel = StatsLogger(paneldef,  clientStatus)
+                panel = StatsLogger(paneldef, clientStatus)
                 self.__intervalHandlers += panel.update
             elif paneldef['channel'] == 'event':
-                panel = EventLogger(paneldef,  clientStatus)
+                panel = EventLogger(paneldef, clientStatus)
                 self.__eventHandlers += panel.onEvent
             self.__panels.append(panel)
         session = dependency.instance(IBattleSessionProvider)
