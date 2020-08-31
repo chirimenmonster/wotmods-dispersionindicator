@@ -67,6 +67,7 @@
         },
         "panel_0": {
             "style": {
+                "visible":                      false,
                 "toggleKey":                    "KEY_P",
                 "horizontalAnchor":             "LEFT",
                 "verticalAnchor":               "BOTTOM",
@@ -97,6 +98,7 @@
         },
         "panel_1": {
             "style": {
+                "visible":                      false,
                 "toggleKey":                    "KEY_P",
                 "horizontalAnchor":             "RIGHT",
                 "verticalAnchor":               "BOTTOM",
@@ -121,6 +123,7 @@
         },
         "panel_2": {
             "style": {
+                "visible":                      false,
                 "toggleKey":                    "KEY_P",
                 "horizontalAnchor":             "RIGHT",
                 "verticalAnchor":               "BOTTOM",
@@ -145,6 +148,8 @@
                 "shotDistance",
                 "shotDistanceH",
                 "shotDistanceV",
+                "shotGravityC",
+                "shotSpeedC",
                 "shotGravity",
                 "shotSpeed",
                 "shotSpeedH",
@@ -155,6 +160,7 @@
         },
         "panel_ping": {
             "style": {
+                "visible":                      false,
                 "toggleKey":                    "KEY_P",
                 "horizontalAnchor":             "LEFT",
                 "verticalAnchor":               "BOTTOM",
@@ -175,6 +181,7 @@
         },
         "panel_piercingInfo": {
             "style": {
+                "visible":                      false,
                 "toggleKey":                    "KEY_P",
                 "horizontalAnchor":             "LEFT",
                 "verticalAnchor":               "BOTTOM",

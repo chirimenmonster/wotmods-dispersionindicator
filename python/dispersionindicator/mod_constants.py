@@ -78,6 +78,7 @@ CLIENT_STATUS_LIST = [
     'vehicleYaw', 'vehiclePitch', 'vehicleRoll', 'vehicleRYaw', 'turretYaw', 'gunPitch',
     'vehicleSpeed', 'vehicleRSpeed', 'engineRPM', 'engineRelativeRPM',
     'shotSpeed', 'shotSpeedH', 'shotSpeedV', 'shotGravity',
+    'shotSpeedC', 'shotGravityC',
     'shotPosX', 'shotPosY', 'shotPosZ', 'shotDistance', 'shotDistanceH', 'shotDistanceV',
     'vehiclePosX', 'vehiclePosY', 'vehiclePosZ', 'distance', 'distanceH', 'distanceV',
     'targetPosX', 'targetPosY', 'targetPosZ',

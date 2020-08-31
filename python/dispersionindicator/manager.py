@@ -19,7 +19,7 @@ from gui.app_loader.settings import APP_NAME_SPACE
 from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE, CROSSHAIR_VIEW_ID
 
 from mod_constants import MOD, CONSTANT, CROSSHAIR_VIEW_SYMBOL, ARENA_PERIOD_SYMBOL, GUI_GLOBAL_SPACE_SYMBOL
-from statscollector import g_statsCollector, g_clientStatus
+from statscollector import g_statsCollector
 from statsindicator import StatsIndicator
 from statslogger import StatsLogger
 from eventlogger import EventLogger
@@ -67,14 +67,16 @@ class IndicatorManager(object):
 
     def initPanel(self):
         _logger.info('initPanel')
-        g_statsCollector.updateArenaInfo()
         self.addHandler()
         g_statsCollector.eventHandlers += self.onEvent
+        g_statsCollector.start()
+        g_statsCollector.updateArenaInfo()
+        clientStatus = g_statsCollector.clientStatus
         self.__panels = []
         self.__keyHandlers = {}
         for paneldef in self.__config.get('panelDefs', []):
             if paneldef['channel'] == 'indicator':
-                panel = StatsIndicator(paneldef, g_clientStatus)
+                panel = StatsIndicator(paneldef, clientStatus)
                 if 'events' in paneldef:
                     self.__eventHandlers += panel.onEvent
                 else:
@@ -86,10 +88,10 @@ class IndicatorManager(object):
                         self.__keyHandlers[keyId] = Event()
                     self.__keyHandlers[keyId] += panel.toggle
             elif paneldef['channel'] == 'status':
-                panel = StatsLogger(paneldef,  g_clientStatus)
+                panel = StatsLogger(paneldef, clientStatus)
                 self.__intervalHandlers += panel.update
             elif paneldef['channel'] == 'event':
-                panel = EventLogger(paneldef,  g_clientStatus)
+                panel = EventLogger(paneldef, clientStatus)
                 self.__eventHandlers += panel.onEvent
             self.__panels.append(panel)
         session = dependency.instance(IBattleSessionProvider)

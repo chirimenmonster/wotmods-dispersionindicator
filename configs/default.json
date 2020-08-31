@@ -277,9 +277,21 @@
             "format":   "{:.2f}",
             "unit":     "m/s"
         },
+        "shotSpeedC": {
+            "status":   "shotSpeedC",
+            "title":    "Shot Speed C.",
+            "format":   "{:.2f}",
+            "unit":     "m/s"
+        },
         "shotGravity": {
             "status":   "shotGravity",
             "title":    "Shot Gravity",
+            "format":   "{:.2f}",
+            "unit":     "m/s2"
+        },
+        "shotGravityC": {
+            "status":   "shotGravityC",
+            "title":    "Shot Gravity C.",
             "format":   "{:.2f}",
             "unit":     "m/s2"
         },

@@ -129,7 +129,7 @@ def showShooting_doShot(_, self, data):
 @overrideMethod(CrosshairDataProxy, '_CrosshairDataProxy__setGunMarkerState')
 @callOriginal(prev=True)
 def crosshairDataProxy_setGunMarkerState(orig_result, self, markerType, value):
-    excludeTeam = g_clientStatus.playerTeam
+    excludeTeam = g_statsCollector.clientStatus.playerTeam
     hitPoint, direction, collision = value
     resultPenetrationInfo = {}
     piercingPercent = None
@@ -155,7 +155,7 @@ def crosshairDataProxy_setGunMarkerState(orig_result, self, markerType, value):
         ppDesc = vDesc.shot.piercingPower
         maxDist = vDesc.shot.maxDistance
         dist = (hitPoint - player.getOwnVehiclePosition()).length
-        piercingPower = _CrosshairShotResults._computePiercingPowerAtDist(ppDesc, dist, maxDist, g_clientStatus.piercingMultiplier)
+        piercingPower = _CrosshairShotResults._computePiercingPowerAtDist(ppDesc, dist, maxDist, g_statsCollector.clientStatus.piercingMultiplier)
         fullPiercingPower = piercingPower
         minPP, maxPP = _CrosshairShotResults._computePiercingPowerRandomization(shell)
         isJet = False
@@ -283,7 +283,11 @@ class ClientStatus(object):
 
 class StatsCollector(object):
     def __init__(self):
+        self.clientStatus = None
         self.eventHandlers = Event()
+
+    def start(self):
+        self.clientStatus = ClientStatus()
 
     def fireEvent(self, reason):
         info = {
@@ -293,16 +297,20 @@ class StatsCollector(object):
         self.eventHandlers(info)
 
     def updateArenaInfo(self):
-        stats = g_clientStatus
+        stats = self.clientStatus
+        if stats is None:
+            return
         stats.arenaName = avatar_getter.getArena().arenaType.geometryName
         stats.vehicleName = avatar_getter.getVehicleTypeDescriptor().type.name
         session = dependency.instance(IBattleSessionProvider)
         stats.playerTeam  = session.getArenaDP().getNumberOfTeam()
 
     def updatePing(self):
-        replayCtrl = BattleReplay.g_replayCtrl
-        stats = g_clientStatus
+        stats = self.clientStatus
+        if stats is None:
+            return
         stats.currTime = BigWorld.time()
+        replayCtrl = BattleReplay.g_replayCtrl
         if replayCtrl.isPlaying:
             ping = replayCtrl.ping
             fps = BigWorld.getFPS()[1]
@@ -322,7 +330,9 @@ class StatsCollector(object):
         stats.latency = latency[3]
 
     def updateDispersionAngle(self, avatar, dispersionAngle, turretRotationSpeed, withShot):
-        stats = g_clientStatus
+        stats = self.clientStatus
+        if stats is None:
+            return
         stats.dAngleAiming = dispersionAngle[0]
         stats.dAngleIdeal = dispersionAngle[1]
         stats.turretRotationSpeed = turretRotationSpeed
@@ -337,7 +347,9 @@ class StatsCollector(object):
             stats.shotFactor = vDescr.gun.shotDispersionFactors['afterShotInBurst']
 
     def updateAimingInfo(self, avatar):
-        stats = g_clientStatus
+        stats = self.clientStatus
+        if stats is None:
+            return
         aimingInfo = avatar._PlayerAvatar__aimingInfo
         stats.aimingStartTime = aimingInfo[0]
         stats.aimingStartFactor = aimingInfo[1]
@@ -348,7 +360,9 @@ class StatsCollector(object):
         stats.aimingTime = aimingInfo[6]
 
     def updateVehicleDirection(self, avatar):
-        stats = g_clientStatus
+        stats = self.clientStatus
+        if stats is None:
+            return
         matrix = Math.Matrix(avatar.getOwnVehicleMatrix())
         stats.vehicleYaw = matrix.yaw
         stats.vehiclePitch = matrix.pitch
@@ -363,7 +377,9 @@ class StatsCollector(object):
         stats.vehicleRYaw = rYaw
 
     def updateGunAngles(self, avatar):
-        stats = g_clientStatus
+        stats = self.clientStatus
+        if stats is None:
+            return
         vehicle = avatar.getVehicleAttached()
         turretYaw = gunPitch = None
         if vehicle is not None:
@@ -373,13 +389,17 @@ class StatsCollector(object):
         stats.gunPitch = gunPitch
 
     def updateVehicleSpeeds(self, avatar):
-        stats = g_clientStatus
+        stats = self.clientStatus
+        if stats is None:
+            return
         vehicleSpeed, vehicleRSpeed = avatar.getOwnVehicleSpeeds(True)
         stats.vehicleSpeed = vehicleSpeed
         stats.vehicleRSpeed = vehicleRSpeed
 
     def updateVehicleEngineState(self, avatar):
-        stats = g_clientStatus
+        stats = self.clientStatus
+        if stats is None:
+            return
         vehicle = avatar.getVehicleAttached()
         engineRPM = engineRelativeRPM = None 
         if vehicle is not None:
@@ -391,10 +411,14 @@ class StatsCollector(object):
         stats.engineRelativeRPM = engineRelativeRPM
 
     def updateShotInfo(self, avatar, hitPoint):
-        stats = g_clientStatus
+        stats = self.clientStatus
+        if stats is None:
+            return
         shotDescr = avatar.getVehicleDescriptor().shot
         stats.shotSpeed = shotDescr.speed
         stats.shotGravity = shotDescr.gravity
+        stats.shotSpeedC = shotDescr.speed / 0.8
+        stats.shotGravityC = shotDescr.gravity / 0.64
         shotPos, shotVec = avatar.gunRotator.getCurShotPosition()
         stats.shotSpeedH = shotVec.flatDistTo(Math.Vector3((0.0, 0.0, 0.0)))
         stats.shotSpeedV = shotVec.y
@@ -418,7 +442,9 @@ class StatsCollector(object):
         stats.targetPosZ = hitPoint.z
 
     def updatePenetrationArmor(self, piercingPercent, penetrationInfo):
-        stats = g_clientStatus
+        stats = self.clientStatus
+        if stats is None:
+            return
         stats.piercingPercent = piercingPercent
         if 'firstArmor' in penetrationInfo:
             stats.targetHitAngleCos = penetrationInfo['firstArmor']['hitAngleCos']
@@ -440,9 +466,10 @@ class StatsCollector(object):
             stats.targetVehicleName = None
 
     def updatePiercingMultiplier(self, piercingMultiplier):
-        stats = g_clientStatus
+        stats = self.clientStatus
+        if stats is None:
+            return
         stats.piercingMultiplier = piercingMultiplier
 
 
 g_statsCollector = StatsCollector()
-g_clientStatus = ClientStatus()

@@ -95,13 +95,15 @@ information about target position
 
 information about shell speed
 
-| name             | description                              |
-| ---------------- | ---------------------------------------- |
-| `shotSpeed`      | shell speed                              |
-| `shotSpeedH`     | horizontal component of shell velocity   |
-| `shotSpeedV`     | vertical component of shell velocity     |
-| `shotGravity`    | gravity acceleration acting on the shell |
-| `flightTime`     | `shotDistanceH` / `shotSpeedH`           |
+| name             | description                                                |
+| ---------------- | ---------------------------------------------------------- |
+| `shotSpeed`      | shell speed                                                |
+| `shotSpeedH`     | horizontal component of shell velocity                     |
+| `shotSpeedV`     | vertical component of shell velocity                       |
+| `shotGravity`    | gravity acceleration acting on the shell                   |
+| `flightTime`     | `shotDistanceH` / `shotSpeedH`                             |
+| `shotSpeedC`     | shell speed (catalog spec)                                 |
+| `shotGravityC`   | gravity acceleration acting on the shell (catalog spec)    |
 
 
 ### on event `updatePenetrationArmor`
