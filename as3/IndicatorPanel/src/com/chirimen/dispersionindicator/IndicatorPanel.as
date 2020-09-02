@@ -22,6 +22,8 @@ package com.chirimen.dispersionindicator
             className = getQualifiedClassName(this);
             DebugUtils.LOG_DEBUG("%s: %s", className, "constructor");
             super();
+            mouseChildren = false;
+            mouseEnabled = false;
         }
 
         public function as_setConfig(settings:Object) : void
