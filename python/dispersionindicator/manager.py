@@ -4,12 +4,11 @@ from functools import partial
 
 import BigWorld
 import GUI
-import game
 import Keys
 from debug_utils import LOG_CURRENT_EXCEPTION
 from Event import Event
 from constants import ARENA_PERIOD
-from gui import g_guiResetters
+from gui import g_guiResetters, g_keyEventHandlers
 from helpers import dependency
 from skeletons.gui.app_loader import IAppLoader, GuiGlobalSpaceID
 from skeletons.gui.battle_session import IBattleSessionProvider
@@ -26,19 +25,6 @@ from eventlogger import EventLogger
 from hook import overrideMethod
 
 _logger = logging.getLogger(MOD.NAME)
-
-def _keyEventCallback(key):
-    pass
-
-@overrideMethod(game, 'handleKeyEvent')
-def _handleKeyEvent(orig, event):
-    ret = orig(event)
-    try:
-        if event.isKeyDown() and not event.isRepeatedEvent():
-            _keyEventCallback(event.key)
-    except:
-        LOG_CURRENT_EXCEPTION()
-    return ret
 
 
 class IndicatorManager(object):
@@ -62,8 +48,6 @@ class IndicatorManager(object):
         appLoader.onGUISpaceEntered += self.onGUISpaceEntered
         appLoader.onGUISpaceLeft += self.onGUISpaceLeft
         g_statsCollector.eventHandlers.clear()
-        global _keyEventCallback
-        _keyEventCallback = self.onKeyEvent
 
     def initPanel(self):
         _logger.info('initPanel')
@@ -126,6 +110,7 @@ class IndicatorManager(object):
         ctl.onCrosshairPositionChanged += self.onCrosshairPositionChanged
         self.__crosshairPosition = list(ctl.getScaledPosition())
         g_guiResetters.add(self.onScreenResolutionChanged)
+        g_keyEventHandlers.add(self.__handleKeyEvent)
     
     def removeHandler(self):
         if not self.__isSetHandler:
@@ -145,6 +130,7 @@ class IndicatorManager(object):
             ctl.onCrosshairViewChanged -= self.onCrosshairViewChanged
             ctl.onCrosshairPositionChanged -= self.onCrosshairPositionChanged
         g_guiResetters.remove(self.onScreenResolutionChanged)
+        g_keyEventHandlers.remove(self.__handleKeyEvent)
 
     def visiblePanel(self):
         if self.__visible:
@@ -253,7 +239,10 @@ class IndicatorManager(object):
     def onEvent(self, reason):
         BigWorld.callback(0, partial(self.__eventHandlers, reason))
 
-    def onKeyEvent(self, keyId):
-        handlers = self.__keyHandlers.get(keyId, None)
-        if handlers is not None:
-            handlers()
+    def __handleKeyEvent(self, event):
+        if event.isKeyDown() and not event.isRepeatedEvent():
+            handlers = self.__keyHandlers.get(event.key, None)
+            if handlers is not None:
+                handlers()
+                return True
+        return False
