@@ -43,6 +43,8 @@ class PanelView(View):
     def beforeCreate(self, pyEntity):
         _logger.debug('%s.beforeCreate', self.className)
         self.flashObject.as_setConfig(self.__settings)
+        self.flashObject.mouseEnabled = False
+        self.flashObject.mouseChildren = False
 
     def afterCreate(self, pyEntity):
         _logger.debug('%s.afterCreate', self.className)
