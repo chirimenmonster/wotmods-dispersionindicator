@@ -1,6 +1,7 @@
 
 import logging
 import json
+import re
 import weakref
 from functools import partial
 
@@ -18,6 +19,7 @@ _logger = logging.getLogger(MOD.NAME)
 SWF_FILE = 'IndicatorPanel.swf'
 SWF_PATH = '${flash_dir}'
 
+MINUS_ZERO = re.compile(r'\A-(0(.0*)?)\Z')
 
 class StatsIndicatorMeta(object):
     onEvent = None
@@ -76,6 +78,7 @@ class StatsIndicatorMeta(object):
         if template is not None:
             try:
                 text = template.format(value)
+                text = MINUS_ZERO.sub(r'\1', text)
             except:
                 _logger.error('%s.getStatusAsText: "%s"', self.className, json.dumps(desc))
                 text = str(value)
