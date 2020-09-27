@@ -28,10 +28,15 @@
                 "aimingTimeConverging": {
                     "status":       "aimingTimeConverging",
                     "format":       "{:.2f}"
+                },
+                "flightTime": {
+                    "status":       "flightTime",
+                    "format":       "{:.2f}"
                 }
             },
             "items": [
-                "aimingTimeConverging"
+                "aimingTimeConverging",
+                "flightTime"
             ]
         },
         "indicator_vehicleRYaw": {

@@ -1,7 +1,8 @@
 
 import logging
 import BigWorld
-from gui.Scaleform.framework import ViewSettings, ViewTypes, ScopeTemplates
+from frameworks.wulf import WindowLayer
+from gui.Scaleform.framework import ViewSettings, ScopeTemplates
 from gui.Scaleform.framework.entities.View import View
 from gui.battle_control.battle_constants import CROSSHAIR_VIEW_ID
 
@@ -158,7 +159,7 @@ PANEL_VIEW_SETTINGS = ViewSettings(
     PANEL_VIEW_ALIAS,
     PanelView,
     PANEL_VIEW_SWF_FILE_PATH,
-    ViewTypes.WINDOW,
+    WindowLayer.WINDOW,
     None,
     ScopeTemplates.DEFAULT_SCOPE
 )
