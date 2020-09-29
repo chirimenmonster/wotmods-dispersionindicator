@@ -36,7 +36,8 @@ def callOriginal(prev=False):
             if prev:
                 result = orig(*args, **kwargs)
             try:
-                _ = func(result, *args, **kwargs)
+                if g_statsCollector is not None:
+                    _ = func(result, *args, **kwargs)
             except:
                 LOG_CURRENT_EXCEPTION()
             if not prev:
@@ -362,6 +363,10 @@ class StatsCollector(object):
     def updateVehicleDirection(self, avatar):
         stats = self.clientStatus
         if stats is None:
+            stats.vehicleYaw = None
+            stats.vehiclePitch = None
+            stats.vehicleRoll = None
+            stats.vehicleRYaw = None
             return
         matrix = Math.Matrix(avatar.getOwnVehicleMatrix())
         stats.vehicleYaw = matrix.yaw
