@@ -6,13 +6,7 @@ from collections import OrderedDict
 
 import ResMgr
 from debug_utils import LOG_CURRENT_EXCEPTION
-from gui.Scaleform.framework import g_entitiesFactories
 
-from dispersionindicator.mod_constants import MOD, CONFIG_FILES, EVENT, EVENT_LIST, CLIENT_STATUS_LIST
-from dispersionindicator.manager import IndicatorManager
-from dispersionindicator.view.panelview import PANEL_VIEW_SETTINGS
-
-_logger = logging.getLogger(MOD.NAME)
 
 g_indicatorManager = None
 
@@ -28,19 +22,28 @@ def getLogLevel(name):
     return logLevel.get(name, logging.INFO)
 
 def init():
-    global g_indicatorManager
     try:
+        from gui.Scaleform.framework import g_entitiesFactories
+        from dispersionindicator.mod_constants import MOD
+        from dispersionindicator.manager import IndicatorManager
+        from dispersionindicator.view.panelview import PANEL_VIEW_SETTINGS
+
+        global _logger
+        _logger = logging.getLogger(MOD.NAME)
         _logger.info('initialize: %s %s', MOD.PACKAGE_ID, MOD.VERSION)
         settings = _readConfig()
         logLevel = getLogLevel(settings['common'].get('logLevel', 'INFO'))
         _logger.setLevel(logLevel)
-        g_indicatorManager = manager = IndicatorManager(settings)
+        global g_indicatorManager
+        g_indicatorManager = IndicatorManager(settings)
         g_entitiesFactories.addSettings(PANEL_VIEW_SETTINGS)
     except:
         LOG_CURRENT_EXCEPTION()
 
 
 def _validationItems(items, statDefs):
+    from dispersionindicator.mod_constants import CLIENT_STATUS_LIST
+
     validItems = []
     invalidItems = []
     for name in items:
@@ -55,6 +58,7 @@ def _validationItems(items, statDefs):
     return validItems
 
 def _readConfig():
+    from dispersionindicator.mod_constants import CONFIG_FILES, EVENT_LIST
     def encode_key(data):
         ascii_encode = lambda x: x.encode('ascii') if isinstance(x, unicode) else x
         return OrderedDict([ (ascii_encode(key), value) for key, value in data ])

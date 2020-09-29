@@ -36,7 +36,8 @@ def callOriginal(prev=False):
             if prev:
                 result = orig(*args, **kwargs)
             try:
-                _ = func(result, *args, **kwargs)
+                if g_statsCollector is not None:
+                    _ = func(result, *args, **kwargs)
             except:
                 LOG_CURRENT_EXCEPTION()
             if not prev:
@@ -116,13 +117,13 @@ def playerAvatar_showShotResults(_, self, result):
     g_statsCollector.fireEvent(EVENT.RECEIVE_SHOT_RESULT)
 
 
-@overrideMethod(ShowShooting, '_ShowShooting__doShot')
+@overrideMethod(ShowShooting, '_doShot')
 @callOriginal(prev=False)
 def showShooting_doShot(_, self, data):
     if not data['entity'].isPlayerVehicle:
         return
     time = BigWorld.time()
-    _logger.debug('catch ShowShooting.__doShot: time={}'.format(time))
+    _logger.debug('catch ShowShooting._doShot: time={}'.format(time))
     g_statsCollector.fireEvent(EVENT.RECEIVE_SHOT)
 
 
