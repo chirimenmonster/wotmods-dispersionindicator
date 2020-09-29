@@ -363,6 +363,10 @@ class StatsCollector(object):
     def updateVehicleDirection(self, avatar):
         stats = self.clientStatus
         if stats is None:
+            stats.vehicleYaw = None
+            stats.vehiclePitch = None
+            stats.vehicleRoll = None
+            stats.vehicleRYaw = None
             return
         matrix = Math.Matrix(avatar.getOwnVehicleMatrix())
         stats.vehicleYaw = matrix.yaw
