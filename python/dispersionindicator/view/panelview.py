@@ -160,5 +160,8 @@ PANEL_VIEW_SETTINGS = ViewSettings(
     PANEL_VIEW_SWF_FILE_PATH,
     ViewTypes.WINDOW,
     None,
-    ScopeTemplates.DEFAULT_SCOPE
+    ScopeTemplates.DEFAULT_SCOPE,
+    canClose=False,
+    canDrag=False,
+    isModal=True
 )

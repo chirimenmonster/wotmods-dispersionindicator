@@ -27,6 +27,7 @@ def init():
         from dispersionindicator.mod_constants import MOD
         from dispersionindicator.manager import IndicatorManager
         from dispersionindicator.view.panelview import PANEL_VIEW_SETTINGS
+        from dispersionindicator.test import dummy
 
         global _logger
         _logger = logging.getLogger(MOD.NAME)
