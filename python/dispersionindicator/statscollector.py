@@ -117,13 +117,13 @@ def playerAvatar_showShotResults(_, self, result):
     g_statsCollector.fireEvent(EVENT.RECEIVE_SHOT_RESULT)
 
 
-@overrideMethod(ShowShooting, '_doShot')
+@overrideMethod(ShowShooting, '_ShowShooting__doShot')
 @callOriginal(prev=False)
 def showShooting_doShot(_, self, data):
     if not data['entity'].isPlayerVehicle:
         return
     time = BigWorld.time()
-    _logger.debug('catch ShowShooting._doShot: time={}'.format(time))
+    _logger.debug('catch ShowShooting.__doShot: time={}'.format(time))
     g_statsCollector.fireEvent(EVENT.RECEIVE_SHOT)
 
 
@@ -361,6 +361,7 @@ class StatsCollector(object):
         stats.aimingTime = aimingInfo[6]
 
     def updateVehicleDirection(self, avatar):
+        _logger.info('updateVehicleDirection')
         stats = self.clientStatus
         if stats is None:
             stats.vehicleYaw = None
@@ -379,6 +380,7 @@ class StatsCollector(object):
             rYaw -= math.pi * 2
         elif rYaw < -math.pi:
             rYaw += math.pi * 2
+        _logger.info('updateVehicleDirection: vehicleRYaw=%s', rYaw)
         stats.vehicleRYaw = rYaw
 
     def updateGunAngles(self, avatar):
