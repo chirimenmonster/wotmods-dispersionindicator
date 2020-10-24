@@ -36,7 +36,8 @@ def callOriginal(prev=False):
             if prev:
                 result = orig(*args, **kwargs)
             try:
-                _ = func(result, *args, **kwargs)
+                if g_statsCollector is not None:
+                    _ = func(result, *args, **kwargs)
             except:
                 LOG_CURRENT_EXCEPTION()
             if not prev:
