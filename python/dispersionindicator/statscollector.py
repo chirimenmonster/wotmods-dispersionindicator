@@ -361,7 +361,7 @@ class StatsCollector(object):
         stats.aimingTime = aimingInfo[6]
 
     def updateVehicleDirection(self, avatar):
-        _logger.info('updateVehicleDirection')
+        _logger.debug('updateVehicleDirection')
         stats = self.clientStatus
         if stats is None:
             stats.vehicleYaw = None
@@ -380,7 +380,7 @@ class StatsCollector(object):
             rYaw -= math.pi * 2
         elif rYaw < -math.pi:
             rYaw += math.pi * 2
-        _logger.info('updateVehicleDirection: vehicleRYaw=%s', rYaw)
+        _logger.debug('updateVehicleDirection: vehicleRYaw=%s', rYaw)
         stats.vehicleRYaw = rYaw
 
     def updateGunAngles(self, avatar):
